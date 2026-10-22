@@ -23,3 +23,9 @@ Contexto: T-00 pide ajustar el backlog si el código ya cubre tareas.
 Opciones consideradas: partir tareas, fusionar T-01 con el esqueleto del simulador, o dejar los IDs como están.
 Decisión: los IDs T-00…T-24 se mantienen. Nada previo a T-00 cuenta como hecho. El simulador sigue siendo T-02 y no se adelanta.
 Consecuencias: la próxima tarea elegible es T-01.
+
+### D-005 — Sin pre-commit (2026-10-22)
+Contexto: T-01 pide un pre-commit opcional.
+Opciones consideradas: agregar el paquete `pre-commit` y un hook, o dejar lint como comando explícito.
+Decisión: no se agrega el paquete. `make lint` corre ruff (check y format). Quien quiera un hook puede enganchar ese comando.
+Consecuencias: un clon no instala hooks solo. La verificación de formato queda en `make lint`.
