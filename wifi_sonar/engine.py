@@ -14,7 +14,7 @@ from wifi_sonar.detect.calibrate import Calibration, calibrate
 from wifi_sonar.detect.motion import MotionConfig, MotionDetector
 from wifi_sonar.detect.presence import PresenceConfig, PresenceMachine, PresenceState
 from wifi_sonar.models import CSIFrame
-from wifi_sonar.pipeline.features import extract_features
+from wifi_sonar.pipeline.features import WindowFeatures, extract_features
 from wifi_sonar.pipeline.preprocess import preprocess
 from wifi_sonar.recording import SessionRecorder
 from wifi_sonar.settings import AppConfig, Settings
@@ -105,6 +105,8 @@ class Engine:
         self._iterator = None
         self._listeners: list[Listener] = []
         self._pulled = 0
+        self._empty_since: float | None = None
+        self._anchor_mean: dict[str, float] | None = None
         self.recorder = SessionRecorder(settings.recordings_dir)
         saved = self.store.load_config()
         if saved:
@@ -114,6 +116,7 @@ class Engine:
         saved_calibration = self.store.load_calibration()
         if saved_calibration:
             self.calibration = Calibration.from_dict(saved_calibration)
+            self._anchor_mean = dict(self.calibration.mean)
 
     def start(self) -> None:
         if self._thread and self._thread.is_alive():
@@ -138,6 +141,8 @@ class Engine:
         calibration = calibrate(source, seconds=seconds, k=self.config.threshold_k)
         with self._lock:
             self.calibration = calibration
+            self._anchor_mean = dict(calibration.mean)
+            self._empty_since = None
             self.nodes.clear()
             self.store.save_calibration(calibration.to_dict())
         logger.info("calibration saved", extra={"seconds": seconds})
@@ -315,6 +320,12 @@ class Engine:
         node.ts = sample.ts
         node.features = feature.as_dict()
         node.amplitudes = [float(value) for value in node.buffer[-1].amplitudes]
+        if sample.state == PresenceState.EMPTY:
+            if self._empty_since is None:
+                self._empty_since = sample.ts
+            self._drift_baseline(feature)
+        else:
+            self._empty_since = None
         if changed:
             zone = self.config.zones.get(node_id, "")
             if hasattr(self.store, "retention_days"):
@@ -328,6 +339,35 @@ class Engine:
             }
             self.store.add_event(event)
             self._notify_webhook(event)
+
+    def _drift_baseline(self, feature: WindowFeatures) -> None:
+        """Acerca la media a lo que se ve, solo después de un minuto vacío.
+
+        El ancla de la calibración limita el corrimiento. No se reescribe el
+        archivo en cada paso: la línea base guardada sigue siendo la de Calibrar.
+        """
+
+        if self.calibration is None or self._anchor_mean is None or self._empty_since is None:
+            return
+        if feature.timestamp - self._empty_since < 60.0:
+            return
+        alpha = 0.01
+        mean = dict(self.calibration.mean)
+        thresholds = dict(self.calibration.thresholds)
+        for name in ("motion_energy", "breath_energy"):
+            anchor = self._anchor_mean[name]
+            updated = (1.0 - alpha) * mean[name] + alpha * float(getattr(feature, name))
+            span = max(abs(anchor), self.calibration.std[name], 1e-6)
+            low = anchor - 0.5 * span
+            high = anchor + 0.5 * span
+            mean[name] = float(min(high, max(low, updated)))
+            thresholds[name] = mean[name] + self.calibration.k * self.calibration.std[name]
+        self.calibration = replace(self.calibration, mean=mean, thresholds=thresholds)
+        for node in self.nodes.values():
+            if node.motion is not None:
+                node.motion.calibration = self.calibration
+            if node.presence is not None:
+                node.presence.calibration = self.calibration
 
     def _motion_config(self) -> MotionConfig:
         off = max(0.0, self.config.on_threshold - self.config.hysteresis)

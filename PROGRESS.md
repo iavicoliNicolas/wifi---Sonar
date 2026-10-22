@@ -1,7 +1,7 @@
 # PROGRESS
 
 ## Estado actual
-Fase: 5 — Calidad · Última tarea completada: T-21 · Próxima: T-22
+Fase: 5 — Calidad · Última tarea completada: T-22 · Próxima: T-23
 
 ## Inventario del repo (2026-10-22)
 
@@ -184,3 +184,10 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Tests agregados: dos fuentes simuladas, living en movimiento y pasillo presente en el estado; la fusión OR queda en movimiento. En Chrome la lista mostró "living / movimiento".
 - Problemas / deuda: ninguna.
 - Siguiente paso sugerido: T-21 — modo RSSI de sensibilidad baja.
+
+### 2026-10-22 T-21 — Modo RSSI degradado
+- Qué se hizo: `RssiSource` solo acepta dispositivos nombrados por la persona y no escanea la red. La RSSI entra como una subportadora. El panel muestra el aviso de sensibilidad baja cuando el modo es `rssi`. Calibrar en ese modo usa una serie vacía de la misma fuente.
+- Archivos tocados: `wifi_sonar/sources/rssi.py`, `wifi_sonar/engine.py`, `wifi_sonar/settings.py`, `web/index.html`, `web/app.js`, `.env.example`, `tests/test_rssi.py`, `DECISIONS.md`, `PROGRESS.md`, `DEV_LOOP.md`.
+- Tests agregados: lista vacía rechazada; cuarto vacío sigue en vacío; caminata pasa a movimiento; el HTML incluye el aviso. En Chrome el aviso quedó visible al poner el modo en `rssi`.
+- Problemas / deuda: no lee RSSI real de la interfaz de red. El default `telefono` es un marcador, no un equipo descubierto.
+- Siguiente paso sugerido: T-22 — reconexión, logs, health y deriva.

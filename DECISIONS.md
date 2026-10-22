@@ -83,3 +83,9 @@ Contexto: T-21 pide un modo degradado con RSSI de dispositivos conocidos de la L
 Opciones consideradas: escanear vecinos, leer cualquier estación asociada, o aceptar solo nombres que la persona escribe.
 Decisión: `RssiSource` exige `devices`. No hay barrido de redes ni descubrimiento. El simulador usa esos nombres; no consulta la LAN. La RSSI entra al pipeline como una sola subportadora. El panel muestra "modo RSSI · sensibilidad baja" cuando `mode` es `rssi`. Arrancar con `WIFI_SONAR_SOURCE=rssi` fuerza ese modo y calibra contra una serie vacía de la misma fuente.
 Consecuencias: sin CSI el detector es más grueso. Un nombre en la lista no identifica a una persona. El default `telefono` es un marcador de posición, no un equipo descubierto.
+
+### D-015 — Deriva lenta solo en memoria (2026-10-22)
+Contexto: T-22 pide recalibración automática lenta cuando el cuarto está vacío, más reconexión, logs y health.
+Opciones consideradas: reescribir la calibración en SQLite en cada ventana, o mover la media en memoria con un tope.
+Decisión: después de 60 s vacíos, cada ventana mezcla 1 % de la energía observada en la media, acotada a media ancla ± 0.5 del mayor entre |ancla| y σ. Los detectores vivos reciben el objeto nuevo. No se guarda en cada paso. Un corte de la fuente (`StopIteration` o cualquier error) tira el iterador y vuelve a abrirla sin matar el proceso. Los logs de `wifi_sonar` son JSON. `GET /health` no requiere calibración.
+Consecuencias: reiniciar el proceso vuelve a la calibración guardada. La deriva no persigue un minuto de movimiento.

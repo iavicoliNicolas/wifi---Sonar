@@ -209,7 +209,7 @@ Formato: `[ ] ID — Título` · *Depende de* · **Aceptación**
 
 ### Fase 5 — Calidad y cierre
 
-- [ ] **T-22 — Robustez operativa**
+- [x] **T-22 — Robustez operativa**
   *Depende de:* T-12
   Reconexión automática de fuentes, logs estructurados, health check, manejo de deriva (recalibración automática lenta cuando está vacío).
   **Aceptación:** test de caos: cortar y reanudar la fuente sin reiniciar el servicio.

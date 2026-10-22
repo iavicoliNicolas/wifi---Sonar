@@ -77,6 +77,17 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
     app.state.engine = engine
     app.state.hub = hub
 
+    @app.get("/health")
+    def health() -> dict[str, object]:
+        current = engine.status()
+        return {
+            "ok": True,
+            "version": __version__,
+            "connected": current["connected"],
+            "paused": current["paused"],
+            "sensing": current["sensing"],
+        }
+
     @app.get("/status")
     def status() -> dict[str, object]:
         return engine.status()

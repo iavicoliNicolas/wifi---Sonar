@@ -4,10 +4,12 @@ from __future__ import annotations
 
 import uvicorn
 
+from wifi_sonar.jsonlog import configure_logging
 from wifi_sonar.settings import Settings
 
 
 def main() -> None:
+    configure_logging()
     settings = Settings.from_env()
     uvicorn.run(
         "wifi_sonar.api.app:app",
