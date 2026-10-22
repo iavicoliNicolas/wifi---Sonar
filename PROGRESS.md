@@ -1,7 +1,7 @@
 # PROGRESS
 
 ## Estado actual
-Fase: 2 — Servicio y tiempo real · Última tarea completada: T-12 · Próxima: T-13
+Fase: 2 — Servicio y tiempo real · Última tarea completada: T-13 · Próxima: T-14
 
 ## Inventario del repo (2026-10-22)
 
@@ -127,3 +127,10 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Tests agregados: reabrir la base conserva config, calibración y el evento reciente; un evento de 40 días desaparece solo.
 - Problemas / deuda: ninguna.
 - Siguiente paso sugerido: T-13 — grabar CSI y etiquetas, y reproducirlas con el mismo resultado del detector.
+
+### 2026-10-22 T-13 — Grabación y exportación
+- Qué se hizo: `SessionRecorder` escribe JSONL crudo y un archivo de etiquetas. `POST /recordings/start`, `/label` y `/stop`. El replay de esa grabación produce los mismos estados del detector.
+- Archivos tocados: `wifi_sonar/recording.py`, `wifi_sonar/sources/replay.py`, `wifi_sonar/engine.py`, `wifi_sonar/api/app.py`, `wifi_sonar/settings.py`, `tests/test_recording.py`, `PROGRESS.md`, `DEV_LOOP.md`.
+- Tests agregados: grabar → replay → mismos estados; los endpoints crean la etiqueta y rechazan un segundo stop.
+- Problemas / deuda: ninguna.
+- Siguiente paso sugerido: T-14 — shell del panel, conectado al WebSocket del simulador.

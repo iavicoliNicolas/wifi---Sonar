@@ -14,6 +14,7 @@ from wifi_sonar.detect.presence import PresenceConfig, PresenceMachine, Presence
 from wifi_sonar.models import CSIFrame
 from wifi_sonar.pipeline.features import extract_features
 from wifi_sonar.pipeline.preprocess import preprocess
+from wifi_sonar.recording import SessionRecorder
 from wifi_sonar.settings import AppConfig, Settings
 from wifi_sonar.sources.base import CSISource
 from wifi_sonar.sources.simulated import SimConfig, SimulatedSource, demo_cycle
@@ -100,6 +101,7 @@ class Engine:
         self._iterator = None
         self._listeners: list[Listener] = []
         self._pulled = 0
+        self.recorder = SessionRecorder(settings.recordings_dir)
         saved = self.store.load_config()
         if saved:
             self.config = AppConfig(**saved)
@@ -148,6 +150,7 @@ class Engine:
         with self._lock:
             if self.config.paused:
                 return
+            self.recorder.write_frame(frame)
             node = self.nodes.setdefault(frame.node_id, NodeRuntime())
             node.buffer.append(frame)
             self._trim(node)
@@ -183,6 +186,19 @@ class Engine:
         self._pulled += 1
         self.ingest(frame)
         return True
+
+    def start_recording(self, name: str | None = None) -> dict[str, str]:
+        path = self.recorder.start(name)
+        assert self.recorder.labels_path is not None
+        return {"path": str(path), "labels": str(self.recorder.labels_path)}
+
+    def add_label(self, timestamp: float, label: str) -> None:
+        self.recorder.label(timestamp, label)
+
+    def stop_recording(self) -> dict[str, str]:
+        path = self.recorder.stop()
+        assert self.recorder.labels_path is not None
+        return {"path": str(path), "labels": str(self.recorder.labels_path)}
 
     def status(self) -> dict[str, object]:
         with self._lock:

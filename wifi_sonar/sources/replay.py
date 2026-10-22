@@ -18,7 +18,7 @@ def write_recording(path: str | Path, frames: Iterable[CSIFrame]) -> None:
     destination.parent.mkdir(parents=True, exist_ok=True)
     suffix = destination.suffix.lower()
     if suffix == ".jsonl":
-        lines = [json.dumps(_frame_payload(frame), ensure_ascii=False) for frame in frames]
+        lines = [dumps_frame(frame) for frame in frames]
         destination.write_text("\n".join(lines) + ("\n" if lines else ""), encoding="utf-8")
         return
     if suffix == ".csv":
@@ -102,6 +102,10 @@ def infer_sample_rate(frames: list[CSIFrame]) -> float:
     deltas.sort()
     median = deltas[len(deltas) // 2]
     return 1.0 / median
+
+
+def dumps_frame(frame: CSIFrame) -> str:
+    return json.dumps(_frame_payload(frame), ensure_ascii=False)
 
 
 def _frame_payload(frame: CSIFrame) -> dict[str, object]:

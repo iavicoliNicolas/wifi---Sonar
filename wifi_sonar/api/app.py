@@ -19,6 +19,15 @@ class CalibrateBody(BaseModel):
     seconds: float = Field(default=20.0, gt=0, le=180)
 
 
+class RecordingStart(BaseModel):
+    name: str | None = None
+
+
+class RecordingLabel(BaseModel):
+    ts: float
+    label: str
+
+
 class ConfigUpdate(BaseModel):
     sensitivity: float | None = None
     window_s: float | None = None
@@ -97,6 +106,29 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
     @app.get("/history")
     def history(limit: int = Query(default=100, ge=1, le=1000)) -> list[dict[str, object]]:
         return engine.store.list_events(limit)
+
+    @app.post("/recordings/start")
+    def start_recording(body: RecordingStart | None = None) -> dict[str, str]:
+        try:
+            name = None if body is None else body.name
+            return engine.start_recording(name)
+        except RuntimeError as error:
+            raise HTTPException(status_code=409, detail=str(error)) from error
+
+    @app.post("/recordings/label")
+    def label_recording(body: RecordingLabel) -> dict[str, bool]:
+        try:
+            engine.add_label(body.ts, body.label)
+        except RuntimeError as error:
+            raise HTTPException(status_code=409, detail=str(error)) from error
+        return {"ok": True}
+
+    @app.post("/recordings/stop")
+    def stop_recording() -> dict[str, str]:
+        try:
+            return engine.stop_recording()
+        except RuntimeError as error:
+            raise HTTPException(status_code=409, detail=str(error)) from error
 
     @app.websocket("/ws")
     async def stream(socket: WebSocket) -> None:

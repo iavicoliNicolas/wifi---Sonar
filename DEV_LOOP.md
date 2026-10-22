@@ -158,7 +158,7 @@ Formato: `[ ] ID — Título` · *Depende de* · **Aceptación**
   SQLite para eventos (cambios de estado), calibraciones y config. Retención configurable.
   **Aceptación:** migración inicial, tests, limpieza automática por antigüedad.
 
-- [ ] **T-13 — Grabación y exportación de sesiones**
+- [x] **T-13 — Grabación y exportación de sesiones**
   *Depende de:* T-12
   Grabar CSI crudo + etiquetas manuales para generar datasets propios y reusar en `ReplaySource`.
   **Aceptación:** grabar → replay → mismo resultado del detector.
