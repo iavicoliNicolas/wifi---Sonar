@@ -247,6 +247,12 @@ canvas {
   font-size: 0.9rem;
 }
 
+#settings label.check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 #settings input[type="url"] {
   border: 1px solid var(--line);
   border-radius: 8px;

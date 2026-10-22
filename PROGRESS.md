@@ -212,3 +212,10 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Tests agregados: ninguno nuevo. La suite completa se volvió a correr al cerrar la tarea.
 - Problemas / deuda: las capturas son del simulador, no de una placa ESP32. No hay hardware en esta máquina.
 - Siguiente paso sugerido: ninguno. El backlog T-00…T-24 está cerrado.
+
+### 2026-10-22 fix(T-15) — Escala del heatmap
+- Qué se hizo: el gráfico de amplitud estiraba todo valor por encima de 1 al mismo naranja. Ahora usa los percentiles 5 y 95 de la ventana visible, y la subportadora nula queda oscura.
+- Archivos tocados: `web/app.js`, `web/style.css`, `tests/test_api.py`, `docs/panel.png`, `docs/calibracion.png`, `PROGRESS.md`.
+- Tests agregados: el asset del panel incluye `displayRange`. En Chrome el canvas pasó de un bloque uniforme a 509 colores (varianza del canal rojo distinta de cero) y el score muestra los cruces de umbral.
+- Problemas / deuda: ninguna.
+- Siguiente paso sugerido: ninguno.

@@ -66,6 +66,31 @@ function renderState(snapshot) {
   }
 }
 
+function displayRange(series) {
+  const values = [];
+  for (const column of series) {
+    if (!column) {
+      continue;
+    }
+    for (const raw of column) {
+      const value = Number(raw);
+      if (Number.isFinite(value) && Math.abs(value) > 1e-4) {
+        values.push(value);
+      }
+    }
+  }
+  if (!values.length) {
+    return { low: 0, high: 1 };
+  }
+  values.sort((left, right) => left - right);
+  const low = values[Math.floor((values.length - 1) * 0.05)];
+  const high = values[Math.ceil((values.length - 1) * 0.95)];
+  if (high - low < 1e-4) {
+    return { low: low - 0.05, high: high + 0.05 };
+  }
+  return { low, high };
+}
+
 function drawHeatmap() {
   const context = heatmap.getContext("2d");
   const width = heatmap.width;
@@ -75,17 +100,21 @@ function drawHeatmap() {
   if (!series.length || !series[0]) {
     return;
   }
+  const range = displayRange(series);
+  const span = range.high - range.low;
   const image = context.createImageData(width, height);
   const subcarriers = series[0].length;
   for (let x = 0; x < width; x += 1) {
     const column = series[Math.floor((x / width) * series.length)];
     for (let y = 0; y < height; y += 1) {
       const bin = Math.min(subcarriers - 1, Math.floor((y / height) * subcarriers));
-      const value = Math.max(-1, Math.min(1, Number(column[bin]) || 0));
+      const raw = Number(column[bin]);
+      const missing = !Number.isFinite(raw) || Math.abs(raw) <= 1e-4;
+      const tone = missing ? 0 : Math.max(0, Math.min(1, (raw - range.low) / span));
       const offset = (y * width + x) * 4;
-      image.data[offset] = value > 0 ? 40 + value * 180 : 20;
-      image.data[offset + 1] = 70 + Math.abs(value) * 80;
-      image.data[offset + 2] = value < 0 ? 40 + -value * 140 : 60;
+      image.data[offset] = missing ? 22 : Math.round(18 + tone * 214);
+      image.data[offset + 1] = missing ? 28 : Math.round(48 + Math.sin(tone * Math.PI) * 120);
+      image.data[offset + 2] = missing ? 32 : Math.round(78 * (1 - tone) + 24);
       image.data[offset + 3] = 255;
     }
   }
@@ -297,6 +326,7 @@ window.__sonar = {
   columnCount: () => columnCount,
   maxColumns: MAX_COLUMNS,
   eventCount: () => timeline.children.length,
+  displayRange,
 };
 
 const wizard = document.querySelector("#wizard");

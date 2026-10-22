@@ -68,7 +68,9 @@ def test_panel_shell_is_served():
         assert 'id="score"' in page.text
         assert 'id="timeline"' in page.text
         assert "Salí de la habitación" in page.text
-        assert client.get("/assets/app.js").status_code == 200
+        script = client.get("/assets/app.js")
+        assert script.status_code == 200
+        assert "displayRange" in script.text
         assert client.get("/assets/style.css").status_code == 200
 
 
