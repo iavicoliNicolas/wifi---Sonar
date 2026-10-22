@@ -126,7 +126,7 @@ Formato: `[ ] ID — Título` · *Depende de* · **Aceptación**
   Capturar N segundos con el ambiente vacío; guardar media y desvío de features; umbrales derivados (ej. media + k·σ).
   **Aceptación:** función `calibrate(source, seconds)` + persistencia de la calibración; test con simulador.
 
-- [ ] **T-07 — Detector de movimiento**
+- [x] **T-07 — Detector de movimiento**
   *Depende de:* T-06
   Compara features contra la línea base con histéresis y mínimo de duración para evitar parpadeo. Salida: `{moving: bool, score: 0-1, ts}`.
   **Aceptación:** en simulador, detecta ≥95 % de eventos de caminata con ≤1 falso positivo cada 10 min de ruido.

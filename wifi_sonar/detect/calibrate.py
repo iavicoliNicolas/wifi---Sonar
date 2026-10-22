@@ -79,7 +79,7 @@ class Calibration:
 def calibrate(
     source: CSISource,
     seconds: float,
-    k: float = 4.0,
+    k: float = 8.0,
     path: str | Path | None = None,
     feature_config: FeatureConfig | None = None,
     preprocess_config: PreprocessConfig | None = None,
@@ -115,7 +115,7 @@ def calibrate_frames(
     frames: Sequence[CSIFrame],
     sample_rate_hz: float,
     seconds: float,
-    k: float = 4.0,
+    k: float = 8.0,
     feature_config: FeatureConfig | None = None,
     preprocess_config: PreprocessConfig | None = None,
 ) -> Calibration:

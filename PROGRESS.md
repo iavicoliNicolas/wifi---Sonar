@@ -1,7 +1,7 @@
 # PROGRESS
 
 ## Estado actual
-Fase: 1 — Núcleo de señal · Última tarea completada: T-06 · Próxima: T-07
+Fase: 1 — Núcleo de señal · Última tarea completada: T-07 · Próxima: T-08
 
 ## Inventario del repo (2026-10-22)
 
@@ -85,3 +85,10 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Tests agregados: la calibración de 20 s persiste y se recarga; una captura más corta que la ventana espectral se rechaza.
 - Problemas / deuda: ninguna.
 - Siguiente paso sugerido: T-07 — detector de movimiento con histéresis.
+
+### 2026-10-22 T-07 — Detector de movimiento
+- Qué se hizo: el score compara la energía de la banda de movimiento contra la calibración. Histéresis (0.75 / 0.40) y 1 s de duración mínima. En el simulador, 20/20 caminatas y ningún falso positivo en 10 minutos de ruido con k = 8. La búsqueda del nodo al interpolar dejó de armar una matriz de N×N.
+- Archivos tocados: `wifi_sonar/detect/motion.py`, `wifi_sonar/detect/calibrate.py`, `wifi_sonar/pipeline/preprocess.py`, `tests/test_motion.py`, `tests/test_preprocess.py`, `DECISIONS.md`, `PROGRESS.md`, `DEV_LOOP.md`.
+- Tests agregados: un pico no engancha y un score sostenido sí; recall ≥ 95 % y ≤ 1 falso positivo en 10 minutos.
+- Problemas / deuda: ninguna.
+- Siguiente paso sugerido: T-08 — detector de presencia quieta y máquina de estados.

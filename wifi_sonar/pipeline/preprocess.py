@@ -108,7 +108,11 @@ def _resample(frames, times, amplitudes, rssi, phases, sample_rate_hz):
         filled_phases = np.column_stack(
             [np.interp(grid, times, phases[:, column]) for column in range(phases.shape[1])]
         )
-    nearest = np.abs(grid[:, None] - times[None, :]).argmin(axis=1)
+    insertion = np.searchsorted(times, grid, side="left")
+    insertion = np.clip(insertion, 1, len(times) - 1)
+    left = insertion - 1
+    take_right = np.abs(times[insertion] - grid) < np.abs(times[left] - grid)
+    nearest = np.where(take_right, insertion, left)
     node_ids = [ordered[int(index)].node_id for index in nearest]
     return grid, filled, filled_rssi, filled_phases, node_ids
 

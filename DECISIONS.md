@@ -41,3 +41,9 @@ Contexto: T-05 pide ventanas de unos 2 s y energía en 0.5–5 Hz y 0.1–0.5 Hz
 Opciones consideradas: agregar SciPy y usar `welch` con segmentos cortos, o un periodograma de Hann sobre una ventana más larga hecho con NumPy.
 Decisión: varianza y media de diferencias usan la ventana corta (2 s, paso 0.5 s). Las dos energías de banda usan una ventana de 10 s (resolución 0.1 Hz) y un solo segmento de Welch con ventana de Hann. No se agrega SciPy.
 Consecuencias: el primer feature aparece a los 10 s. La respiración no dispara la banda de movimiento. El detector de T-07 tiene que esperar esa ventana.
+
+### D-008 — El movimiento se decide con la banda 0.5–5 Hz y k = 8 (2026-10-22)
+Contexto: la varianza de la ventana también sube con la respiración, así que no separa "camina" de "está quieto". En 10 minutos de ruido, la energía de movimiento llega a unos 4 σ de una calibración corta con k = 4 y produce dos falsos positivos.
+Opciones consideradas: subir la duración mínima, subir el umbral de histéresis, o agrandar k.
+Decisión: el score de movimiento es la energía de la banda 0.5–5 Hz, normalizada para valer 1 en `media + k·σ`, con k = 8 por defecto. Histéresis 0.75 / 0.40 y al menos 1 s por encima del umbral. El nodo de cada frame interpolado se elige con búsqueda binaria: la matriz de distancias no entra en memoria a 10 minutos.
+Consecuencias: respiración y ruido quedan por debajo de 0.5 de score. Una caminata de unos segundos satura el score en 1. La calibración de T-06 sigue aceptando otro k.

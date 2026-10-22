@@ -59,5 +59,19 @@ def test_null_subcarrier_is_removed_and_amplitude_is_normalized():
     assert np.allclose(medians, 1.0)
 
 
+def test_gap_keeps_the_nearest_node_id():
+    frames = [
+        CSIFrame(0.0, -40.0, (1.0,), None, "a"),
+        CSIFrame(0.05, -40.0, (1.0,), None, "b"),
+    ]
+    cleaned = preprocess(
+        frames,
+        100.0,
+        PreprocessConfig(normalize=False, null_threshold=0.0),
+    )
+    assert cleaned[0].node_id == "a"
+    assert cleaned[-1].node_id == "b"
+
+
 def samples_to_frames(samples, fs=100.0):
     return _frames(samples, fs=fs)
