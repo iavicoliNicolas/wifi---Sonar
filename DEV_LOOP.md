@@ -214,7 +214,7 @@ Formato: `[ ] ID — Título` · *Depende de* · **Aceptación**
   Reconexión automática de fuentes, logs estructurados, health check, manejo de deriva (recalibración automática lenta cuando está vacío).
   **Aceptación:** test de caos: cortar y reanudar la fuente sin reiniciar el servicio.
 
-- [ ] **T-23 — Empaquetado**
+- [x] **T-23 — Empaquetado**
   *Depende de:* T-22
   Dockerfile / compose, o servicio systemd, para correr en una Raspberry Pi o mini PC.
   **Aceptación:** `docker compose up` deja todo funcionando con el simulador.

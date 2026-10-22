@@ -1,0 +1,16 @@
+services:
+  wifi-sonar:
+    build: .
+    ports:
+      - "127.0.0.1:8000:8000"
+    environment:
+      WIFI_SONAR_HOST: "0.0.0.0"
+      WIFI_SONAR_SOURCE: sim
+      WIFI_SONAR_SPEED: "1"
+      WIFI_SONAR_WEB: /app/web
+      WIFI_SONAR_DB: /data/wifi_sonar.sqlite
+    volumes:
+      - sonar-data:/data
+
+volumes:
+  sonar-data:

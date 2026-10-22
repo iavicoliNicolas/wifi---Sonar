@@ -1,7 +1,7 @@
 # PROGRESS
 
 ## Estado actual
-Fase: 5 — Calidad · Última tarea completada: T-22 · Próxima: T-23
+Fase: 5 — Calidad · Última tarea completada: T-23 · Próxima: T-24
 
 ## Inventario del repo (2026-10-22)
 
@@ -191,3 +191,17 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Tests agregados: lista vacía rechazada; cuarto vacío sigue en vacío; caminata pasa a movimiento; el HTML incluye el aviso. En Chrome el aviso quedó visible al poner el modo en `rssi`.
 - Problemas / deuda: no lee RSSI real de la interfaz de red. El default `telefono` es un marcador, no un equipo descubierto.
 - Siguiente paso sugerido: T-22 — reconexión, logs, health y deriva.
+
+### 2026-10-22 T-22 — Robustez operativa
+- Qué se hizo: si la fuente corta o tira un error, el hilo la vuelve a abrir. Los logs del paquete son JSON. `GET /health` informa conexión, pausa y sensado. Con el cuarto vacío más de un minuto, la media se acerca despacio a lo observado y no se aleja de la calibración original más de media σ.
+- Archivos tocados: `wifi_sonar/engine.py`, `wifi_sonar/jsonlog.py`, `wifi_sonar/__main__.py`, `wifi_sonar/api/app.py`, `tests/test_robustness.py`, `DECISIONS.md`, `PROGRESS.md`, `DEV_LOOP.md`.
+- Tests agregados: la primera lectura levanta `ConnectionError` y el servicio sigue conectado; `/health` responde; una línea de log es JSON; la deriva no corre antes del minuto y queda acotada.
+- Problemas / deuda: la deriva no se persiste. Al reiniciar vuelve la calibración guardada.
+- Siguiente paso sugerido: T-23 — Docker.
+
+### 2026-10-22 T-23 — Empaquetado
+- Qué se hizo: `Dockerfile`, `compose.yaml` y una unidad de ejemplo en `deploy/wifi-sonar.service`. La imagen instala el paquete y sirve el panel con `WIFI_SONAR_WEB`.
+- Archivos tocados: `Dockerfile`, `compose.yaml`, `.dockerignore`, `deploy/wifi-sonar.service`, `DECISIONS.md`, `PROGRESS.md`, `DEV_LOOP.md`.
+- Tests agregados: `docker compose up --build` dejó `/health` en ok, el panel en 200 y el simulador calibrado. Después se bajó el stack para no ocupar el puerto.
+- Problemas / deuda: esta máquina no traía Docker; se instaló para la prueba. Un clon no lo instala solo.
+- Siguiente paso sugerido: T-24 — README final.

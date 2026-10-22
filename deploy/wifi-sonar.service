@@ -1,0 +1,14 @@
+[Unit]
+Description=WiFi Sonar local presence panel
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/wifi-sonar
+Environment=WIFI_SONAR_HOST=127.0.0.1
+Environment=WIFI_SONAR_SOURCE=sim
+ExecStart=/opt/wifi-sonar/.venv/bin/python -m wifi_sonar
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

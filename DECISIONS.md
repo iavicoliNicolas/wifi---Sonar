@@ -89,3 +89,9 @@ Contexto: T-22 pide recalibración automática lenta cuando el cuarto está vac�
 Opciones consideradas: reescribir la calibración en SQLite en cada ventana, o mover la media en memoria con un tope.
 Decisión: después de 60 s vacíos, cada ventana mezcla 1 % de la energía observada en la media, acotada a media ancla ± 0.5 del mayor entre |ancla| y σ. Los detectores vivos reciben el objeto nuevo. No se guarda en cada paso. Un corte de la fuente (`StopIteration` o cualquier error) tira el iterador y vuelve a abrirla sin matar el proceso. Los logs de `wifi_sonar` son JSON. `GET /health` no requiere calibración.
 Consecuencias: reiniciar el proceso vuelve a la calibración guardada. La deriva no persigue un minuto de movimiento.
+
+### D-016 — Imagen Docker con el panel al lado del paquete (2026-10-22)
+Contexto: T-23 pide `docker compose up` con el simulador. `pip install` copia el paquete a site-packages, así que `web/` deja de estar dos niveles arriba de `api/app.py`.
+Opciones consideradas: instalar en editable, o fijar `WIFI_SONAR_WEB`.
+Decisión: la imagen hace `pip install .`, copia `web/` a `/app/web` y define `WIFI_SONAR_WEB`. El servicio escucha en `0.0.0.0` dentro de la red del compose y el puerto publicado queda en `127.0.0.1:8000`. Hay además una unidad systemd de ejemplo en `deploy/` para una Raspberry sin Docker.
+Consecuencias: el panel no depende de la ruta del wheel. El contenedor no abre el puerto a la LAN de la casa por defecto.
