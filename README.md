@@ -12,6 +12,6 @@ Hace falta Python 3.11 o superior. En Debian/Ubuntu también el paquete `python3
 make test
 ```
 
-Eso crea `.venv`, instala el paquete en modo editable y corre la suite. `make lint` corre ruff. Las variables opcionales están en `.env.example`.
+Eso crea `.venv`, instala el paquete en modo editable y corre la suite. `make lint` corre ruff. `make eval` imprime la tabla de precisión, recall y latencia y la guarda en `docs/eval.md`. Las variables opcionales están en `.env.example`.
 
 Alcance: presencia, movimiento y zona aproximada dentro de tu casa, con consentimiento de quienes viven ahí. No identifica personas.

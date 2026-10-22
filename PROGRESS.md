@@ -1,7 +1,7 @@
 # PROGRESS
 
 ## Estado actual
-Fase: 1 — Núcleo de señal · Última tarea completada: T-08 · Próxima: T-09
+Fase: 2 — Servicio y tiempo real · Última tarea completada: T-09 · Próxima: T-10
 
 ## Inventario del repo (2026-10-22)
 
@@ -99,3 +99,10 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Tests agregados: transiciones de la máquina (un pico no alcanza, la quietud sostenida sí, el movimiento la interrumpe y al bajar vuelve a vacío); en el simulador un `still` termina en presencia y un `walk` en movimiento.
 - Problemas / deuda: ninguna.
 - Siguiente paso sugerido: T-09 — `make eval` con precisión, recall y latencia.
+
+### 2026-10-22 T-09 — Métricas de evaluación
+- Qué se hizo: `make eval` corre caminatas, quietud y cuarto vacío sobre el simulador. Imprime precisión, recall y latencia mediana, y guarda la tabla en `docs/eval.md`.
+- Archivos tocados: `wifi_sonar/eval/report.py`, `wifi_sonar/eval/__main__.py`, `tests/test_eval.py`, `Makefile`, `docs/eval.md`, `README.md`, `PROGRESS.md`, `DEV_LOOP.md`.
+- Tests agregados: la tabla cumple recall de caminata ≥ 95 %, quietud perfecta en el escenario y como máximo un falso positivo en el cuarto vacío.
+- Problemas / deuda: la latencia de la quietud ronda los 11 s porque la banda de respiración mira 10 s de espectro. Está escrito en el reporte.
+- Siguiente paso sugerido: T-10 — API HTTP.

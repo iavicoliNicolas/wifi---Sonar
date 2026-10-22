@@ -2,7 +2,7 @@ PY ?= python3
 VENV := .venv
 BIN := $(VENV)/bin
 
-.PHONY: dev test lint
+.PHONY: dev test lint eval
 
 $(VENV)/.installed: pyproject.toml
 	$(PY) -m venv $(VENV)
@@ -18,3 +18,6 @@ test: $(VENV)/.installed
 lint: $(VENV)/.installed
 	$(BIN)/ruff check .
 	$(BIN)/ruff format --check .
+
+eval: $(VENV)/.installed
+	$(BIN)/python -m wifi_sonar.eval
