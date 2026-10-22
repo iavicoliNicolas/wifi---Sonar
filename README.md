@@ -6,7 +6,7 @@ Estado y backlog: [`PROGRESS.md`](PROGRESS.md), [`DEV_LOOP.md`](DEV_LOOP.md), [`
 
 ## Desarrollo
 
-Hace falta Python 3.11 o superior. En un clon limpio:
+Hace falta Python 3.11 o superior. En Debian/Ubuntu también el paquete `python3-venv`. En un clon limpio:
 
 ```bash
 make test
