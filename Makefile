@@ -4,16 +4,17 @@ BIN := $(VENV)/bin
 
 .PHONY: dev test lint
 
-$(BIN)/pytest: pyproject.toml
+$(VENV)/.installed: pyproject.toml
 	$(PY) -m venv $(VENV)
 	$(BIN)/python -m pip install -U pip
 	$(BIN)/pip install -e ".[dev]"
+	touch $(VENV)/.installed
 
-dev: $(BIN)/pytest
+dev: $(VENV)/.installed
 
-test: $(BIN)/pytest
+test: $(VENV)/.installed
 	$(BIN)/pytest
 
-lint: $(BIN)/pytest
+lint: $(VENV)/.installed
 	$(BIN)/ruff check .
 	$(BIN)/ruff format --check .
