@@ -2,14 +2,16 @@
 
 from __future__ import annotations
 
+import asyncio
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel, Field
 
 from wifi_sonar import __version__
 from wifi_sonar.engine import Engine
 from wifi_sonar.settings import Settings
+from wifi_sonar.stream import SnapshotHub
 
 
 class CalibrateBody(BaseModel):
@@ -37,6 +39,8 @@ class ConfigUpdate(BaseModel):
 def create_app(settings: Settings | None = None, engine: Engine | None = None) -> FastAPI:
     settings = settings if settings is not None else Settings.from_env()
     engine = engine if engine is not None else Engine(settings)
+    hub = SnapshotHub()
+    engine.add_listener(hub.publish)
 
     @asynccontextmanager
     async def lifespan(app: FastAPI):
@@ -56,6 +60,7 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
     )
     app.state.settings = settings
     app.state.engine = engine
+    app.state.hub = hub
 
     @app.get("/status")
     def status() -> dict[str, object]:
@@ -90,6 +95,19 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
     @app.get("/history")
     def history(limit: int = Query(default=100, ge=1, le=1000)) -> list[dict[str, object]]:
         return engine.store.list_events(limit)
+
+    @app.websocket("/ws")
+    async def stream(socket: WebSocket) -> None:
+        await socket.accept()
+        try:
+            await socket.send_json(engine.status())
+            while True:
+                snapshot = hub.take()
+                if snapshot is not None:
+                    await socket.send_json(snapshot)
+                await asyncio.sleep(0.1)
+        except WebSocketDisconnect:
+            return
 
     return app
 

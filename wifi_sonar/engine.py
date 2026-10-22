@@ -34,6 +34,8 @@ class NodeRuntime:
     presence_score: float = 0.0
     moving: bool = False
     ts: float = 0.0
+    features: dict[str, float] = field(default_factory=dict)
+    amplitudes: list[float] = field(default_factory=list)
 
 
 @dataclass
@@ -51,6 +53,8 @@ class EngineStatus:
     ts: float | None = None
     connected: bool = False
     nodes: list[dict[str, object]] = field(default_factory=list)
+    features: dict[str, float] = field(default_factory=dict)
+    amplitudes: list[float] = field(default_factory=list)
 
     def as_dict(self) -> dict[str, object]:
         return {
@@ -67,6 +71,8 @@ class EngineStatus:
             "ts": self.ts,
             "connected": self.connected,
             "nodes": self.nodes,
+            "features": self.features,
+            "amplitudes": self.amplitudes,
         }
 
 
@@ -259,6 +265,8 @@ class Engine:
         node.presence_score = sample.presence_score
         node.moving = sample.moving
         node.ts = sample.ts
+        node.features = feature.as_dict()
+        node.amplitudes = [float(value) for value in node.buffer[-1].amplitudes]
         if changed:
             zone = self.config.zones.get(node_id, "")
             self.store.add_event(
@@ -325,6 +333,8 @@ class Engine:
             ts=None if active is None else active.ts,
             connected=self.connected,
             nodes=node_rows,
+            features={} if active is None else dict(active.features),
+            amplitudes=[] if active is None else list(active.amplitudes),
         )
 
     def _publish_locked(self) -> None:

@@ -1,7 +1,7 @@
 # PROGRESS
 
 ## Estado actual
-Fase: 2 — Servicio y tiempo real · Última tarea completada: T-10 · Próxima: T-11
+Fase: 2 — Servicio y tiempo real · Última tarea completada: T-11 · Próxima: T-12
 
 ## Inventario del repo (2026-10-22)
 
@@ -113,3 +113,10 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Tests agregados: config en caliente, calibración, historial de un cambio a movimiento, esquema OpenAPI y fusión OR.
 - Problemas / deuda: el historial todavía está en memoria. SQLite es T-12.
 - Siguiente paso sugerido: T-11 — WebSocket a ~10 Hz con descarte de frames viejos.
+
+### 2026-10-22 T-11 — Streaming por WebSocket
+- Qué se hizo: `/ws` manda el estado, las features y las amplitudes del último frame. El hub guarda un solo snapshot: si el cliente no leyó, el siguiente publish pisa al anterior. El lazo del socket espera 0.1 s, así que sale a unos 10 Hz.
+- Archivos tocados: `wifi_sonar/stream.py`, `wifi_sonar/api/app.py`, `wifi_sonar/engine.py`, `tests/test_ws.py`, `PROGRESS.md`, `DEV_LOOP.md`.
+- Tests agregados: 50 publishes sin lectura dejan el último y cuentan 49 descartes; el cliente WS ve el mismo estado que `GET /status`.
+- Problemas / deuda: ninguna.
+- Siguiente paso sugerido: T-12 — SQLite para eventos, calibraciones y config, con retención.
