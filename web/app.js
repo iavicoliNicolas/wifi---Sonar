@@ -156,19 +156,50 @@ function connect() {
   };
 }
 
-fetch("/config")
-  .then((response) => response.json())
-  .then((config) => {
-    thresholds = config;
-  })
-  .catch(() => {});
-
 window.__sonar = {
   pushSnapshot,
   columnCount: () => columnCount,
   maxColumns: MAX_COLUMNS,
   eventCount: () => timeline.children.length,
 };
+
+const wizard = document.querySelector("#wizard");
+const countdownNode = document.querySelector("#countdown");
+const wizardResult = document.querySelector("#wizard-result");
+const wizardStart = document.querySelector("#wizard-start");
+
+document.querySelector("#calibrate").addEventListener("click", () => {
+  countdownNode.textContent = "";
+  wizardResult.textContent = "";
+  wizard.showModal();
+});
+
+document.querySelector("#wizard-close").addEventListener("click", () => wizard.close());
+
+wizardStart.addEventListener("click", async () => {
+  wizardStart.disabled = true;
+  try {
+    for (let left = 3; left >= 1; left -= 1) {
+      countdownNode.textContent = String(left);
+      await new Promise((resolve) => window.setTimeout(resolve, 1000));
+    }
+    countdownNode.textContent = "capturando…";
+    const response = await fetch("/calibrate", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ seconds: 12 }),
+    });
+    const body = await response.json();
+    if (!response.ok) {
+      wizardResult.textContent = body.detail || "No se pudo calibrar.";
+      return;
+    }
+    const threshold = Number(body.thresholds.motion_energy).toFixed(4);
+    wizardResult.textContent = `Calidad: ${body.quality}. Umbral de movimiento ${threshold}.`;
+  } finally {
+    wizardStart.disabled = false;
+  }
+});
 
 window.requestAnimationFrame(frame);
 connect();

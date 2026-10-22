@@ -12,7 +12,10 @@
         <p class="eyebrow">Hogar propio · procesamiento local</p>
         <h1>WiFi Sonar</h1>
       </div>
-      <p id="connection" class="pill">desconectado</p>
+      <div class="header-actions">
+        <button id="calibrate" type="button">Calibrar</button>
+        <p id="connection" class="pill">desconectado</p>
+      </div>
     </header>
     <main>
       <p id="state" data-state="vacío">—</p>
@@ -32,6 +35,16 @@
         <ol id="timeline"></ol>
       </section>
     </main>
+    <dialog id="wizard">
+      <h2>Calibración</h2>
+      <p>Salí de la habitación. La captura tiene que ser con el ambiente vacío.</p>
+      <p id="countdown"></p>
+      <p id="wizard-result"></p>
+      <div class="dialog-actions">
+        <button id="wizard-start" type="button">Empezar</button>
+        <button id="wizard-close" type="button">Cerrar</button>
+      </div>
+    </dialog>
     <script src="/assets/app.js"></script>
   </body>
 </html>

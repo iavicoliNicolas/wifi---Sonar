@@ -1,7 +1,7 @@
 # PROGRESS
 
 ## Estado actual
-Fase: 3 — Panel · Última tarea completada: T-15 · Próxima: T-16
+Fase: 3 — Panel · Última tarea completada: T-16 · Próxima: T-17
 
 ## Inventario del repo (2026-10-22)
 
@@ -149,3 +149,10 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Tests agregados: el HTML incluye los tres bloques. En Chrome, el heatmap pinta, y 5000 snapshots dejan el anillo en 240 y los eventos en 40.
 - Problemas / deuda: no corrí 10 minutos de reloj de pared; el tope de memoria es el anillo fijo.
 - Siguiente paso sugerido: T-16 — asistente de calibración en el panel.
+
+### 2026-10-22 T-16 — Asistente de calibración
+- Qué se hizo: el botón Calibrar abre un diálogo que pide salir de la habitación, hace una cuenta regresiva de 3 s, llama a `POST /calibrate` y muestra la calidad y el umbral de movimiento.
+- Archivos tocados: `web/index.html`, `web/style.css`, `web/app.js`, `tests/test_api.py`, `PROGRESS.md`, `DEV_LOOP.md`.
+- Tests agregados: el HTML incluye la consigna. En Chrome la cuenta baja 3, 2, 1 y el resultado fue "Calidad: estable" con un umbral numérico.
+- Problemas / deuda: ninguna.
+- Siguiente paso sugerido: T-17 — sliders de sensibilidad, ventana e histéresis, más alerta y webhook.

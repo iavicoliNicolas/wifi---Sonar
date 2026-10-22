@@ -67,6 +67,7 @@ def test_panel_shell_is_served():
         assert 'id="heatmap"' in page.text
         assert 'id="score"' in page.text
         assert 'id="timeline"' in page.text
+        assert "Salí de la habitación" in page.text
         assert client.get("/assets/app.js").status_code == 200
         assert client.get("/assets/style.css").status_code == 200
 
