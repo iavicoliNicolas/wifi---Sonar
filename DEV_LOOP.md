@@ -111,7 +111,7 @@ Formato: `[ ] ID — Título` · *Depende de* · **Aceptación**
 
 ### Fase 1 — Núcleo de señal
 
-- [ ] **T-04 — Preprocesamiento**
+- [x] **T-04 — Preprocesamiento**
   *Depende de:* T-03
   Filtro Hampel (outliers), interpolación de paquetes perdidos, normalización de amplitud por subportadora, remoción de subportadoras nulas.
   **Aceptación:** tests con ruido/outliers inyectados; salida estable.

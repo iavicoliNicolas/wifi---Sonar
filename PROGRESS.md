@@ -1,7 +1,7 @@
 # PROGRESS
 
 ## Estado actual
-Fase: 0 — Cimientos · Última tarea completada: T-03 · Próxima: T-04
+Fase: 1 — Núcleo de señal · Última tarea completada: T-04 · Próxima: T-05
 
 ## Inventario del repo (2026-10-22)
 
@@ -64,3 +64,10 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Tests agregados: roundtrip simulador → jsonl/csv → replay; el sleeper solo corre con `speed>0`; una línea JSONL inválida se rechaza.
 - Problemas / deuda: ninguna.
 - Siguiente paso sugerido: T-04 — preprocesamiento (Hampel, huecos, nulas, normalización).
+
+### 2026-10-22 T-04 — Preprocesamiento
+- Qué se hizo: `preprocess` rellena huecos sobre una grilla uniforme, aplica Hampel por subportadora, descarta subportadoras nulas y normaliza por la mediana de amplitud.
+- Archivos tocados: `wifi_sonar/pipeline/preprocess.py`, `wifi_sonar/pipeline/__init__.py`, `tests/test_preprocess.py`, `PROGRESS.md`, `DEV_LOOP.md`.
+- Tests agregados: un pico aislado desaparece y la traza queda finita; un paquete faltante se interpola; la subportadora en cero se va y la mediana normalizada queda en 1.
+- Problemas / deuda: la normalización es por lote, no causal muestra a muestra. El motor la va a aplicar sobre la ventana reciente.
+- Siguiente paso sugerido: T-05 — features por ventana.
