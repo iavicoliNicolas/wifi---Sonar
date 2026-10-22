@@ -165,7 +165,7 @@ Formato: `[ ] ID — Título` · *Depende de* · **Aceptación**
 
 ### Fase 3 — Panel
 
-- [ ] **T-14 — Shell del panel**
+- [x] **T-14 — Shell del panel**
   *Depende de:* T-11
   Layout, estado de conexión, indicador grande `vacío / presencia / movimiento`, tema oscuro.
   **Aceptación:** el panel se conecta al WS y refleja el estado en vivo con el simulador.

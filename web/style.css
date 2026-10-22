@@ -1,0 +1,101 @@
+:root {
+  color-scheme: dark;
+  --bg: #101417;
+  --ink: #e8eee9;
+  --muted: #93a099;
+  --line: #24302b;
+  --empty: #8eb8c4;
+  --presence: #e2b15a;
+  --motion: #e07a5f;
+  --ok: #1e3a2c;
+  --ok-ink: #b7e4c7;
+  --bad: #3a2424;
+  --bad-ink: #f0c2c2;
+  font-family: "Segoe UI", "Helvetica Neue", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top, #1a2420 0%, transparent 42%),
+    var(--bg);
+  color: var(--ink);
+  display: grid;
+  grid-template-rows: auto 1fr;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--line);
+}
+
+h1 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.eyebrow {
+  margin: 0 0 0.2rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.pill {
+  margin: 0;
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  background: var(--bad);
+  color: var(--bad-ink);
+  font-size: 0.85rem;
+}
+
+.pill.live {
+  background: var(--ok);
+  color: var(--ok-ink);
+}
+
+main {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 0.75rem;
+  padding: 2rem 1rem 4rem;
+}
+
+#state {
+  margin: 0;
+  font-size: clamp(3.2rem, 12vw, 8rem);
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  font-weight: 600;
+}
+
+#state[data-state="vacío"] {
+  color: var(--empty);
+}
+
+#state[data-state="presencia"] {
+  color: var(--presence);
+}
+
+#state[data-state="movimiento"] {
+  color: var(--motion);
+}
+
+#detail {
+  margin: 0;
+  color: var(--muted);
+  font-size: 1.05rem;
+}

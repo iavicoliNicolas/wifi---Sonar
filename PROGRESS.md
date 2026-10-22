@@ -1,7 +1,7 @@
 # PROGRESS
 
 ## Estado actual
-Fase: 2 — Servicio y tiempo real · Última tarea completada: T-13 · Próxima: T-14
+Fase: 3 — Panel · Última tarea completada: T-14 · Próxima: T-15
 
 ## Inventario del repo (2026-10-22)
 
@@ -134,3 +134,11 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Tests agregados: grabar → replay → mismos estados; los endpoints crean la etiqueta y rechazan un segundo stop.
 - Problemas / deuda: ninguna.
 - Siguiente paso sugerido: T-14 — shell del panel, conectado al WebSocket del simulador.
+
+### 2026-10-22 T-14 — Shell del panel
+- Qué se hizo: página oscura en `/` con el estado grande (`vacío` / `presencia` / `movimiento`) y la píldora de conexión. El JavaScript abre `/ws` y se reconecta solo. Si no hay calibración guardada, el arranque del simulador calibra 12 s de cuarto vacío para que el panel tenga línea base. Uvicorn necesita el paquete `websockets` para aceptar el upgrade; quedó como dependencia.
+- Archivos tocados: `web/index.html`, `web/style.css`, `web/app.js`, `wifi_sonar/api/app.py`, `wifi_sonar/engine.py`, `tests/test_api.py`, `pyproject.toml`, `DECISIONS.md`, `PROGRESS.md`, `DEV_LOOP.md`.
+- Tests agregados: `GET /` sirve el shell y los assets.
+- Problemas / deuda: sin gráficos todavía.
+- Verificación: en Chrome el panel pasó a "en vivo" y mostró vacío, presencia y movimiento con el simulador acelerado.
+- Siguiente paso sugerido: T-15 — heatmap, score y timeline.

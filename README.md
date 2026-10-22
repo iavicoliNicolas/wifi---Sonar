@@ -20,6 +20,6 @@ El servidor local, con el simulador:
 .venv/bin/python -m wifi_sonar
 ```
 
-Escucha en `http://127.0.0.1:8000`. La documentación de la API queda en `/docs`. Las variables opcionales están en `.env.example`.
+Escucha en `http://127.0.0.1:8000`. El panel está en `/` y la documentación de la API en `/docs`. Las variables opcionales están en `.env.example`.
 
 Alcance: presencia, movimiento y zona aproximada dentro de tu casa, con consentimiento de quienes viven ahí. No identifica personas.

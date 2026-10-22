@@ -3,9 +3,13 @@
 from __future__ import annotations
 
 import asyncio
+import os
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Query, WebSocket, WebSocketDisconnect
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from wifi_sonar import __version__
@@ -143,7 +147,23 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
         except WebSocketDisconnect:
             return
 
+    assets = web_dir()
+    if assets.is_dir():
+
+        @app.get("/")
+        def panel() -> FileResponse:
+            return FileResponse(assets / "index.html")
+
+        app.mount("/assets", StaticFiles(directory=assets), name="assets")
+
     return app
+
+
+def web_dir() -> Path:
+    override = os.environ.get("WIFI_SONAR_WEB")
+    if override:
+        return Path(override)
+    return Path(__file__).resolve().parents[2] / "web"
 
 
 app = create_app()

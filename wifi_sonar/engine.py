@@ -112,6 +112,8 @@ class Engine:
     def start(self) -> None:
         if self._thread and self._thread.is_alive():
             return
+        if self.calibration is None and self.settings.source == "sim":
+            self.calibrate(12.0)
         self._stop.clear()
         self._thread = threading.Thread(target=self._run, name="wifi-sonar", daemon=True)
         self._thread.start()

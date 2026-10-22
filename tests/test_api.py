@@ -57,6 +57,17 @@ def test_status_config_calibrate_history_and_openapi():
             assert path in paths
 
 
+def test_panel_shell_is_served():
+    client, _engine = _client()
+    with client:
+        page = client.get("/")
+        assert page.status_code == 200
+        assert "WiFi Sonar" in page.text
+        assert 'id="state"' in page.text
+        assert client.get("/assets/app.js").status_code == 200
+        assert client.get("/assets/style.css").status_code == 200
+
+
 def test_or_fusion_prefers_motion_and_vote_breaks_ties_toward_activity():
     assert fuse_states(["vacío", "movimiento"], "or") == "movimiento"
     assert fuse_states(["vacío", "presencia"], "or") == "presencia"
