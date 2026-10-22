@@ -71,3 +71,9 @@ Contexto: T-18 pide detener la ingesta y borrar los datos, sin definir si la cal
 Opciones consideradas: borrar eventos y calibración, o solo el historial de estados.
 Decisión: pausar hace que `step` y el hilo no llamen a `next` sobre la fuente, y que `ingest` descarte el frame. `DELETE /history` borra eventos. La calibración queda: es la línea base del cuarto, no un registro de personas.
 Consecuencias: reanudar no recalibra. Quien quiera tirar la línea base vuelve a correr el asistente.
+
+### D-013 — ESP32 sin pyserial y dos formatos de línea (2026-10-22)
+Contexto: T-19 pide un adaptador serie y/o UDP, parser tolerante y el ejemplo esp-csi. El CSV oficial cambia de columnas entre ESP32/C3 y C5/C6, y trae imag/real crudos.
+Opciones consideradas: depender de pyserial, aceptar solo el CSV oficial, o definir una línea corta además del CSV.
+Decisión: no se agrega pyserial. El serie es un archivo de texto (tty o FIFO). UDP es el camino para más de una placa. El parser acepta el `CSI_DATA` documentado por Espressif (timestamp en microsegundos, pares imag/real) y la línea `CSI,nodo,segundos,rssi,amps` del snippet `firmware/csi_line.c`. Una línea rota devuelve None.
+Consecuencias: no hay un binario propio ni un mapa de registros. El flasheo sigue siendo el de `examples/get-started` de esp-csi.

@@ -1,7 +1,7 @@
 # PROGRESS
 
 ## Estado actual
-Fase: 4 — Hardware · Última tarea completada: T-18 · Próxima: T-19
+Fase: 4 — Hardware · Última tarea completada: T-19 · Próxima: T-20
 
 ## Inventario del repo (2026-10-22)
 

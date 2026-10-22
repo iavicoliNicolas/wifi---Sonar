@@ -19,6 +19,7 @@ from wifi_sonar.pipeline.preprocess import preprocess
 from wifi_sonar.recording import SessionRecorder
 from wifi_sonar.settings import AppConfig, Settings
 from wifi_sonar.sources.base import CSISource
+from wifi_sonar.sources.esp32 import ESP32Source
 from wifi_sonar.sources.simulated import SimConfig, SimulatedSource, demo_cycle
 from wifi_sonar.storage.memory import MemoryStore
 
@@ -421,4 +422,8 @@ def build_source(settings: Settings) -> CSISource:
                 events=demo_cycle(),
             )
         )
+    if settings.source == "esp32":
+        if settings.esp32_serial:
+            return ESP32Source(serial_path=settings.esp32_serial)
+        return ESP32Source(udp_host=settings.esp32_host, udp_port=settings.esp32_port)
     raise ValueError(f"unsupported source: {settings.source}")
