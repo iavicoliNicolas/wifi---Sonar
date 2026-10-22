@@ -219,7 +219,7 @@ Formato: `[ ] ID — Título` · *Depende de* · **Aceptación**
   Dockerfile / compose, o servicio systemd, para correr en una Raspberry Pi o mini PC.
   **Aceptación:** `docker compose up` deja todo funcionando con el simulador.
 
-- [ ] **T-24 — Documentación final**
+- [x] **T-24 — Documentación final**
   *Depende de:* T-23
   README con capturas, guía de instalación, guía de calibración, límites conocidos, sección de privacidad.
   **Aceptación:** alguien externo puede reproducir el setup leyendo solo el README.

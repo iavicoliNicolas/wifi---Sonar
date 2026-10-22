@@ -1,7 +1,7 @@
 # PROGRESS
 
 ## Estado actual
-Fase: 5 — Calidad · Última tarea completada: T-23 · Próxima: T-24
+Fase: 5 — Calidad · Última tarea completada: T-24 · Próxima: ninguna
 
 ## Inventario del repo (2026-10-22)
 
@@ -205,3 +205,10 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Tests agregados: `docker compose up --build` dejó `/health` en ok, el panel en 200 y el simulador calibrado. Después se bajó el stack para no ocupar el puerto.
 - Problemas / deuda: esta máquina no traía Docker; se instaló para la prueba. Un clon no lo instala solo.
 - Siguiente paso sugerido: T-24 — README final.
+
+### 2026-10-22 T-24 — Documentación final
+- Qué se hizo: el README queda solo como guía de instalación, calibración, Docker, hardware, límites y privacidad, con dos capturas del panel.
+- Archivos tocados: `README.md`, `docs/panel.png`, `docs/calibracion.png`, `PROGRESS.md`, `DEV_LOOP.md`.
+- Tests agregados: ninguno nuevo. La suite completa se volvió a correr al cerrar la tarea.
+- Problemas / deuda: las capturas son del simulador, no de una placa ESP32. No hay hardware en esta máquina.
+- Siguiente paso sugerido: ninguno. El backlog T-00…T-24 está cerrado.
