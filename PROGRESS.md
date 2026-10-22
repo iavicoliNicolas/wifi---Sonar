@@ -1,7 +1,7 @@
 # PROGRESS
 
 ## Estado actual
-Fase: 3 — Panel · Última tarea completada: T-14 · Próxima: T-15
+Fase: 3 — Panel · Última tarea completada: T-15 · Próxima: T-16
 
 ## Inventario del repo (2026-10-22)
 
@@ -142,3 +142,10 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Problemas / deuda: sin gráficos todavía.
 - Verificación: en Chrome el panel pasó a "en vivo" y mostró vacío, presencia y movimiento con el simulador acelerado.
 - Siguiente paso sugerido: T-15 — heatmap, score y timeline.
+
+### 2026-10-22 T-15 — Visualizaciones en vivo
+- Qué se hizo: heatmap de amplitud, gráfico de score con los umbrales de la config y una lista de cambios de estado. Los buffers son anillos de 240 columnas y 40 eventos. El dibujo va en `requestAnimationFrame`. La entrada del socket sigue en ~10 Hz; el anillo no crece aunque lleguen miles de snapshots.
+- Archivos tocados: `web/index.html`, `web/style.css`, `web/app.js`, `tests/test_api.py`, `PROGRESS.md`, `DEV_LOOP.md`.
+- Tests agregados: el HTML incluye los tres bloques. En Chrome, el heatmap pinta, y 5000 snapshots dejan el anillo en 240 y los eventos en 40.
+- Problemas / deuda: no corrí 10 minutos de reloj de pared; el tope de memoria es el anillo fijo.
+- Siguiente paso sugerido: T-16 — asistente de calibración en el panel.

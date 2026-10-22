@@ -64,6 +64,9 @@ def test_panel_shell_is_served():
         assert page.status_code == 200
         assert "WiFi Sonar" in page.text
         assert 'id="state"' in page.text
+        assert 'id="heatmap"' in page.text
+        assert 'id="score"' in page.text
+        assert 'id="timeline"' in page.text
         assert client.get("/assets/app.js").status_code == 200
         assert client.get("/assets/style.css").status_code == 200
 

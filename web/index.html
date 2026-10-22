@@ -17,6 +17,20 @@
     <main>
       <p id="state" data-state="vacío">—</p>
       <p id="detail">esperando la señal</p>
+      <section class="charts">
+        <figure>
+          <figcaption>Amplitud por subportadora</figcaption>
+          <canvas id="heatmap" width="640" height="160"></canvas>
+        </figure>
+        <figure>
+          <figcaption>Score y umbrales</figcaption>
+          <canvas id="score" width="640" height="160"></canvas>
+        </figure>
+      </section>
+      <section>
+        <h2>Eventos</h2>
+        <ol id="timeline"></ol>
+      </section>
     </main>
     <script src="/assets/app.js"></script>
   </body>
