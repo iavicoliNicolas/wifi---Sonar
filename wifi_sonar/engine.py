@@ -103,6 +103,9 @@ class Engine:
         saved = self.store.load_config()
         if saved:
             self.config = AppConfig(**saved)
+        saved_calibration = self.store.load_calibration()
+        if saved_calibration:
+            self.calibration = Calibration.from_dict(saved_calibration)
 
     def start(self) -> None:
         if self._thread and self._thread.is_alive():
@@ -269,6 +272,8 @@ class Engine:
         node.amplitudes = [float(value) for value in node.buffer[-1].amplitudes]
         if changed:
             zone = self.config.zones.get(node_id, "")
+            if hasattr(self.store, "retention_days"):
+                self.store.retention_days = self.config.retention_days
             self.store.add_event(
                 {
                     "ts": sample.ts,

@@ -1,7 +1,7 @@
 # PROGRESS
 
 ## Estado actual
-Fase: 2 — Servicio y tiempo real · Última tarea completada: T-11 · Próxima: T-12
+Fase: 2 — Servicio y tiempo real · Última tarea completada: T-12 · Próxima: T-13
 
 ## Inventario del repo (2026-10-22)
 
@@ -120,3 +120,10 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Tests agregados: 50 publishes sin lectura dejan el último y cuentan 49 descartes; el cliente WS ve el mismo estado que `GET /status`.
 - Problemas / deuda: ninguna.
 - Siguiente paso sugerido: T-12 — SQLite para eventos, calibraciones y config, con retención.
+
+### 2026-10-22 T-12 — Persistencia local
+- Qué se hizo: `SqliteStore` con migración inicial para eventos, calibraciones y config. Cada evento guarda la hora de pared y `purge` borra lo que supera la retención. El servidor abre `data/wifi_sonar.sqlite` y el motor recupera la última calibración y la config al arrancar.
+- Archivos tocados: `wifi_sonar/storage/sqlite.py`, `wifi_sonar/storage/__init__.py`, `wifi_sonar/engine.py`, `wifi_sonar/api/app.py`, `tests/test_storage.py`, `PROGRESS.md`, `DEV_LOOP.md`.
+- Tests agregados: reabrir la base conserva config, calibración y el evento reciente; un evento de 40 días desaparece solo.
+- Problemas / deuda: ninguna.
+- Siguiente paso sugerido: T-13 — grabar CSI y etiquetas, y reproducirlas con el mismo resultado del detector.

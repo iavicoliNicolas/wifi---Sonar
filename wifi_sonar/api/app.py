@@ -11,6 +11,7 @@ from pydantic import BaseModel, Field
 from wifi_sonar import __version__
 from wifi_sonar.engine import Engine
 from wifi_sonar.settings import Settings
+from wifi_sonar.storage.sqlite import SqliteStore
 from wifi_sonar.stream import SnapshotHub
 
 
@@ -38,7 +39,8 @@ class ConfigUpdate(BaseModel):
 
 def create_app(settings: Settings | None = None, engine: Engine | None = None) -> FastAPI:
     settings = settings if settings is not None else Settings.from_env()
-    engine = engine if engine is not None else Engine(settings)
+    if engine is None:
+        engine = Engine(settings, store=SqliteStore(settings.db_path))
     hub = SnapshotHub()
     engine.add_listener(hub.publish)
 
