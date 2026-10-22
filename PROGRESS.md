@@ -1,7 +1,7 @@
 # PROGRESS
 
 ## Estado actual
-Fase: 2 — Servicio y tiempo real · Última tarea completada: T-09 · Próxima: T-10
+Fase: 2 — Servicio y tiempo real · Última tarea completada: T-10 · Próxima: T-11
 
 ## Inventario del repo (2026-10-22)
 
@@ -106,3 +106,10 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Tests agregados: la tabla cumple recall de caminata ≥ 95 %, quietud perfecta en el escenario y como máximo un falso positivo en el cuarto vacío.
 - Problemas / deuda: la latencia de la quietud ronda los 11 s porque la banda de respiración mira 10 s de espectro. Está escrito en el reporte.
 - Siguiente paso sugerido: T-10 — API HTTP.
+
+### 2026-10-22 T-10 — API HTTP
+- Qué se hizo: FastAPI con `GET /status`, `POST /calibrate`, `GET /config`, `PUT /config` y `GET /history`. OpenAPI en `/openapi.json`. El motor procesa frames del simulador y publica el estado fusionado. La calibración del simulador usa un cuarto vacío con el mismo ruido, no el ciclo demo.
+- Archivos tocados: `wifi_sonar/api/app.py`, `wifi_sonar/engine.py`, `wifi_sonar/settings.py`, `wifi_sonar/storage/memory.py`, `wifi_sonar/__main__.py`, `tests/test_api.py`, `pyproject.toml`, `DECISIONS.md`, `README.md`, `PROGRESS.md`, `DEV_LOOP.md`.
+- Tests agregados: config en caliente, calibración, historial de un cambio a movimiento, esquema OpenAPI y fusión OR.
+- Problemas / deuda: el historial todavía está en memoria. SQLite es T-12.
+- Siguiente paso sugerido: T-11 — WebSocket a ~10 Hz con descarte de frames viejos.

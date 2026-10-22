@@ -47,3 +47,9 @@ Contexto: la varianza de la ventana también sube con la respiración, así que 
 Opciones consideradas: subir la duración mínima, subir el umbral de histéresis, o agrandar k.
 Decisión: el score de movimiento es la energía de la banda 0.5–5 Hz, normalizada para valer 1 en `media + k·σ`, con k = 8 por defecto. Histéresis 0.75 / 0.40 y al menos 1 s por encima del umbral. El nodo de cada frame interpolado se elige con búsqueda binaria: la matriz de distancias no entra en memoria a 10 minutos.
 Consecuencias: respiración y ruido quedan por debajo de 0.5 de score. Una caminata de unos segundos satura el score en 1. La calibración de T-06 sigue aceptando otro k.
+
+### D-009 — API local y calibración del simulador (2026-10-22)
+Contexto: T-10 necesita un servicio. El ciclo demo del simulador alterna caminatas y quietud, así que calibrar contra el stream en vivo mezclaría movimiento en la línea base.
+Opciones consideradas: calibrar con lo que esté entrando, o generar una captura vacía aparte.
+Decisión: el servidor escucha en `127.0.0.1` por defecto. `POST /calibrate` en modo simulador sintetiza un cuarto vacío con el mismo ruido y la semilla desplazada. FastAPI queda como dependencia de runtime porque la API es el producto a partir de esta tarea. El historial de T-10 vive en memoria, con la misma interfaz que va a implementar SQLite.
+Consecuencias: no hay telemetría. Cambiar la config reinicia la histéresis de los detectores. Una calibración nueva también.

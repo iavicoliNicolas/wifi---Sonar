@@ -143,7 +143,7 @@ Formato: `[ ] ID — Título` · *Depende de* · **Aceptación**
 
 ### Fase 2 — Servicio y tiempo real
 
-- [ ] **T-10 — API HTTP**
+- [x] **T-10 — API HTTP**
   *Depende de:* T-08
   Endpoints: `GET /status`, `POST /calibrate`, `GET /config`, `PUT /config`, `GET /history`.
   **Aceptación:** tests de API; OpenAPI/docs generada.
