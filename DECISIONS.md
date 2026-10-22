@@ -65,3 +65,9 @@ Contexto: T-17 pide que sensibilidad, ventana e histéresis apliquen en caliente
 Opciones consideradas: recalcular los umbrales al mover la ventana, o seguir usando la calibración guardada hasta que la persona vuelva a calibrar. Para el aviso externo, un cliente nuevo o `urllib` de la stdlib.
 Decisión: la ventana viva sale de `AppConfig` y los umbrales siguen siendo los de la última calibración. Cambiar la config reinicia la histéresis. El webhook es un POST JSON a una URL local que la persona escribe; un fallo se loguea y no corta el detector. No se agrega ninguna librería.
 Consecuencias: un slider no reescribe la línea base. La notificación del navegador solo sale si el permiso ya está concedido.
+
+### D-012 — Pausa sin leer la fuente y borrado solo del historial (2026-10-22)
+Contexto: T-18 pide detener la ingesta y borrar los datos, sin definir si la calibración también se va.
+Opciones consideradas: borrar eventos y calibración, o solo el historial de estados.
+Decisión: pausar hace que `step` y el hilo no llamen a `next` sobre la fuente, y que `ingest` descarte el frame. `DELETE /history` borra eventos. La calibración queda: es la línea base del cuarto, no un registro de personas.
+Consecuencias: reanudar no recalibra. Quien quiera tirar la línea base vuelve a correr el asistente.

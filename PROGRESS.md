@@ -1,7 +1,7 @@
 # PROGRESS
 
 ## Estado actual
-Fase: 3 — Panel · Última tarea completada: T-17 · Próxima: T-18
+Fase: 4 — Hardware · Última tarea completada: T-18 · Próxima: T-19
 
 ## Inventario del repo (2026-10-22)
 
@@ -163,3 +163,10 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Tests agregados: un servidor HTTP local recibe el estado `movimiento`; un segundo `Engine` con el mismo store recupera sensibilidad, ventana e histéresis. En Chrome, mover el slider dejó la nota en "Sensibilidad 1.7" y `GET /config` devolvió ese valor.
 - Problemas / deuda: el permiso de notificación no se puede conceder en Chrome headless, así que ese camino queda cubierto por el código del panel y no por un clic real.
 - Siguiente paso sugerido: T-18 — aviso de sensado, pausa y borrado.
+
+### 2026-10-22 T-18 — Privacidad y control
+- Qué se hizo: el panel muestra "Sensado activo", la retención en días, un botón para pausar y otro para borrar el historial. En pausa el motor no avanza la fuente ni procesa frames. `DELETE /history` vacía los eventos y deja la calibración.
+- Archivos tocados: `web/index.html`, `web/style.css`, `web/app.js`, `wifi_sonar/api/app.py`, `tests/test_privacy.py`, `DECISIONS.md`, `PROGRESS.md`, `DEV_LOOP.md`.
+- Tests agregados: una fuente contadora no se lee mientras está en pausa; borrar deja el historial vacío. En Chrome, pausar cambia el aviso a "Sensado en pausa" y reanudar lo vuelve a "Sensado activo".
+- Problemas / deuda: ninguna.
+- Siguiente paso sugerido: T-19 — adaptador ESP32.

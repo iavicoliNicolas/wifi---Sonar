@@ -111,6 +111,11 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
     def history(limit: int = Query(default=100, ge=1, le=1000)) -> list[dict[str, object]]:
         return engine.store.list_events(limit)
 
+    @app.delete("/history")
+    def delete_history() -> dict[str, bool]:
+        engine.store.clear_events()
+        return {"ok": True}
+
     @app.post("/recordings/start")
     def start_recording(body: RecordingStart | None = None) -> dict[str, str]:
         try:

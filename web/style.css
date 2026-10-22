@@ -66,6 +66,21 @@ h1 {
   color: var(--ok-ink);
 }
 
+.banner {
+  margin: 0.8rem 0 0;
+  width: fit-content;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  background: #3d2a12;
+  color: #f0c27a;
+  font-size: 0.85rem;
+}
+
+.banner[data-paused="1"] {
+  background: #24302b;
+  color: var(--muted);
+}
+
 .header-actions,
 .dialog-actions {
   display: flex;

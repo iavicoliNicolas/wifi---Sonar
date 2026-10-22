@@ -17,6 +17,7 @@
         <p id="connection" class="pill">desconectado</p>
       </div>
     </header>
+    <p id="sensing" class="banner" data-paused="0">Sensado activo</p>
     <main>
       <p id="state" data-state="vacío">—</p>
       <p id="detail">esperando la señal</p>
@@ -33,6 +34,14 @@
       <section>
         <h2>Eventos</h2>
         <ol id="timeline"></ol>
+      </section>
+      <section id="privacy">
+        <h2>Privacidad</h2>
+        <p id="retention"></p>
+        <div class="header-actions">
+          <button id="pause" type="button">Pausar</button>
+          <button id="erase" type="button">Borrar historial</button>
+        </div>
       </section>
       <section id="settings">
         <h2>Configuración</h2>

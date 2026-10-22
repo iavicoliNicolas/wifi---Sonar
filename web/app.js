@@ -48,6 +48,7 @@ function renderState(snapshot) {
   const score = Number(snapshot.score || 0);
   const calibrated = snapshot.calibrated ? "calibrado" : "sin calibrar";
   detailNode.textContent = `${calibrated} · score ${score.toFixed(2)}`;
+  renderSensing(snapshot);
   if (state !== lastState) {
     lastState = state;
     const item = document.createElement("li");
@@ -164,6 +165,22 @@ const alertsInput = document.querySelector("#alerts");
 const settingsNote = document.querySelector("#settings-note");
 let saveTimer = 0;
 
+const sensingNode = document.querySelector("#sensing");
+const pauseButton = document.querySelector("#pause");
+const retentionNode = document.querySelector("#retention");
+let paused = false;
+
+function applyPaused(isPaused) {
+  paused = Boolean(isPaused);
+  sensingNode.textContent = paused ? "Sensado en pausa" : "Sensado activo";
+  sensingNode.dataset.paused = paused ? "1" : "0";
+  pauseButton.textContent = paused ? "Reanudar" : "Pausar";
+}
+
+function renderSensing(snapshot) {
+  applyPaused(snapshot.paused);
+}
+
 function fillSettings(config) {
   thresholds = config;
   sensitivityInput.value = String(config.sensitivity);
@@ -171,6 +188,8 @@ function fillSettings(config) {
   hysteresisInput.value = String(config.hysteresis);
   webhookInput.value = config.webhook_url || "";
   settingsNote.textContent = `Sensibilidad ${config.sensitivity} · ventana ${config.window_s}s · histéresis ${config.hysteresis}`;
+  retentionNode.textContent = `El historial se conserva ${config.retention_days} días en esta máquina.`;
+  applyPaused(config.paused);
 }
 
 function scheduleSave() {
@@ -197,6 +216,27 @@ for (const input of [sensitivityInput, windowInput, hysteresisInput, webhookInpu
   input.addEventListener("change", scheduleSave);
   input.addEventListener("input", scheduleSave);
 }
+
+pauseButton.addEventListener("click", async () => {
+  const response = await fetch("/config", {
+    method: "PUT",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ paused: !paused }),
+  });
+  if (response.ok) {
+    fillSettings(await response.json());
+  }
+});
+
+document.querySelector("#erase").addEventListener("click", async () => {
+  if (!window.confirm("¿Borrar el historial guardado en esta máquina?")) {
+    return;
+  }
+  const response = await fetch("/history", { method: "DELETE" });
+  if (response.ok) {
+    timeline.replaceChildren();
+  }
+});
 
 alertsInput.addEventListener("change", () => {
   if (alertsInput.checked && "Notification" in window && Notification.permission === "default") {
