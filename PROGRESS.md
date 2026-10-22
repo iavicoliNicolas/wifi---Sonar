@@ -1,7 +1,7 @@
 # PROGRESS
 
 ## Estado actual
-Fase: 0 — Cimientos · Última tarea completada: T-01 · Próxima: T-02
+Fase: 0 — Cimientos · Última tarea completada: T-02 · Próxima: T-03
 
 ## Inventario del repo (2026-10-22)
 
@@ -50,3 +50,10 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Tests agregados: `tests/test_package.py` (el paquete importa y la versión es 0.1.0).
 - Problemas / deuda: no hay pre-commit (D-005). NumPy entra en T-02.
 - Siguiente paso sugerido: T-02 — `CSIFrame` y `SimulatedSource` determinista.
+
+### 2026-10-22 T-02 — Modelo de datos y simulador de CSI
+- Qué se hizo: `CSIFrame` (timestamp, rssi, amplitudes, phases opcionales, node_id). `SimulatedSource` con 52 subportadoras, ruido gaussiano, deriva lenta, subportadora nula y eventos `enter`, `walk`, `still` y `leave`. La semilla fija la secuencia. NumPy pasa a ser dependencia de runtime.
+- Archivos tocados: `wifi_sonar/models.py`, `wifi_sonar/sources/simulated.py`, `wifi_sonar/sources/__init__.py`, `tests/test_simulator.py`, `pyproject.toml`, `PROGRESS.md`, `DEV_LOOP.md`.
+- Tests agregados: determinismo y forma del frame; la varianza temporal de caminata, quietud y ráfaga queda por encima del cuarto vacío, y la quietud queda por debajo de la caminata.
+- Problemas / deuda: el generador infinito (`duration_s=None`) todavía no tiene test propio; lo usa el servidor más adelante.
+- Siguiente paso sugerido: T-03 — interfaz `CSISource` y `ReplaySource`.
