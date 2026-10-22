@@ -271,12 +271,19 @@ function renderSensing(snapshot) {
   applyPaused(snapshot.paused);
 }
 
+function paintControlValues() {
+  document.querySelector("#sensitivity-value").textContent = sensitivityInput.value;
+  document.querySelector("#window-value").textContent = windowInput.value;
+  document.querySelector("#hysteresis-value").textContent = hysteresisInput.value;
+}
+
 function fillSettings(config) {
   thresholds = config;
   sensitivityInput.value = String(config.sensitivity);
   windowInput.value = String(config.window_s);
   hysteresisInput.value = String(config.hysteresis);
   webhookInput.value = config.webhook_url || "";
+  paintControlValues();
   settingsNote.textContent = `Sensibilidad ${config.sensitivity} · ventana ${config.window_s}s · histéresis ${config.hysteresis}`;
   retentionNode.textContent = `El historial se conserva ${config.retention_days} días en esta máquina.`;
   applyPaused(config.paused);
@@ -287,7 +294,11 @@ function renderMode(mode) {
   document.querySelector("#mode-note").hidden = mode !== "rssi";
 }
 
+let editSeq = 0;
+
 function scheduleSave() {
+  paintControlValues();
+  const seq = ++editSeq;
   window.clearTimeout(saveTimer);
   saveTimer = window.setTimeout(async () => {
     const payload = {
@@ -301,9 +312,10 @@ function scheduleSave() {
       headers: { "content-type": "application/json" },
       body: JSON.stringify(payload),
     });
-    if (response.ok) {
-      fillSettings(await response.json());
+    if (!response.ok || seq !== editSeq) {
+      return;
     }
+    fillSettings(await response.json());
   }, 200);
 }
 

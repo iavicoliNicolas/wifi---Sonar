@@ -268,6 +268,17 @@ canvas {
   font-size: 0.9rem;
 }
 
+#settings .control-name {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+#settings output {
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
 #settings label.check {
   display: flex;
   align-items: center;

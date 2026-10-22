@@ -226,3 +226,10 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Tests agregados: un cambio de zona conserva el detector y uno de sensibilidad lo reinicia. En Chrome, escribir "living" dejó esa zona en la config y el estado siguió en movimiento.
 - Problemas / deuda: ninguna.
 - Siguiente paso sugerido: ninguno.
+
+### 2026-10-22 feat(T-17) — Número visible en los sliders
+- Qué se hizo: sensibilidad, ventana e histéresis muestran el valor al lado del nombre en cuanto se mueve el control. Una respuesta vieja del `PUT` no pisa un cambio más nuevo.
+- Archivos tocados: `web/index.html`, `web/style.css`, `web/app.js`, `tests/test_api.py`, `PROGRESS.md`.
+- Tests agregados: el HTML incluye la salida del valor. En Chrome, mover sensibilidad a 2.4 actualizó el número al instante y `GET /config` devolvió 2.4. En 390 px de ancho el número y el slider entran en la pantalla.
+- Problemas / deuda: ninguna.
+- Siguiente paso sugerido: ninguno.

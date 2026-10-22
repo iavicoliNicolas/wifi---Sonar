@@ -72,6 +72,8 @@ def test_panel_shell_is_served():
         assert script.status_code == 200
         assert "displayRange" in script.text
         assert "Nombre de la zona" in script.text
+        assert 'id="sensitivity-value"' in page.text
+        assert "editSeq" in script.text
         assert client.get("/assets/style.css").status_code == 200
 
 
