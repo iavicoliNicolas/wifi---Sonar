@@ -116,7 +116,7 @@ Formato: `[ ] ID — Título` · *Depende de* · **Aceptación**
   Filtro Hampel (outliers), interpolación de paquetes perdidos, normalización de amplitud por subportadora, remoción de subportadoras nulas.
   **Aceptación:** tests con ruido/outliers inyectados; salida estable.
 
-- [ ] **T-05 — Extracción de features por ventana**
+- [x] **T-05 — Extracción de features por ventana**
   *Depende de:* T-04
   Ventanas deslizantes (ej. 2 s, paso 0.5 s). Features: varianza, media absoluta de diferencias, energía en bandas (movimiento ~0.5-5 Hz, respiración ~0.1-0.5 Hz) vía FFT/Welch, PCA opcional.
   **Aceptación:** features con valores esperados sobre señales sintéticas conocidas.

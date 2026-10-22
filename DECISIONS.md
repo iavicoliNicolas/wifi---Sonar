@@ -35,3 +35,9 @@ Contexto: T-03 pide replay desde `.csv` o `.jsonl`.
 Opciones consideradas: un solo formato, o los dos con un esquema propio.
 Decisión: JSONL es el formato canónico (un objeto por frame, con `timestamp`, `rssi`, `amplitudes`, `phases`, `node_id`). CSV guarda las mismas columnas y codifica las listas con `|`, usando `repr` para no perder el float. Las líneas en blanco se saltean. Una línea mal formada aborta la carga: una grabación corrupta no debe parecer una habitación vacía.
 Consecuencias: `write_recording` elige el formato por la extensión. El detector compara resultados sobre los frames releídos, no sobre bits idénticos del JSON.
+
+### D-007 — Ventana espectral de 10 s y sin SciPy (2026-10-22)
+Contexto: T-05 pide ventanas de unos 2 s y energía en 0.5–5 Hz y 0.1–0.5 Hz vía FFT/Welch. Una FFT de 2 s tiene bins de 0.5 Hz y no separa la respiración del movimiento.
+Opciones consideradas: agregar SciPy y usar `welch` con segmentos cortos, o un periodograma de Hann sobre una ventana más larga hecho con NumPy.
+Decisión: varianza y media de diferencias usan la ventana corta (2 s, paso 0.5 s). Las dos energías de banda usan una ventana de 10 s (resolución 0.1 Hz) y un solo segmento de Welch con ventana de Hann. No se agrega SciPy.
+Consecuencias: el primer feature aparece a los 10 s. La respiración no dispara la banda de movimiento. El detector de T-07 tiene que esperar esa ventana.
