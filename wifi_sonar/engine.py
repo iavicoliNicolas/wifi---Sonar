@@ -26,6 +26,20 @@ from wifi_sonar.storage.memory import MemoryStore
 
 logger = logging.getLogger("wifi_sonar")
 Listener = Callable[[dict[str, object]], None]
+_DETECTOR_KEYS = frozenset(
+    {
+        "sensitivity",
+        "window_s",
+        "step_s",
+        "spectrum_window_s",
+        "hysteresis",
+        "on_threshold",
+        "min_duration_s",
+        "presence_min_duration_s",
+        "threshold_k",
+        "mode",
+    }
+)
 
 
 @dataclass
@@ -151,9 +165,10 @@ class Engine:
     def update_config(self, updates: dict[str, object]) -> AppConfig:
         with self._lock:
             self.config = self.config.merged(updates)
-            for node in self.nodes.values():
-                node.motion = None
-                node.presence = None
+            if _DETECTOR_KEYS.intersection(updates):
+                for node in self.nodes.values():
+                    node.motion = None
+                    node.presence = None
             self.store.save_config(self.config.to_dict())
             return self.config
 

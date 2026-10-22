@@ -71,6 +71,7 @@ def test_panel_shell_is_served():
         script = client.get("/assets/app.js")
         assert script.status_code == 200
         assert "displayRange" in script.text
+        assert "Nombre de la zona" in script.text
         assert client.get("/assets/style.css").status_code == 200
 
 

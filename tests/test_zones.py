@@ -1,4 +1,4 @@
-from wifi_sonar.engine import Engine
+from wifi_sonar.engine import Engine, NodeRuntime
 from wifi_sonar.settings import Settings
 from wifi_sonar.sources.simulated import SimConfig, SimEvent, SimulatedSource
 
@@ -41,3 +41,16 @@ def test_simulated_nodes_report_a_state_per_zone_and_fuse_with_or():
     engine.update_config({"fusion": "vote"})
     voted = engine.status()
     assert {row["zone"] for row in voted["nodes"]} == {"living", "pasillo"}
+
+
+def test_renaming_a_zone_does_not_reset_the_detector():
+    engine = Engine(Settings(auto_start=False, source="file"))
+    node = engine.nodes.setdefault("sim-0", NodeRuntime())
+    node.state = "movimiento"
+    node.motion = object()
+    engine.update_config({"zones": {"sim-0": "living"}})
+    assert engine.nodes["sim-0"].motion is not None
+    assert engine.nodes["sim-0"].state == "movimiento"
+    assert engine.status()["nodes"][0]["zone"] == "living"
+    engine.update_config({"sensitivity": 1.2})
+    assert engine.nodes["sim-0"].motion is None

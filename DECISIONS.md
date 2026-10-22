@@ -95,3 +95,9 @@ Contexto: T-23 pide `docker compose up` con el simulador. `pip install` copia el
 Opciones consideradas: instalar en editable, o fijar `WIFI_SONAR_WEB`.
 Decisión: la imagen hace `pip install .`, copia `web/` a `/app/web` y define `WIFI_SONAR_WEB`. El servicio escucha en `0.0.0.0` dentro de la red del compose y el puerto publicado queda en `127.0.0.1:8000`. Hay además una unidad systemd de ejemplo en `deploy/` para una Raspberry sin Docker.
 Consecuencias: el panel no depende de la ruta del wheel. El contenedor no abre el puerto a la LAN de la casa por defecto.
+
+### D-017 — Solo los parámetros del detector reinician la histéresis (2026-10-22)
+Contexto: D-009 reiniciaba los detectores ante cualquier `PUT /config`. Nombrar una zona o pegar un webhook no cambia la señal, pero borraba el estado de movimiento.
+Opciones consideradas: seguir reiniciando siempre, o solo cuando cambia un parámetro del detector.
+Decisión: la histéresis se tira si cambia sensibilidad, ventanas, umbrales o el modo. Zona, fusión, pausa, retención y webhook dejan el detector como está.
+Consecuencias: renombrar una zona en el panel no parpadea el estado. Un cambio de sensibilidad sigue aplicando en caliente desde la próxima ventana.

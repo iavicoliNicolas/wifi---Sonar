@@ -203,23 +203,61 @@ let paused = false;
 
 function renderZones(snapshot) {
   const list = document.querySelector("#zones");
-  list.replaceChildren();
   const rows = Array.isArray(snapshot.nodes) ? snapshot.nodes : [];
   if (!rows.length) {
+    list.replaceChildren();
     const item = document.createElement("li");
     item.textContent = "sin zonas";
     list.append(item);
     return;
   }
+  const existing = new Map(
+    [...list.querySelectorAll("li[data-node]")].map((item) => [item.dataset.node, item]),
+  );
+  const next = document.createDocumentFragment();
   for (const row of rows) {
-    const item = document.createElement("li");
-    const name = document.createElement("span");
-    const state = document.createElement("span");
-    name.textContent = row.zone || row.node_id || "zona";
-    state.textContent = labels[row.state] || row.state || "—";
-    item.append(name, state);
-    list.append(item);
+    const nodeId = row.node_id || "";
+    let item = existing.get(nodeId);
+    if (!item) {
+      item = document.createElement("li");
+      item.dataset.node = nodeId;
+      const field = document.createElement("label");
+      const input = document.createElement("input");
+      input.type = "text";
+      input.maxLength = 40;
+      input.placeholder = nodeId || "zona";
+      input.setAttribute("aria-label", `Nombre de la zona ${nodeId}`);
+      input.addEventListener("change", saveZones);
+      const device = document.createElement("small");
+      device.textContent = nodeId;
+      field.append(input, device);
+      const state = document.createElement("span");
+      state.className = "zone-state";
+      item.append(field, state);
+    }
+    const input = item.querySelector("input");
+    if (document.activeElement !== input) {
+      input.value = row.zone || "";
+    }
+    item.querySelector(".zone-state").textContent = labels[row.state] || row.state || "—";
+    next.append(item);
   }
+  list.replaceChildren(next);
+}
+
+function saveZones() {
+  const zones = {};
+  for (const item of document.querySelectorAll("#zones li[data-node]")) {
+    const name = item.querySelector("input").value.trim();
+    if (name) {
+      zones[item.dataset.node] = name;
+    }
+  }
+  fetch("/config", {
+    method: "PUT",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ zones }),
+  }).catch(() => {});
 }
 
 function applyPaused(isPaused) {

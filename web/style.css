@@ -228,10 +228,31 @@ canvas {
 #zones li {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   gap: 1rem;
   padding: 0.45rem 0.7rem;
   border: 1px solid var(--line);
   border-radius: 8px;
+}
+
+#zones label {
+  display: grid;
+  gap: 0.1rem;
+}
+
+#zones input {
+  width: 12rem;
+  max-width: 60vw;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  padding: 0;
+}
+
+#zones small {
+  color: var(--muted);
+  font-size: 0.75rem;
 }
 
 #settings {
