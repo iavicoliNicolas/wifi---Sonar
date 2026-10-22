@@ -219,3 +219,10 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Tests agregados: el asset del panel incluye `displayRange`. En Chrome el canvas pasó de un bloque uniforme a 509 colores (varianza del canal rojo distinta de cero) y el score muestra los cruces de umbral.
 - Problemas / deuda: ninguna.
 - Siguiente paso sugerido: ninguno.
+
+### 2026-10-22 feat(T-20) — Nombrar zonas en el panel
+- Qué se hizo: cada nodo tiene un campo para ponerle nombre. El nombre se guarda en la config y el estado sigue al lado. Renombrar no reinicia el detector; sí lo hacen sensibilidad, ventanas, umbrales y el modo.
+- Archivos tocados: `web/app.js`, `web/style.css`, `wifi_sonar/engine.py`, `tests/test_zones.py`, `tests/test_api.py`, `DECISIONS.md`, `PROGRESS.md`.
+- Tests agregados: un cambio de zona conserva el detector y uno de sensibilidad lo reinicia. En Chrome, escribir "living" dejó esa zona en la config y el estado siguió en movimiento.
+- Problemas / deuda: ninguna.
+- Siguiente paso sugerido: ninguno.
