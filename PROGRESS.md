@@ -1,7 +1,7 @@
 # PROGRESS
 
 ## Estado actual
-Fase: 1 — Núcleo de señal · Última tarea completada: T-05 · Próxima: T-06
+Fase: 1 — Núcleo de señal · Última tarea completada: T-06 · Próxima: T-07
 
 ## Inventario del repo (2026-10-22)
 
@@ -71,3 +71,17 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Tests agregados: un pico aislado desaparece y la traza queda finita; un paquete faltante se interpola; la subportadora en cero se va y la mediana normalizada queda en 1.
 - Problemas / deuda: la normalización es por lote, no causal muestra a muestra. El motor la va a aplicar sobre la ventana reciente.
 - Siguiente paso sugerido: T-05 — features por ventana.
+
+### 2026-10-22 T-05 — Extracción de features por ventana
+- Qué se hizo: ventanas de 2 s con paso de 0.5 s para varianza y media de diferencias absolutas. La energía de las bandas de movimiento (0.5–5 Hz) y respiración (0.1–0.5 Hz) sale de un periodograma de Hann sobre 10 s, que es lo mínimo para separarlas. PCA opcional por ventana vía SVD.
+- Archivos tocados: `wifi_sonar/pipeline/features.py`, `tests/test_features.py`, `DECISIONS.md`, `PROGRESS.md`, `DEV_LOOP.md`.
+- Tests agregados: una constante no tiene energía; un tono de 2 Hz cae en la banda de movimiento y uno de 0.25 Hz en la de respiración; PCA de un componente conserva el tono compartido.
+- Problemas / deuda: ninguna.
+- Siguiente paso sugerido: T-06 — calibración de línea base.
+
+### 2026-10-22 T-06 — Calibración de línea base
+- Qué se hizo: `calibrate(source, seconds)` consume el cuarto vacío, calcula media y desvío de cada feature y guarda umbrales `media + k·σ` en JSON. El tiempo es el de los frames, así que el simulador no espera en tiempo real.
+- Archivos tocados: `wifi_sonar/detect/calibrate.py`, `wifi_sonar/detect/__init__.py`, `tests/test_calibrate.py`, `PROGRESS.md`, `DEV_LOOP.md`.
+- Tests agregados: la calibración de 20 s persiste y se recarga; una captura más corta que la ventana espectral se rechaza.
+- Problemas / deuda: ninguna.
+- Siguiente paso sugerido: T-07 — detector de movimiento con histéresis.
