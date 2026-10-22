@@ -53,3 +53,9 @@ Contexto: T-10 necesita un servicio. El ciclo demo del simulador alterna caminat
 Opciones consideradas: calibrar con lo que esté entrando, o generar una captura vacía aparte.
 Decisión: el servidor escucha en `127.0.0.1` por defecto. `POST /calibrate` en modo simulador sintetiza un cuarto vacío con el mismo ruido y la semilla desplazada. FastAPI queda como dependencia de runtime porque la API es el producto a partir de esta tarea. El historial de T-10 vive en memoria, con la misma interfaz que va a implementar SQLite.
 Consecuencias: no hay telemetría. Cambiar la config reinicia la histéresis de los detectores. Una calibración nueva también.
+
+### D-010 — Paquete websockets para el servidor (2026-10-22)
+Contexto: los tests de `/ws` pasan con el cliente de Starlette, pero Uvicorn responde 404 al upgrade si no hay una librería de WebSocket instalada.
+Opciones consideradas: `uvicorn[standard]` (arrastra uvloop, httptools y watchfiles) o declarar `websockets`.
+Decisión: dependencia de runtime `websockets`. Alcanza para que el panel se conecte.
+Consecuencias: un entorno que solo instala el paquete puede abrir `/ws`.
