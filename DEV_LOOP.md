@@ -94,7 +94,7 @@ Formato: `[ ] ID — Título` · *Depende de* · **Aceptación**
   Listá estructura, lenguaje, dependencias, qué funciona y qué no. Escribí `PROGRESS.md` y `DECISIONS.md` iniciales con un diagnóstico y un plan de adaptación de este backlog al código existente.
   **Aceptación:** `PROGRESS.md` con inventario del repo; backlog ajustado si hace falta (renombrar tareas, marcar como hechas las que ya existan).
 
-- [ ] **T-01 — Entorno reproducible**
+- [x] **T-01 — Entorno reproducible**
   *Depende de:* T-00
   Gestor de dependencias, `Makefile` o scripts (`dev`, `test`, `lint`), `.gitignore`, `.env.example`, pre-commit opcional.
   **Aceptación:** clon limpio + un comando = tests corriendo.
