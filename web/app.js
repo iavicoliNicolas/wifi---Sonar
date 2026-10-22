@@ -49,6 +49,7 @@ function renderState(snapshot) {
   const calibrated = snapshot.calibrated ? "calibrado" : "sin calibrar";
   detailNode.textContent = `${calibrated} · score ${score.toFixed(2)}`;
   renderSensing(snapshot);
+  renderZones(snapshot);
   if (state !== lastState) {
     lastState = state;
     const item = document.createElement("li");
@@ -169,6 +170,27 @@ const sensingNode = document.querySelector("#sensing");
 const pauseButton = document.querySelector("#pause");
 const retentionNode = document.querySelector("#retention");
 let paused = false;
+
+function renderZones(snapshot) {
+  const list = document.querySelector("#zones");
+  list.replaceChildren();
+  const rows = Array.isArray(snapshot.nodes) ? snapshot.nodes : [];
+  if (!rows.length) {
+    const item = document.createElement("li");
+    item.textContent = "sin zonas";
+    list.append(item);
+    return;
+  }
+  for (const row of rows) {
+    const item = document.createElement("li");
+    const name = document.createElement("span");
+    const state = document.createElement("span");
+    name.textContent = row.zone || row.node_id || "zona";
+    state.textContent = labels[row.state] || row.state || "—";
+    item.append(name, state);
+    list.append(item);
+  }
+}
 
 function applyPaused(isPaused) {
   paused = Boolean(isPaused);

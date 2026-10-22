@@ -197,7 +197,7 @@ Formato: `[ ] ID — Título` · *Depende de* · **Aceptación**
   `ESP32Source` por serial y/o UDP. Incluir `firmware/` con instrucciones de flasheo (esp-csi) y formato de línea documentado. Parser tolerante a líneas corruptas.
   **Aceptación:** parser con tests sobre muestras reales/ficticias del formato; documento `docs/hardware.md` con lista de materiales y pasos.
 
-- [ ] **T-20 — Multi-nodo y zonas**
+- [x] **T-20 — Multi-nodo y zonas**
   *Depende de:* T-19, T-08
   Varios receptores, estado por nodo, fusión simple (OR/votación) y mapa de zonas configurable (ej. "living", "pasillo").
   **Aceptación:** panel muestra un estado por zona; test de fusión con nodos simulados.

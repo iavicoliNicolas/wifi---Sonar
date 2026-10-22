@@ -217,6 +217,23 @@ canvas {
   font-size: 0.92rem;
 }
 
+#zones {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.35rem;
+}
+
+#zones li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
 #settings {
   display: grid;
   gap: 0.7rem;

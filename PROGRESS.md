@@ -1,7 +1,7 @@
 # PROGRESS
 
 ## Estado actual
-Fase: 4 — Hardware · Última tarea completada: T-19 · Próxima: T-20
+Fase: 4 — Hardware · Última tarea completada: T-20 · Próxima: T-21
 
 ## Inventario del repo (2026-10-22)
 
@@ -170,3 +170,10 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Tests agregados: una fuente contadora no se lee mientras está en pausa; borrar deja el historial vacío. En Chrome, pausar cambia el aviso a "Sensado en pausa" y reanudar lo vuelve a "Sensado activo".
 - Problemas / deuda: ninguna.
 - Siguiente paso sugerido: T-19 — adaptador ESP32.
+
+### 2026-10-22 T-19 — Adaptador ESP32 CSI
+- Qué se hizo: `ESP32Source` lee líneas por archivo/tty o UDP. El parser acepta el CSV `CSI_DATA` de esp-csi (ESP32/C3 y C5/C6) y la línea corta `CSI,...`. Las líneas rotas se saltean. `firmware/` explica el flasheo del ejemplo oficial y `docs/hardware.md` lista materiales y pasos.
+- Archivos tocados: `wifi_sonar/sources/esp32.py`, `wifi_sonar/engine.py`, `firmware/README.md`, `firmware/csi_line.c`, `docs/hardware.md`, `tests/test_esp32.py`, `DECISIONS.md`, `PROGRESS.md`, `DEV_LOOP.md`.
+- Tests agregados: CSV oficial, línea corta, basura, archivo y un datagrama UDP. No se flasheó hardware.
+- Problemas / deuda: sin placas en esta máquina. El snippet C no es un proyecto IDF completo.
+- Siguiente paso sugerido: T-20 — zonas y fusión en el panel.
