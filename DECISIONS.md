@@ -29,3 +29,9 @@ Contexto: T-01 pide un pre-commit opcional.
 Opciones consideradas: agregar el paquete `pre-commit` y un hook, o dejar lint como comando explícito.
 Decisión: no se agrega el paquete. `make lint` corre ruff (check y format). Quien quiera un hook puede enganchar ese comando.
 Consecuencias: un clon no instala hooks solo. La verificación de formato queda en `make lint`.
+
+### D-006 — Formato de grabación (2026-10-22)
+Contexto: T-03 pide replay desde `.csv` o `.jsonl`.
+Opciones consideradas: un solo formato, o los dos con un esquema propio.
+Decisión: JSONL es el formato canónico (un objeto por frame, con `timestamp`, `rssi`, `amplitudes`, `phases`, `node_id`). CSV guarda las mismas columnas y codifica las listas con `|`, usando `repr` para no perder el float. Las líneas en blanco se saltean. Una línea mal formada aborta la carga: una grabación corrupta no debe parecer una habitación vacía.
+Consecuencias: `write_recording` elige el formato por la extensión. El detector compara resultados sobre los frames releídos, no sobre bits idénticos del JSON.

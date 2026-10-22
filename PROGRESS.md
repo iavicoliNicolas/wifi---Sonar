@@ -1,7 +1,7 @@
 # PROGRESS
 
 ## Estado actual
-Fase: 0 — Cimientos · Última tarea completada: T-02 · Próxima: T-03
+Fase: 0 — Cimientos · Última tarea completada: T-03 · Próxima: T-04
 
 ## Inventario del repo (2026-10-22)
 
@@ -57,3 +57,10 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Tests agregados: determinismo y forma del frame; la varianza temporal de caminata, quietud y ráfaga queda por encima del cuarto vacío, y la quietud queda por debajo de la caminata.
 - Problemas / deuda: el generador infinito (`duration_s=None`) todavía no tiene test propio; lo usa el servidor más adelante.
 - Siguiente paso sugerido: T-03 — interfaz `CSISource` y `ReplaySource`.
+
+### 2026-10-22 T-03 — Interfaz CSISource y replay
+- Qué se hizo: protocolo `CSISource` y helper `read_frames`. `ReplaySource` lee `.jsonl` y `.csv`, infiere la tasa de muestreo y reproduce a velocidad real o acelerada (`speed=0` no duerme). El simulador ya cumple la interfaz, así que el mismo helper consume las dos fuentes.
+- Archivos tocados: `wifi_sonar/sources/base.py`, `wifi_sonar/sources/replay.py`, `wifi_sonar/sources/__init__.py`, `tests/test_replay.py`, `PROGRESS.md`, `DEV_LOOP.md`, `DECISIONS.md`.
+- Tests agregados: roundtrip simulador → jsonl/csv → replay; el sleeper solo corre con `speed>0`; una línea JSONL inválida se rechaza.
+- Problemas / deuda: ninguna.
+- Siguiente paso sugerido: T-04 — preprocesamiento (Hampel, huecos, nulas, normalización).
