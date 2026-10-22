@@ -131,7 +131,7 @@ Formato: `[ ] ID — Título` · *Depende de* · **Aceptación**
   Compara features contra la línea base con histéresis y mínimo de duración para evitar parpadeo. Salida: `{moving: bool, score: 0-1, ts}`.
   **Aceptación:** en simulador, detecta ≥95 % de eventos de caminata con ≤1 falso positivo cada 10 min de ruido.
 
-- [ ] **T-08 — Detector de presencia (quieto)**
+- [x] **T-08 — Detector de presencia (quieto)**
   *Depende de:* T-07
   Detecta presencia sin movimiento grande usando banda de respiración / cambio sostenido respecto de la línea base, con ventana más larga.
   **Aceptación:** estados `vacío | presencia | movimiento` con máquina de estados testeada.

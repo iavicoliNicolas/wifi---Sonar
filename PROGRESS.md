@@ -1,7 +1,7 @@
 # PROGRESS
 
 ## Estado actual
-Fase: 1 — Núcleo de señal · Última tarea completada: T-07 · Próxima: T-08
+Fase: 1 — Núcleo de señal · Última tarea completada: T-08 · Próxima: T-09
 
 ## Inventario del repo (2026-10-22)
 
@@ -92,3 +92,10 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Tests agregados: un pico no engancha y un score sostenido sí; recall ≥ 95 % y ≤ 1 falso positivo en 10 minutos.
 - Problemas / deuda: ninguna.
 - Siguiente paso sugerido: T-08 — detector de presencia quieta y máquina de estados.
+
+### 2026-10-22 T-08 — Detector de presencia
+- Qué se hizo: máquina de estados `vacío | presencia | movimiento`. El movimiento del detector anterior gana. La presencia quieta exige que la banda de respiración supere el umbral durante al menos 3 s. `analyze_frames` une preprocesamiento, features y los dos detectores.
+- Archivos tocados: `wifi_sonar/detect/presence.py`, `tests/test_presence.py`, `PROGRESS.md`, `DEV_LOOP.md`.
+- Tests agregados: transiciones de la máquina (un pico no alcanza, la quietud sostenida sí, el movimiento la interrumpe y al bajar vuelve a vacío); en el simulador un `still` termina en presencia y un `walk` en movimiento.
+- Problemas / deuda: ninguna.
+- Siguiente paso sugerido: T-09 — `make eval` con precisión, recall y latencia.
