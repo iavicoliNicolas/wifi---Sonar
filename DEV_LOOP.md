@@ -202,7 +202,7 @@ Formato: `[ ] ID — Título` · *Depende de* · **Aceptación**
   Varios receptores, estado por nodo, fusión simple (OR/votación) y mapa de zonas configurable (ej. "living", "pasillo").
   **Aceptación:** panel muestra un estado por zona; test de fusión con nodos simulados.
 
-- [ ] **T-21 — Modo RSSI degradado**
+- [x] **T-21 — Modo RSSI degradado**
   *Depende de:* T-08
   Fuente alternativa con solo RSSI (por ejemplo, dispositivos conocidos de la LAN) con detector adaptado y sensibilidad claramente marcada como baja.
   **Aceptación:** el panel indica el modo y su limitación.

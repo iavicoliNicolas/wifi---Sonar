@@ -1,7 +1,7 @@
 # PROGRESS
 
 ## Estado actual
-Fase: 4 — Hardware · Última tarea completada: T-20 · Próxima: T-21
+Fase: 5 — Calidad · Última tarea completada: T-21 · Próxima: T-22
 
 ## Inventario del repo (2026-10-22)
 
@@ -177,3 +177,10 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Tests agregados: CSV oficial, línea corta, basura, archivo y un datagrama UDP. No se flasheó hardware.
 - Problemas / deuda: sin placas en esta máquina. El snippet C no es un proyecto IDF completo.
 - Siguiente paso sugerido: T-20 — zonas y fusión en el panel.
+
+### 2026-10-22 T-20 — Multi-nodo y zonas
+- Qué se hizo: el panel lista un estado por zona. La fusión OR/voto ya estaba en el motor; la config `zones` le pone nombre a cada `node_id`.
+- Archivos tocados: `web/index.html`, `web/style.css`, `web/app.js`, `tests/test_zones.py`, `PROGRESS.md`, `DEV_LOOP.md`.
+- Tests agregados: dos fuentes simuladas, living en movimiento y pasillo presente en el estado; la fusión OR queda en movimiento. En Chrome la lista mostró "living / movimiento".
+- Problemas / deuda: ninguna.
+- Siguiente paso sugerido: T-21 — modo RSSI de sensibilidad baja.

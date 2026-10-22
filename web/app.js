@@ -50,6 +50,7 @@ function renderState(snapshot) {
   detailNode.textContent = `${calibrated} · score ${score.toFixed(2)}`;
   renderSensing(snapshot);
   renderZones(snapshot);
+  renderMode(snapshot.mode);
   if (state !== lastState) {
     lastState = state;
     const item = document.createElement("li");
@@ -212,6 +213,11 @@ function fillSettings(config) {
   settingsNote.textContent = `Sensibilidad ${config.sensitivity} · ventana ${config.window_s}s · histéresis ${config.hysteresis}`;
   retentionNode.textContent = `El historial se conserva ${config.retention_days} días en esta máquina.`;
   applyPaused(config.paused);
+  renderMode(config.mode);
+}
+
+function renderMode(mode) {
+  document.querySelector("#mode-note").hidden = mode !== "rssi";
 }
 
 function scheduleSave() {

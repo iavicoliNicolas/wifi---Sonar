@@ -73,6 +73,7 @@ class Settings:
     esp32_port: int = 5005
     esp32_serial: str = ""
     recordings_dir: str = "data/recordings"
+    rssi_devices: str = "telefono"
 
     @classmethod
     def from_env(cls) -> Settings:
@@ -92,4 +93,5 @@ class Settings:
             esp32_port=int(env("WIFI_SONAR_ESP32_PORT", "5005")),
             esp32_serial=env("WIFI_SONAR_ESP32_SERIAL", ""),
             recordings_dir=env("WIFI_SONAR_RECORDINGS", "data/recordings"),
+            rssi_devices=env("WIFI_SONAR_RSSI_DEVICES", "telefono"),
         )

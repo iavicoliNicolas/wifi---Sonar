@@ -77,3 +77,9 @@ Contexto: T-19 pide un adaptador serie y/o UDP, parser tolerante y el ejemplo es
 Opciones consideradas: depender de pyserial, aceptar solo el CSV oficial, o definir una línea corta además del CSV.
 Decisión: no se agrega pyserial. El serie es un archivo de texto (tty o FIFO). UDP es el camino para más de una placa. El parser acepta el `CSI_DATA` documentado por Espressif (timestamp en microsegundos, pares imag/real) y la línea `CSI,nodo,segundos,rssi,amps` del snippet `firmware/csi_line.c`. Una línea rota devuelve None.
 Consecuencias: no hay un binario propio ni un mapa de registros. El flasheo sigue siendo el de `examples/get-started` de esp-csi.
+
+### D-014 — RSSI solo con lista blanca (2026-10-22)
+Contexto: T-21 pide un modo degradado con RSSI de dispositivos conocidos de la LAN, marcado como baja sensibilidad.
+Opciones consideradas: escanear vecinos, leer cualquier estación asociada, o aceptar solo nombres que la persona escribe.
+Decisión: `RssiSource` exige `devices`. No hay barrido de redes ni descubrimiento. El simulador usa esos nombres; no consulta la LAN. La RSSI entra al pipeline como una sola subportadora. El panel muestra "modo RSSI · sensibilidad baja" cuando `mode` es `rssi`. Arrancar con `WIFI_SONAR_SOURCE=rssi` fuerza ese modo y calibra contra una serie vacía de la misma fuente.
+Consecuencias: sin CSI el detector es más grueso. Un nombre en la lista no identifica a una persona. El default `telefono` es un marcador de posición, no un equipo descubierto.

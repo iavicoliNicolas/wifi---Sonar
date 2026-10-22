@@ -20,6 +20,7 @@ from wifi_sonar.recording import SessionRecorder
 from wifi_sonar.settings import AppConfig, Settings
 from wifi_sonar.sources.base import CSISource
 from wifi_sonar.sources.esp32 import ESP32Source
+from wifi_sonar.sources.rssi import RssiConfig, RssiSource
 from wifi_sonar.sources.simulated import SimConfig, SimulatedSource, demo_cycle
 from wifi_sonar.storage.memory import MemoryStore
 
@@ -108,6 +109,8 @@ class Engine:
         saved = self.store.load_config()
         if saved:
             self.config = AppConfig(**saved)
+        if self.settings.source == "rssi":
+            self.config = replace(self.config, mode="rssi")
         saved_calibration = self.store.load_calibration()
         if saved_calibration:
             self.calibration = Calibration.from_dict(saved_calibration)
@@ -115,7 +118,7 @@ class Engine:
     def start(self) -> None:
         if self._thread and self._thread.is_alive():
             return
-        if self.calibration is None and self.settings.source == "sim":
+        if self.calibration is None and self.settings.source in ("sim", "rssi"):
             self.calibrate(12.0)
         self._stop.clear()
         self._thread = threading.Thread(target=self._run, name="wifi-sonar", daemon=True)
@@ -250,6 +253,15 @@ class Engine:
             time.sleep(min(delay, 0.5))
 
     def _empty_source(self, seconds: float) -> CSISource:
+        if self.config.mode == "rssi":
+            return RssiSource(
+                RssiConfig(
+                    devices=self._rssi_devices()[:1],
+                    seed=self.settings.seed + 17,
+                    duration_s=seconds + 1.0,
+                    noise_sigma=0.35,
+                )
+            )
         return SimulatedSource(
             SimConfig(
                 seed=self.settings.seed + 17,
@@ -258,6 +270,14 @@ class Engine:
                 node_id="cal",
             )
         )
+
+    def _rssi_devices(self) -> tuple[str, ...]:
+        names = tuple(
+            part.strip() for part in self.settings.rssi_devices.split(",") if part.strip()
+        )
+        if not names:
+            raise ValueError("rssi mode needs your own device names; it does not scan the LAN")
+        return names
 
     def _trim(self, node: NodeRuntime) -> None:
         rate = 100.0
@@ -426,4 +446,14 @@ def build_source(settings: Settings) -> CSISource:
         if settings.esp32_serial:
             return ESP32Source(serial_path=settings.esp32_serial)
         return ESP32Source(udp_host=settings.esp32_host, udp_port=settings.esp32_port)
+    if settings.source == "rssi":
+        names = tuple(part.strip() for part in settings.rssi_devices.split(",") if part.strip())
+        return RssiSource(
+            RssiConfig(
+                devices=names,
+                seed=settings.seed,
+                duration_s=None,
+                events=demo_cycle(),
+            )
+        )
     raise ValueError(f"unsupported source: {settings.source}")
