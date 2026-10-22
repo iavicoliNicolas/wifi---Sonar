@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+import json
 import logging
 import threading
 import time
+import urllib.request
 from collections.abc import Callable
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 
 from wifi_sonar.detect.calibrate import Calibration, calibrate
 from wifi_sonar.detect.motion import MotionConfig, MotionDetector
@@ -265,9 +267,13 @@ class Engine:
     def _update_node(self, node: NodeRuntime, node_id: str) -> None:
         assert self.calibration is not None
         cleaned = preprocess(node.buffer, self.calibration.sample_rate_hz)
-        features = extract_features(
-            cleaned, self.calibration.sample_rate_hz, self.calibration.feature_config()
+        live_features = replace(
+            self.calibration.feature_config(),
+            window_s=self.config.window_s,
+            step_s=self.config.step_s,
+            spectrum_window_s=self.config.spectrum_window_s,
         )
+        features = extract_features(cleaned, self.calibration.sample_rate_hz, live_features)
         if not features:
             return
         feature = features[-1]
@@ -292,15 +298,15 @@ class Engine:
             zone = self.config.zones.get(node_id, "")
             if hasattr(self.store, "retention_days"):
                 self.store.retention_days = self.config.retention_days
-            self.store.add_event(
-                {
-                    "ts": sample.ts,
-                    "state": sample.state,
-                    "score": sample.score,
-                    "node_id": node_id,
-                    "zone": zone,
-                }
-            )
+            event = {
+                "ts": sample.ts,
+                "state": sample.state,
+                "score": sample.score,
+                "node_id": node_id,
+                "zone": zone,
+            }
+            self.store.add_event(event)
+            self._notify_webhook(event)
 
     def _motion_config(self) -> MotionConfig:
         off = max(0.0, self.config.on_threshold - self.config.hysteresis)
@@ -359,6 +365,27 @@ class Engine:
             features={} if active is None else dict(active.features),
             amplitudes=[] if active is None else list(active.amplitudes),
         )
+
+    def _notify_webhook(self, event: dict[str, object]) -> None:
+        url = self.config.webhook_url.strip()
+        if not url:
+            return
+        payload = json.dumps(event).encode("utf-8")
+
+        def send() -> None:
+            request = urllib.request.Request(
+                url,
+                data=payload,
+                headers={"content-type": "application/json"},
+                method="POST",
+            )
+            try:
+                with urllib.request.urlopen(request, timeout=1.5) as response:
+                    response.read()
+            except Exception:
+                logger.warning("local webhook failed", exc_info=True)
+
+        threading.Thread(target=send, name="wifi-sonar-webhook", daemon=True).start()
 
     def _publish_locked(self) -> None:
         snapshot = self._status_locked().as_dict()

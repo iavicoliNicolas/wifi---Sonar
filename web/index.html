@@ -34,6 +34,15 @@
         <h2>Eventos</h2>
         <ol id="timeline"></ol>
       </section>
+      <section id="settings">
+        <h2>Configuración</h2>
+        <label>Sensibilidad <input id="sensitivity" type="range" min="0.2" max="3" step="0.1" /></label>
+        <label>Ventana (s) <input id="window" type="range" min="0.5" max="5" step="0.1" /></label>
+        <label>Histéresis <input id="hysteresis" type="range" min="0" max="0.7" step="0.05" /></label>
+        <label>Webhook local <input id="webhook" type="url" placeholder="http://127.0.0.1:9/aviso" /></label>
+        <label class="check"><input id="alerts" type="checkbox" /> Avisar en el navegador</label>
+        <p id="settings-note"></p>
+      </section>
     </main>
     <dialog id="wizard">
       <h2>Calibración</h2>

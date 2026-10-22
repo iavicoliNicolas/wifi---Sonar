@@ -128,7 +128,7 @@ function pushSnapshot(snapshot) {
     pushColumn(snapshot.amplitudes.slice(0, 64));
     pushScore(Number(snapshot.score) || 0);
   }
-  renderState(snapshot);
+  renderStateWithAlert(snapshot);
 }
 
 function frame() {
@@ -155,6 +155,74 @@ function connect() {
     pushSnapshot(JSON.parse(event.data));
   };
 }
+
+const sensitivityInput = document.querySelector("#sensitivity");
+const windowInput = document.querySelector("#window");
+const hysteresisInput = document.querySelector("#hysteresis");
+const webhookInput = document.querySelector("#webhook");
+const alertsInput = document.querySelector("#alerts");
+const settingsNote = document.querySelector("#settings-note");
+let saveTimer = 0;
+
+function fillSettings(config) {
+  thresholds = config;
+  sensitivityInput.value = String(config.sensitivity);
+  windowInput.value = String(config.window_s);
+  hysteresisInput.value = String(config.hysteresis);
+  webhookInput.value = config.webhook_url || "";
+  settingsNote.textContent = `Sensibilidad ${config.sensitivity} · ventana ${config.window_s}s · histéresis ${config.hysteresis}`;
+}
+
+function scheduleSave() {
+  window.clearTimeout(saveTimer);
+  saveTimer = window.setTimeout(async () => {
+    const payload = {
+      sensitivity: Number(sensitivityInput.value),
+      window_s: Number(windowInput.value),
+      hysteresis: Number(hysteresisInput.value),
+      webhook_url: webhookInput.value.trim(),
+    };
+    const response = await fetch("/config", {
+      method: "PUT",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (response.ok) {
+      fillSettings(await response.json());
+    }
+  }, 200);
+}
+
+for (const input of [sensitivityInput, windowInput, hysteresisInput, webhookInput]) {
+  input.addEventListener("change", scheduleSave);
+  input.addEventListener("input", scheduleSave);
+}
+
+alertsInput.addEventListener("change", () => {
+  if (alertsInput.checked && "Notification" in window && Notification.permission === "default") {
+    Notification.requestPermission();
+  }
+});
+
+const originalRender = renderState;
+function renderStateWithAlert(snapshot) {
+  const previous = lastState;
+  originalRender(snapshot);
+  if (
+    alertsInput.checked &&
+    previous &&
+    snapshot.state !== previous &&
+    "Notification" in window &&
+    Notification.permission === "granted"
+  ) {
+    new Notification("WiFi Sonar", { body: snapshot.state });
+  }
+}
+
+fetch("/config")
+  .then((response) => response.json())
+  .then(fillSettings)
+  .catch(() => {});
 
 window.__sonar = {
   pushSnapshot,

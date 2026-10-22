@@ -59,3 +59,9 @@ Contexto: los tests de `/ws` pasan con el cliente de Starlette, pero Uvicorn res
 Opciones consideradas: `uvicorn[standard]` (arrastra uvloop, httptools y watchfiles) o declarar `websockets`.
 Decisión: dependencia de runtime `websockets`. Alcanza para que el panel se conecte.
 Consecuencias: un entorno que solo instala el paquete puede abrir `/ws`.
+
+### D-011 — Config en caliente y webhook local (2026-10-22)
+Contexto: T-17 pide que sensibilidad, ventana e histéresis apliquen en caliente y persistan, más una alerta opcional.
+Opciones consideradas: recalcular los umbrales al mover la ventana, o seguir usando la calibración guardada hasta que la persona vuelva a calibrar. Para el aviso externo, un cliente nuevo o `urllib` de la stdlib.
+Decisión: la ventana viva sale de `AppConfig` y los umbrales siguen siendo los de la última calibración. Cambiar la config reinicia la histéresis. El webhook es un POST JSON a una URL local que la persona escribe; un fallo se loguea y no corta el detector. No se agrega ninguna librería.
+Consecuencias: un slider no reescribe la línea base. La notificación del navegador solo sale si el permiso ya está concedido.

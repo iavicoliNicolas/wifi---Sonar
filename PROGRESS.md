@@ -1,7 +1,7 @@
 # PROGRESS
 
 ## Estado actual
-Fase: 3 — Panel · Última tarea completada: T-16 · Próxima: T-17
+Fase: 3 — Panel · Última tarea completada: T-17 · Próxima: T-18
 
 ## Inventario del repo (2026-10-22)
 
@@ -156,3 +156,10 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Tests agregados: el HTML incluye la consigna. En Chrome la cuenta baja 3, 2, 1 y el resultado fue "Calidad: estable" con un umbral numérico.
 - Problemas / deuda: ninguna.
 - Siguiente paso sugerido: T-17 — sliders de sensibilidad, ventana e histéresis, más alerta y webhook.
+
+### 2026-10-22 T-17 — Configuración y alertas
+- Qué se hizo: sliders de sensibilidad, ventana e histéresis, campo de webhook local y aviso opcional del navegador. El motor aplica la ventana en caliente y, si hay URL, hace POST del cambio de estado. La config se guarda en el store y vuelve al reiniciar el motor.
+- Archivos tocados: `web/index.html`, `web/style.css`, `web/app.js`, `wifi_sonar/engine.py`, `tests/test_webhook.py`, `PROGRESS.md`, `DEV_LOOP.md`.
+- Tests agregados: un servidor HTTP local recibe el estado `movimiento`; un segundo `Engine` con el mismo store recupera sensibilidad, ventana e histéresis. En Chrome, mover el slider dejó la nota en "Sensibilidad 1.7" y `GET /config` devolvió ese valor.
+- Problemas / deuda: el permiso de notificación no se puede conceder en Chrome headless, así que ese camino queda cubierto por el código del panel y no por un clic real.
+- Siguiente paso sugerido: T-18 — aviso de sensado, pausa y borrado.

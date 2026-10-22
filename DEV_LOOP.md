@@ -180,7 +180,7 @@ Formato: `[ ] ID — Título` · *Depende de* · **Aceptación**
   Flujo guiado: "salí de la habitación" → cuenta regresiva → captura → resumen de calidad.
   **Aceptación:** se calibra de punta a punta desde la UI.
 
-- [ ] **T-17 — Configuración y alertas**
+- [x] **T-17 — Configuración y alertas**
   *Depende de:* T-15
   Sliders de sensibilidad, ventana, histéresis; alertas opcionales (notificación del navegador, webhook local).
   **Aceptación:** cambios aplican en caliente y persisten.
