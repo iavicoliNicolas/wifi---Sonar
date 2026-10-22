@@ -1,7 +1,7 @@
 # PROGRESS
 
 ## Estado actual
-Fase: 0 — Cimientos · Última tarea completada: T-00 · Próxima: T-01
+Fase: 0 — Cimientos · Última tarea completada: T-01 · Próxima: T-02
 
 ## Inventario del repo (2026-10-22)
 
@@ -43,3 +43,10 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Tests agregados: ninguno. No existe runner; armar pytest sería T-01. La verificación de esta tarea es el inventario de arriba (un archivo de producto, cero dependencias, cero tests).
 - Problemas / deuda: README sigue siendo un puntero corto; la guía de uso queda para T-24. Sin `.gitignore` hasta T-01.
 - Siguiente paso sugerido: T-01 — entorno reproducible (`pyproject.toml`, `Makefile` con `test` y `lint`, `.gitignore`, `.env.example`) de modo que un clon limpio corra la suite con un comando.
+
+### 2026-10-22 T-01 — Entorno reproducible
+- Qué se hizo: paquete instalable `wifi_sonar` 0.0.1, `pyproject.toml` (setuptools, extra `dev` con pytest y ruff), `Makefile` (`dev`, `test`, `lint`, `format`), `.gitignore` y `.env.example`. `make test` crea `.venv` si no existe. Sin NumPy ni pre-commit (D-005).
+- Archivos tocados: `pyproject.toml`, `Makefile`, `.gitignore`, `.env.example`, `wifi_sonar/__init__.py`, `tests/test_package.py`, `README.md`, `DEV_LOOP.md`, `DECISIONS.md`, `PROGRESS.md`.
+- Tests agregados: `tests/test_package.py` comprueba que el paquete importa y que `__version__` es `0.0.1`.
+- Problemas / deuda: `.env` todavía no lo lee nadie. El README de uso completo sigue siendo T-24.
+- Siguiente paso sugerido: T-02 — `CSIFrame` y `SimulatedSource` determinista por seed, con un test de que los eventos cambian la varianza esperada.

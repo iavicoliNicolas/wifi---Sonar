@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wifi-sonar"
+version = "0.0.1"
+description = "Panel local que usa el WiFi del hogar como sensor de presencia y movimiento."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3",
+    "ruff>=0.6",
+]
+
+[tool.setuptools]
+packages = ["wifi_sonar"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+src = ["wifi_sonar", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
