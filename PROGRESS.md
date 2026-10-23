@@ -1,7 +1,7 @@
 # PROGRESS
 
 ## Estado actual
-Fase: 5 — Cierre · Última tarea completada: T-23 · Próxima: T-24
+Fase: 5 — Cierre · Última tarea completada: T-24 · Próxima: ninguna (T-00…T-24 cerradas)
 
 ## Inventario del repo (2026-10-22)
 
@@ -204,3 +204,10 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Tests agregados: la suite sigue en verde. `docker compose up --build -d` dejó el contenedor en marcha; `/health` respondió `ok` y `/` sirvió el panel.
 - Problemas / deuda: la imagen no incluye las herramientas de desarrollo. El puerto 8000 es el del panel, así que no convive con otro `python -m wifi_sonar` en el mismo puerto.
 - Siguiente paso sugerido: T-24 — README de instalación, calibración, límites y privacidad.
+
+### 2026-10-23 T-24 — Documentación final
+- Qué se hizo: el README queda como guía de instalación (venv y Docker), calibración, ajustes, privacidad y límites conocidos, con dos capturas del panel.
+- Archivos tocados: `README.md`, `docs/screenshots/panel.jpg`, `docs/screenshots/calibracion.jpg`, `DEV_LOOP.md`, `PROGRESS.md`.
+- Tests agregados: ninguno nuevo. `make test` y `make lint` siguen en verde, y el contenedor de T-23 responde en el puerto 8000.
+- Problemas / deuda: la captura de calibración sigue siendo el simulador vacío hasta que haya una placa. El favicon sigue en 404.
+- Siguiente paso sugerido: ninguno del backlog. El próximo trabajo real es conectar un ESP32 propio siguiendo `docs/hardware.md`.
