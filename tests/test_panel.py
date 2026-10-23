@@ -27,3 +27,6 @@ def test_panel_shell_is_served() -> None:
     assert 'id="hysteresis"' in page.text
     assert 'id="notify"' in page.text
     assert "Notification" in script.text
+    assert "sensado activo" in page.text
+    assert 'id="pause"' in page.text
+    assert 'id="wipe"' in page.text

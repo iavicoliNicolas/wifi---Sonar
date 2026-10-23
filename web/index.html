@@ -11,6 +11,7 @@
       <p class="mark">wifi sonar</p>
       <p id="link" class="link" data-state="off">conectando</p>
     </header>
+    <p id="sensing" data-state="on">sensado activo</p>
     <main>
       <p class="kicker">esta habitación</p>
       <h1 id="state" data-state="empty">vacío</h1>
@@ -37,6 +38,11 @@
         <label class="check"><input id="notify" type="checkbox" /> notificación del navegador</label>
         <label>webhook local <input id="webhook" type="url" placeholder="http://127.0.0.1:9/hook" /></label>
         <p id="config-note"></p>
+        <p id="retention"></p>
+        <div class="controls">
+          <button id="pause" type="button">pausar</button>
+          <button id="wipe" type="button">borrar historial</button>
+        </div>
       </section>
       <section class="wizard" id="wizard">
         <h2>calibración</h2>

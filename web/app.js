@@ -211,5 +211,41 @@ notifyBox.addEventListener("change", () => {
   }
 });
 
-loadConfig();
+const sensingEl = document.querySelector("#sensing");
+const pauseButton = document.querySelector("#pause");
+const wipeButton = document.querySelector("#wipe");
+const retentionEl = document.querySelector("#retention");
+
+function showSensing(paused) {
+  sensingEl.textContent = paused ? "sensado en pausa" : "sensado activo";
+  sensingEl.dataset.state = paused ? "off" : "on";
+  pauseButton.textContent = paused ? "reanudar" : "pausar";
+}
+
+async function refreshSensing() {
+  const status = await (await fetch("/status")).json();
+  showSensing(status.sensing === false);
+}
+
+pauseButton.addEventListener("click", async () => {
+  const paused = pauseButton.textContent === "pausar";
+  await fetch("/sensing", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ paused: paused }),
+  });
+  showSensing(paused);
+});
+
+wipeButton.addEventListener("click", async () => {
+  if (!window.confirm("¿Borrar el historial de esta máquina?")) return;
+  await fetch("/history", { method: "DELETE" });
+  timeline.replaceChildren();
+});
+
+loadConfig().then(() => {
+  const days = Math.max(1, Math.round(config.retention_s / 86400));
+  retentionEl.textContent = "los eventos se borran solos a los " + days + " días";
+});
+refreshSensing();
 connect();

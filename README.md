@@ -16,6 +16,6 @@ make eval
 
 `make test` crea `.venv`, instala el paquete en modo editable con las herramientas de desarrollo y corre pytest. `make dev` solo prepara ese entorno. `make eval` corre el simulador y escribe precisión, recall y latencia en `docs/eval.md`.
 
-La API local (FastAPI) expone `/status`, `/calibrate`, `/config` y `/history`. OpenAPI queda en `/openapi.json`. `make serve` abre el panel en el puerto 8000, con el simulador. El panel muestra el estado, un heatmap de amplitud, el score y la línea de tiempo. El botón calibrar cuenta cinco segundos y resume la calidad de la línea base. Los sliders de sensibilidad, ventana e histéresis se guardan en `data/sonar.sqlite`. Una alerta puede ser una notificación del navegador o un webhook en `127.0.0.1`. No hay servicio en la nube.
+La API local (FastAPI) expone `/status`, `/calibrate`, `/config` y `/history`. OpenAPI queda en `/openapi.json`. `make serve` abre el panel en el puerto 8000, con el simulador. El panel muestra el estado, un heatmap de amplitud, el score y la línea de tiempo. El botón calibrar cuenta cinco segundos y resume la calidad de la línea base. Los sliders de sensibilidad, ventana e histéresis se guardan en `data/sonar.sqlite`. Una alerta puede ser una notificación del navegador o un webhook en `127.0.0.1`. El panel avisa que el sensado está activo y permite pausarlo o borrar el historial. No hay servicio en la nube.
 
 Alcance: presencia, movimiento y zona aproximada dentro de tu casa, con consentimiento de quienes viven ahí. No identifica personas.

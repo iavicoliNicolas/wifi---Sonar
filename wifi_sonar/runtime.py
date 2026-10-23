@@ -72,6 +72,19 @@ class SonarState:
         if self.store is not None:
             self.store.save_config(config.model_dump_json())
 
+    def wipe(self) -> None:
+        self.history.clear()
+        self.calibration = None
+        self.latest = {
+            "state": "empty",
+            "score": 0.0,
+            "ts": 0.0,
+            "sensing": not self.paused,
+            "calibrated": False,
+        }
+        if self.store is not None:
+            self.store.clear()
+
     def purge(self, now: float) -> int:
         if self.store is None:
             cutoff = now - self.config.retention_s

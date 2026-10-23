@@ -1,7 +1,7 @@
 # PROGRESS
 
 ## Estado actual
-Fase: 3 — Panel · Última tarea completada: T-17 · Próxima: T-18
+Fase: 4 — Hardware · Última tarea completada: T-18 · Próxima: T-19
 
 ## Inventario del repo (2026-10-22)
 
@@ -162,3 +162,10 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Tests agregados: un webhook externo se rechaza; un cambio a movimiento hace POST al loopback; subir la ventana a 30 s evita que una caminata de 6 s cuente como movimiento. En el navegador, histéresis 0 y el webhook quedaron después de recargar, y también en el archivo SQLite.
 - Problemas / deuda: la notificación del navegador depende del permiso del usuario. k nuevo se usa en la próxima calibración, no reescribe umbrales ya guardados.
 - Siguiente paso sugerido: T-18 — aviso de sensado activo, pausa y borrado del historial.
+
+### 2026-10-23 T-18 — Privacidad y control
+- Qué se hizo: el panel muestra "sensado activo", la retención en días, y botones para pausar y borrar. Pausar corta la ingesta. Borrar vacía eventos y calibraciones en memoria y en SQLite; el config (incluida la retención) se conserva (D-003).
+- Archivos tocados: `wifi_sonar/runtime.py`, `wifi_sonar/api/app.py`, `web/index.html`, `web/style.css`, `web/app.js`, `tests/test_privacy.py`, `tests/test_panel.py`, `DEV_LOOP.md`, `PROGRESS.md`, `README.md`.
+- Tests agregados: con la sesión en pausa una caminata no entra al historial; `DELETE /history` deja la base vacía y el config intacto; `/sensing` se refleja en `/status`. En el navegador el banner pasó a "sensado en pausa" y el borrado confirmado respondió 200.
+- Problemas / deuda: al reanudar, el simulador vuelve a grabar eventos. La pausa no apaga el transmisor de WiFi del router.
+- Siguiente paso sugerido: T-19 — adaptador ESP32 y el formato de línea.

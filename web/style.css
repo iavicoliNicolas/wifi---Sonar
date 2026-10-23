@@ -49,6 +49,33 @@ body {
 .link[data-state="on"] { color: var(--live); }
 .link[data-state="off"] { color: #c45b4a; }
 
+#sensing {
+  margin: 0;
+  padding: 0.45rem 1.5rem;
+  font-family: "Segoe UI", Helvetica, sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: #2a2416;
+  color: var(--presence);
+}
+
+#sensing[data-state="off"] {
+  background: #241816;
+  color: #c45b4a;
+}
+
+.controls { display: flex; gap: 0.5rem; margin-top: 0.6rem; }
+
+.controls button {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--line);
+  padding: 0.45rem 0.8rem;
+  font: inherit;
+  cursor: pointer;
+}
+
 main {
   padding: 1.4rem 1.5rem 2rem;
 }

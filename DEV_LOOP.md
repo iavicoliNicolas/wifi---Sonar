@@ -185,7 +185,7 @@ Formato: `[ ] ID — Título` · *Depende de* · **Aceptación**
   Sliders de sensibilidad, ventana, histéresis; alertas opcionales (notificación del navegador, webhook local).
   **Aceptación:** cambios aplican en caliente y persisten.
 
-- [ ] **T-18 — Privacidad y control**
+- [x] **T-18 — Privacidad y control**
   *Depende de:* T-12, T-14
   Aviso de sensado activo, botón pausar, botón borrar todo el historial, retención visible.
   **Aceptación:** pausar detiene ingesta y borrar elimina datos (verificado por test).

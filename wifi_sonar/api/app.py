@@ -18,6 +18,10 @@ class CalibrateBody(BaseModel):
     seconds: float = Field(default=12.0, gt=0.0, le=120.0)
 
 
+class SensingBody(BaseModel):
+    paused: bool
+
+
 def create_app(state: SonarState | None = None) -> FastAPI:
     app = FastAPI(
         title="wifi-sonar",
@@ -57,6 +61,18 @@ def create_app(state: SonarState | None = None) -> FastAPI:
     @app.get("/history")
     def history() -> list[dict[str, object]]:
         return list(app.state.sonar.history)
+
+    @app.delete("/history")
+    def wipe_history() -> dict[str, bool]:
+        app.state.sonar.wipe()
+        return {"cleared": True}
+
+    @app.post("/sensing")
+    def set_sensing(body: SensingBody) -> dict[str, object]:
+        sonar = app.state.sonar
+        sonar.paused = body.paused
+        sonar.latest["sensing"] = not body.paused
+        return {"paused": sonar.paused, "retention_s": sonar.config.retention_s}
 
     @app.get("/")
     def panel() -> FileResponse:
