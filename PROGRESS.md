@@ -1,7 +1,7 @@
 # PROGRESS
 
 ## Estado actual
-Fase: 1 — Núcleo de señal · Última tarea completada: T-06 · Próxima: T-07
+Fase: 1 — Núcleo de señal · Última tarea completada: T-07 · Próxima: T-08
 
 ## Inventario del repo (2026-10-22)
 
@@ -85,3 +85,10 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Tests agregados: umbrales por encima de la media, ida y vuelta por archivo, y la misma semilla produce la misma calibración.
 - Problemas / deuda: asume cuarto vacío durante la captura. No hay todavía asistente en el panel (T-16).
 - Siguiente paso sugerido: T-07 — detector de movimiento con histéresis.
+
+### 2026-10-23 T-07 — Detector de movimiento
+- Qué se hizo: `MotionDetector` enciende con histéresis y 0,5 s de permanencia cuando la energía de movimiento supera el umbral y a la banda de respiración. Score en 0–1 (D-011). El Hampel quedó vectorizado para poder evaluar 10 min de ruido.
+- Archivos tocados: `wifi_sonar/detect/motion.py`, `wifi_sonar/detect/__init__.py`, `wifi_sonar/pipeline/preprocess.py`, `tests/test_detect.py`, `DECISIONS.md`, `DEV_LOOP.md`, `PROGRESS.md`.
+- Tests agregados: 20 caminatas, al menos 19 detectadas y el detector se apaga entre ellas; 10 min de cuarto vacío con como máximo un falso positivo; el score queda en 0–1.
+- Problemas / deuda: los umbrales salen del simulador. Con CSI real hay que recalibrar k.
+- Siguiente paso sugerido: T-08 — presencia quieta y estados vacío / presencia / movimiento.

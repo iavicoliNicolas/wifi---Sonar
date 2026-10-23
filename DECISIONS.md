@@ -59,3 +59,9 @@ Contexto: T-06 pide capturar N segundos de cuarto vacío, guardar media y desví
 Opciones consideradas: k=3 (más sensible, más falsos positivos en 10 min) o k=6.
 Decisión: `calibrate(source, seconds, k=6)` observa la traza, la preprocesa y resume las cuatro features. El umbral es media + 6·σ. Se persiste en JSON.
 Consecuencias: con el simulador, la caminata queda muy por encima del umbral de movimiento y el cuarto vacío no. k se puede cambiar cuando haya grabaciones reales.
+
+### D-011 — Detector de movimiento (2026-10-23)
+Contexto: T-07 compara features con la línea base, con histéresis y duración mínima. Tiene que ver al menos el 95 % de las caminatas y como máximo un falso positivo cada 10 min de ruido.
+Opciones consideradas: umbral solo de varianza, o energía de la banda de movimiento.
+Decisión: hay movimiento si la energía de movimiento supera el umbral y además supera a la de respiración, y eso se sostiene 0,5 s. La histéresis (0,5) baja el umbral de apagado. El score es el exceso sobre el umbral de apagado, recortado a 0–1. El Hampel pasa a ser vectorizado para que 10 min de traza corran en el test.
+Consecuencias: una persona quieta no enciende el detector aunque algo de su tono se cuele en la banda de movimiento. El test de 20 caminatas y 10 min de vacío queda en verde.

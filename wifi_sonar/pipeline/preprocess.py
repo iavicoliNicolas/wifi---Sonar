@@ -139,21 +139,17 @@ def _hampel_matrix(values: np.ndarray, window: int, n_sigma: float) -> np.ndarra
 
 
 def _hampel(series: np.ndarray, window: int, n_sigma: float) -> np.ndarray:
-    cleaned = series.copy()
+    """Vectorized Hampel. Edges repeat the end sample so every point has a full window."""
     half = window // 2
-    for index in range(len(series)):
-        lo = max(0, index - half)
-        hi = min(len(series), index + half + 1)
-        segment = series[lo:hi]
-        median = float(np.median(segment))
-        mad = float(np.median(np.abs(segment - median)))
-        scale = 1.4826 * mad
-        if scale == 0.0:
-            if series[index] != median:
-                cleaned[index] = median
-            continue
-        if abs(series[index] - median) > n_sigma * scale:
-            cleaned[index] = median
+    padded = np.pad(series, half, mode="edge")
+    windows = np.lib.stride_tricks.sliding_window_view(padded, window)
+    median = np.median(windows, axis=1)
+    mad = np.median(np.abs(windows - median[:, None]), axis=1)
+    scale = 1.4826 * mad
+    deviation = np.abs(series - median)
+    outlier = np.where(scale == 0.0, series != median, deviation > n_sigma * scale)
+    cleaned = series.copy()
+    cleaned[outlier] = median[outlier]
     return cleaned
 
 
