@@ -83,3 +83,9 @@ Contexto: T-10 pide `GET /status`, `POST /calibrate`, `GET /config`, `PUT /confi
 Opciones consideradas: seguir sin framework y servir JSON a mano, o sumar FastAPI.
 Decisión: FastAPI + uvicorn. La sesión vive en `SonarState` (memoria, por ahora). `httpx` queda en el extra `dev` porque el `TestClient` lo necesita. Nada de la API sale de la máquina.
 Consecuencias: OpenAPI queda en `/openapi.json`. La persistencia llega en T-12; hasta entonces el historial es el proceso.
+
+### D-015 — WebSocket con cola corta (2026-10-23)
+Contexto: T-11 pide un canal a ~10 Hz con frames reducidos, features y estado, y backpressure que descarta frames viejos.
+Opciones consideradas: bloquear al productor cuando el cliente no lee, o una cola acotada que tira lo más viejo.
+Decisión: `FrameHub` tiene cola de 8 por cliente. Si está llena, se descarta el snapshot más viejo. `follow()` publica sobre el tiempo simulado a 10 Hz con 8 bins de amplitud (media por grupo de subportadoras), más estado y score.
+Consecuencias: un panel lento no frena el sensor. No se prometen 10 Hz de reloj de pared si la máquina está ocupada; el ritmo es el de la traza.

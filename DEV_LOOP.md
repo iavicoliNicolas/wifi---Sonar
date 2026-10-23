@@ -148,7 +148,7 @@ Formato: `[ ] ID — Título` · *Depende de* · **Aceptación**
   Endpoints: `GET /status`, `POST /calibrate`, `GET /config`, `PUT /config`, `GET /history`.
   **Aceptación:** tests de API; OpenAPI/docs generada.
 
-- [ ] **T-11 — Streaming por WebSocket**
+- [x] **T-11 — Streaming por WebSocket**
   *Depende de:* T-10
   Canal con frames reducidos, features y estado a ~10 Hz.
   **Aceptación:** cliente de test recibe estado coherente; backpressure manejado (descarta frames viejos).

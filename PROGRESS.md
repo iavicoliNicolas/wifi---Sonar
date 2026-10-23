@@ -1,7 +1,7 @@
 # PROGRESS
 
 ## Estado actual
-Fase: 2 — Servicio y tiempo real · Última tarea completada: T-10 · Próxima: T-11
+Fase: 2 — Servicio y tiempo real · Última tarea completada: T-11 · Próxima: T-12
 
 ## Inventario del repo (2026-10-22)
 
@@ -113,3 +113,10 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Tests agregados: OpenAPI lista los cuatro caminos; el config rechaza histéresis fuera de rango; calibrar y correr una caminata deja `/status` y `/history` en movimiento.
 - Problemas / deuda: el historial muere con el proceso. `TestClient` avisa que Starlette quiere `httpx2`; los tests pasan con `httpx`.
 - Siguiente paso sugerido: T-11 — WebSocket con descarte de frames viejos.
+
+### 2026-10-23 T-11 — Streaming por WebSocket
+- Qué se hizo: `/ws` reenvía snapshots. `FrameHub` descarta el frame más viejo si la cola está llena. `follow()` arma ~10 muestras por segundo simulado con estado, score y 8 bins de amplitud (D-015).
+- Archivos tocados: `wifi_sonar/api/stream.py`, `wifi_sonar/api/app.py`, `tests/test_stream.py`, `DECISIONS.md`, `DEV_LOOP.md`, `PROGRESS.md`.
+- Tests agregados: la cola de 2 se queda con los dos últimos; el stream de una caminata termina en movimiento; el cliente WebSocket recibe estado, score y amplitudes coherentes.
+- Problemas / deuda: el productor en vivo (hilo que lee la fuente todo el tiempo) llega con el servicio de T-22. Hoy el test empuja los snapshots.
+- Siguiente paso sugerido: T-12 — SQLite para eventos, calibraciones y config.
