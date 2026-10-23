@@ -102,6 +102,13 @@ main {
 
 #zones li { display: flex; gap: 0.4rem; }
 
+#mode-note {
+  margin: 0.2rem 0 0;
+  color: var(--presence);
+  font-family: "Segoe UI", Helvetica, sans-serif;
+  font-size: 0.85rem;
+}
+
 #state {
   margin: 0;
   font-size: clamp(3.2rem, 8vw, 5.6rem);

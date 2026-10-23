@@ -32,6 +32,19 @@ class SonarConfig(BaseModel):
     n_subcarriers: int = Field(default=52, ge=1, le=256)
     fusion: Literal["or", "vote"] = "or"
     zones: list[ZoneSpec] = Field(default_factory=list)
+    mode: Literal["csi", "rssi"] = "csi"
+    rssi_devices: list[str] = Field(default_factory=list)
+
+    @field_validator("rssi_devices")
+    @classmethod
+    def devices_are_known_names(cls, value: list[str]) -> list[str]:
+        cleaned: list[str] = []
+        for item in value:
+            label = item.strip()
+            if not label or label in {"*", "scan", "all"}:
+                raise ValueError("rssi_devices must be names of your own devices")
+            cleaned.append(label[:40])
+        return cleaned
 
     @field_validator("webhook_url")
     @classmethod

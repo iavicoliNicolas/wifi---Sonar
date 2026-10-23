@@ -1,7 +1,7 @@
 # PROGRESS
 
 ## Estado actual
-Fase: 4 — Hardware · Última tarea completada: T-20 · Próxima: T-21
+Fase: 5 — Cierre · Última tarea completada: T-21 · Próxima: T-22
 
 ## Inventario del repo (2026-10-22)
 
@@ -183,3 +183,10 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Tests agregados: una caminata simulada en el living y un pasillo vacío fusionan en movimiento para la casa y vacío para el pasillo; la votación no deja que un solo nodo gane si está en minoría. En el navegador la zona "esta habitación" mostró el mismo estado que la palabra grande.
 - Problemas / deuda: el simulador en vivo sigue siendo un solo nodo (`sim-0`).
 - Siguiente paso sugerido: T-21 — modo RSSI degradado, marcado como sensibilidad baja.
+
+### 2026-10-23 T-21 — Modo RSSI
+- Qué se hizo: un detector grueso mira el RSSI de dispositivos que la persona ya nombró. No escanea la red. Solo dice vacío o movimiento, y el panel muestra "sensibilidad baja" (D-024).
+- Archivos tocados: `wifi_sonar/detect/rssi.py`, `wifi_sonar/runtime.py`, `wifi_sonar/live.py`, `web/index.html`, `web/style.css`, `web/app.js`, `tests/test_rssi.py`, `tests/test_panel.py`, `DECISIONS.md`, `DEV_LOOP.md`, `PROGRESS.md`.
+- Tests agregados: una traza quieta no se mueve y ninguna muestra dice presencia; un balanceo sí es movimiento; el nombre `*` se rechaza. En el navegador, al elegir RSSI apareció el aviso y al volver a CSI se ocultó.
+- Problemas / deuda: sin placa, el modo RSSI en vivo sigue siendo una traza simulada con la etiqueta elegida.
+- Siguiente paso sugerido: T-22 — reconexión, logs, health y recalibración lenta en vacío.

@@ -185,7 +185,16 @@ async function loadConfig() {
   windowInput.value = config.min_motion_s;
   hysteresis.value = config.hysteresis;
   webhook.value = config.webhook_url || "";
+  document.querySelector("#mode").value = config.mode || "csi";
+  document.querySelector("#devices").value = (config.rssi_devices || []).join(", ");
   showConfig();
+  showMode();
+}
+
+function showMode() {
+  const note = document.querySelector("#mode-note");
+  if (!note || !config) return;
+  note.hidden = config.mode !== "rssi";
 }
 
 async function pushConfig() {
@@ -194,6 +203,12 @@ async function pushConfig() {
   config.min_motion_s = Number(windowInput.value);
   config.hysteresis = Number(hysteresis.value);
   config.webhook_url = webhook.value.trim() || null;
+  config.mode = document.querySelector("#mode").value;
+  config.rssi_devices = document
+    .querySelector("#devices")
+    .value.split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
   const response = await fetch("/config", {
     method: "PUT",
     headers: { "content-type": "application/json" },
@@ -205,6 +220,7 @@ async function pushConfig() {
   }
   config = await response.json();
   configNote.textContent = "guardado";
+  showMode();
 }
 
 function scheduleConfig() {
@@ -217,6 +233,8 @@ sensibility.addEventListener("input", scheduleConfig);
 windowInput.addEventListener("input", scheduleConfig);
 hysteresis.addEventListener("input", scheduleConfig);
 webhook.addEventListener("change", scheduleConfig);
+document.querySelector("#mode").addEventListener("change", scheduleConfig);
+document.querySelector("#devices").addEventListener("change", scheduleConfig);
 notifyBox.addEventListener("change", () => {
   if (notifyBox.checked && typeof Notification !== "undefined" && Notification.permission === "default") {
     Notification.requestPermission();

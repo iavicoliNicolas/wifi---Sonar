@@ -5,6 +5,7 @@ import threading
 from fastapi import FastAPI
 
 from wifi_sonar.api.stream import follow
+from wifi_sonar.detect.rssi import detect_rssi, simulated_rssi
 from wifi_sonar.detect.zones import zone_states
 from wifi_sonar.sources.simulated import ScenarioEvent, SimulatedSource
 
@@ -31,15 +32,26 @@ def live_loop(app: FastAPI, stop: threading.Event, *, pace_s: float = 0.1) -> No
             stop.wait(0.2)
             continue
         token = state.config.model_dump_json()
-        source = scenario(seed, state.config.n_subcarriers)
         seed += 1
-        for snapshot in follow(state, source, hz=10.0):
+        if state.config.mode == "rssi":
+            stream = _rssi_snapshots(state.config.rssi_devices, seed)
+        else:
+            source = scenario(seed, state.config.n_subcarriers)
+            stream = follow(state, source, hz=10.0)
+        for snapshot in stream:
             if stop.is_set() or state.paused or state.config.model_dump_json() != token:
                 break
             snapshot["zones"] = _zones(str(snapshot["state"]), state.config)
             app.state.hub.publish(snapshot)
             if pace_s > 0:
                 stop.wait(pace_s)
+
+
+def _rssi_snapshots(devices: list[str], seed: int) -> list[dict[str, object]]:
+    device_id = devices[0] if devices else "ap-propio"
+    # A scripted swing stands in for someone walking. The label is the operator's.
+    points = simulated_rssi(seed, 24.0, device_id=device_id, swing=True)
+    return detect_rssi(points)
 
 
 def _zones(sample_state: str, config: object) -> list[dict[str, str]]:

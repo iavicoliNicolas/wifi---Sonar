@@ -15,6 +15,7 @@
     <main>
       <p class="kicker">esta habitación</p>
       <ul id="zones"></ul>
+      <p id="mode-note" hidden>modo RSSI · sensibilidad baja. No distingue a alguien quieto.</p>
       <h1 id="state" data-state="empty">vacío</h1>
       <p id="score" class="score">score 0.00</p>
       <section class="charts">
@@ -33,6 +34,13 @@
       </section>
       <section class="settings" id="settings">
         <h2>ajustes</h2>
+        <label>fuente
+          <select id="mode">
+            <option value="csi">CSI</option>
+            <option value="rssi">RSSI</option>
+          </select>
+        </label>
+        <label>dispositivos propios <input id="devices" type="text" placeholder="ap-living, tele" /></label>
         <label>sensibilidad (k) <input id="sensibility" type="range" min="2" max="12" step="0.5" /> <output id="sensibility-out"></output></label>
         <label>ventana (s) <input id="window" type="range" min="0.2" max="3" step="0.1" /> <output id="window-out"></output></label>
         <label>histéresis <input id="hysteresis" type="range" min="0" max="0.9" step="0.05" /> <output id="hysteresis-out"></output></label>

@@ -137,3 +137,9 @@ Contexto: T-20 pide varios receptores, un estado por nodo, fusión OR o votació
 Opciones consideradas: un mapa geométrico, o una lista de nombres con los nodos que miran esa habitación.
 Decisión: cada zona es un nombre y una lista de `node_id`. OR se queda con el estado más activo (movimiento > presencia > vacío). La votación es por mayoría y, si empatan, gana el más activo. Sin zonas configuradas, el panel muestra "esta habitación" con el estado del simulador.
 Consecuencias: no hay plano de la casa. Un nodo que no reporta no vota.
+
+### D-024 — RSSI solo de equipos nombrados (2026-10-23)
+Contexto: T-21 pide un modo degradado con RSSI, por ejemplo de dispositivos conocidos de la LAN, con la sensibilidad marcada como baja. D-003 prohíbe mirar redes ajenas.
+Opciones consideradas: descubrir equipos en la red, o aceptar solo nombres que escribe quien opera el panel.
+Decisión: `rssi_devices` es una lista de etiquetas. `*`, `scan` y `all` se rechazan. El detector usa la variación de RSSI en 2 s y un salto de 4 dB: vacío o movimiento, nunca presencia quieta. El panel lo dice: "modo RSSI · sensibilidad baja".
+Consecuencias: no hay un escaneo de vecinos. Sin hardware, el simulador genera la traza bajo la etiqueta elegida.
