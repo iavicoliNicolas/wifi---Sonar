@@ -1,0 +1,81 @@
+:root {
+  color-scheme: dark;
+  --bg: #14140f;
+  --ink: #f3efe2;
+  --muted: #9a947f;
+  --line: #2a2a22;
+  --empty: #c8c2b0;
+  --presence: #e2a23a;
+  --motion: #ef6434;
+  --live: #d6f25c;
+  font-family: "Iowan Old Style", Palatino, "Palatino Linotype", Georgia, serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(1200px 500px at 10% -10%, #242418 0%, transparent 55%),
+    var(--bg);
+  color: var(--ink);
+}
+
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.mark {
+  margin: 0;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+}
+
+.link {
+  margin: 0;
+  font-family: "Segoe UI", Helvetica, sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.link[data-state="on"] { color: var(--live); }
+.link[data-state="off"] { color: #c45b4a; }
+
+main {
+  padding: 12vh 1.5rem 2rem;
+}
+
+.kicker {
+  margin: 0 0 0.5rem;
+  color: var(--muted);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+}
+
+#state {
+  margin: 0;
+  font-size: clamp(4.5rem, 16vw, 11rem);
+  font-weight: 500;
+  line-height: 0.9;
+  letter-spacing: -0.04em;
+}
+
+#state[data-state="empty"] { color: var(--empty); }
+#state[data-state="presence"] { color: var(--presence); }
+#state[data-state="motion"] { color: var(--motion); }
+
+.score {
+  margin-top: 1.5rem;
+  color: var(--muted);
+  font-family: "Segoe UI", Helvetica, sans-serif;
+  font-size: 0.95rem;
+}

@@ -1,10 +1,16 @@
 """Local HTTP API. Nothing here leaves the machine."""
 
+from pathlib import Path
+
 from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from wifi_sonar.api.stream import FrameHub
 from wifi_sonar.runtime import SonarConfig, SonarState
+
+WEB_ROOT = Path(__file__).resolve().parents[2] / "web"
 
 
 class CalibrateBody(BaseModel):
@@ -49,6 +55,12 @@ def create_app(state: SonarState | None = None) -> FastAPI:
     @app.get("/history")
     def history() -> list[dict[str, object]]:
         return list(app.state.sonar.history)
+
+    @app.get("/")
+    def panel() -> FileResponse:
+        return FileResponse(WEB_ROOT / "index.html")
+
+    app.mount("/static", StaticFiles(directory=WEB_ROOT), name="static")
 
     @app.websocket("/ws")
     async def websocket_endpoint(socket: WebSocket) -> None:

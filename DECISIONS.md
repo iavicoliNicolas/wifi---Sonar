@@ -101,3 +101,9 @@ Contexto: T-13 pide grabar CSI crudo y etiquetas manuales, y que el replay dé e
 Opciones consideradas: meter la etiqueta en cada frame, o un sidecar.
 Decisión: el crudo reusa el JSONL de T-03. Las etiquetas van en `nombre.jsonl.labels.json` como lista de `{kind, start_s, duration_s}`. El detector corre sobre `preprocess` + features, igual en vivo y en `ReplaySource`.
 Consecuencias: no hay un formato nuevo de frames. Una etiqueta no identifica personas; dice qué pasó en el escenario (caminata, quietud).
+
+### D-018 — Panel estático y websockets (2026-10-23)
+Contexto: T-14 pide el shell del panel, tema oscuro, estado de conexión y el indicador vacío / presencia / movimiento, conectado al simulador por WebSocket. D-001 reservó un panel sin framework.
+Opciones consideradas: un framework de UI, o HTML/CSS/JS estático.
+Decisión: archivos en `web/` servidos por FastAPI. El proceso `python -m wifi_sonar` publica el simulador a 10 Hz. Uvicorn necesita el paquete `websockets` para aceptar `/ws`; el `TestClient` no lo usa, por eso el hueco apareció recién al abrir el navegador.
+Consecuencias: no hay Node ni bundler. `make serve` levanta el panel en el puerto 8000.

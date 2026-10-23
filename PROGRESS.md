@@ -1,7 +1,7 @@
 # PROGRESS
 
 ## Estado actual
-Fase: 2 — Servicio y tiempo real · Última tarea completada: T-13 · Próxima: T-14
+Fase: 3 — Panel · Última tarea completada: T-14 · Próxima: T-15
 
 ## Inventario del repo (2026-10-22)
 
@@ -134,3 +134,10 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Tests agregados: una caminata grabada se reproduce con la misma secuencia de estados y las etiquetas vuelven iguales.
 - Problemas / deuda: no hay botón de grabar en el panel todavía.
 - Siguiente paso sugerido: T-14 — shell del panel, tema oscuro, conectado al WebSocket.
+
+### 2026-10-23 T-14 — Shell del panel
+- Qué se hizo: página estática en tema oscuro con el estado grande (vacío / presencia / movimiento) y el texto de conexión. `python -m wifi_sonar` corre el simulador y lo publica por `/ws`. Se agregó `websockets` porque uvicorn no acepta el socket sin esa librería (D-018).
+- Archivos tocados: `web/index.html`, `web/style.css`, `web/app.js`, `wifi_sonar/live.py`, `wifi_sonar/__main__.py`, `wifi_sonar/api/app.py`, `tests/test_panel.py`, `Makefile`, `pyproject.toml`, `DECISIONS.md`, `DEV_LOOP.md`, `PROGRESS.md`.
+- Tests agregados: `GET /` sirve el shell y el CSS declara el color de movimiento. En el navegador, con el socket conectado, el indicador pasó por vacío, presencia y movimiento.
+- Problemas / deuda: todavía no hay gráficos ni calibración en la página.
+- Siguiente paso sugerido: T-15 — heatmap, score y línea de tiempo.

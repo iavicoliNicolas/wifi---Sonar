@@ -25,3 +25,6 @@ format: $(BIN)/pytest
 
 eval: $(BIN)/pytest
 	$(BIN)/python -m wifi_sonar.eval
+
+serve: $(BIN)/pytest
+	$(BIN)/python -m wifi_sonar
