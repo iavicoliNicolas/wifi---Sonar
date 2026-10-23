@@ -1,7 +1,7 @@
 # PROGRESS
 
 ## Estado actual
-Fase: 1 — Núcleo de señal · Última tarea completada: T-09 · Próxima: T-10
+Fase: 2 — Servicio y tiempo real · Última tarea completada: T-10 · Próxima: T-11
 
 ## Inventario del repo (2026-10-22)
 

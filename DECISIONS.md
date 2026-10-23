@@ -77,3 +77,9 @@ Contexto: T-09 pide `make eval` con precisión, recall y latencia sobre escenari
 Opciones consideradas: una sola traza mezclada, o una traza por clase.
 Decisión: caminatas y quietudes se evalúan en trazas separadas. Mezclarlas en una sola normalización (la mediana de toda la captura) aplasta la quietud después de una caminata y genera falsos positivos de presencia. La latencia es el promedio hasta la primera muestra correcta, con 1,5 s de gracia para contar el acierto.
 Consecuencias: `docs/eval.md` se regenera con `make eval`. No es una métrica sobre CSI real.
+
+### D-014 — API con FastAPI (2026-10-23)
+Contexto: T-10 pide `GET /status`, `POST /calibrate`, `GET /config`, `PUT /config`, `GET /history` y documentación OpenAPI. D-001 había reservado FastAPI para esta tarea.
+Opciones consideradas: seguir sin framework y servir JSON a mano, o sumar FastAPI.
+Decisión: FastAPI + uvicorn. La sesión vive en `SonarState` (memoria, por ahora). `httpx` queda en el extra `dev` porque el `TestClient` lo necesita. Nada de la API sale de la máquina.
+Consecuencias: OpenAPI queda en `/openapi.json`. La persistencia llega en T-12; hasta entonces el historial es el proceso.
