@@ -53,3 +53,9 @@ Contexto: T-05 pide ventanas (ejemplo 2 s, paso 0,5 s), varianza, media de difer
 Opciones consideradas: SciPy `welch`, o un periodograma con `rfft` y ventana de Hann.
 Decisión: la serie es la media de subportadoras. Varianza, MAD y energía de movimiento salen de la ventana de 2 s. La respiración usa 8 s, porque en 2 s el salto de frecuencia es 0,5 Hz y esa banda no se resuelve. El espectro es un periodograma normalizado por la energía de la ventana, no Welch: no hace falta SciPy para una senoide conocida.
 Consecuencias: una senoide de 2 Hz carga la banda de movimiento; una de 0,25 Hz carga la de respiración. SciPy sigue afuera.
+
+### D-010 — Calibración (2026-10-23)
+Contexto: T-06 pide capturar N segundos de cuarto vacío, guardar media y desvío de las features y umbrales media + k·σ.
+Opciones consideradas: k=3 (más sensible, más falsos positivos en 10 min) o k=6.
+Decisión: `calibrate(source, seconds, k=6)` observa la traza, la preprocesa y resume las cuatro features. El umbral es media + 6·σ. Se persiste en JSON.
+Consecuencias: con el simulador, la caminata queda muy por encima del umbral de movimiento y el cuarto vacío no. k se puede cambiar cuando haya grabaciones reales.

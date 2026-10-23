@@ -1,7 +1,7 @@
 # PROGRESS
 
 ## Estado actual
-Fase: 1 — Núcleo de señal · Última tarea completada: T-05 · Próxima: T-06
+Fase: 1 — Núcleo de señal · Última tarea completada: T-06 · Próxima: T-07
 
 ## Inventario del repo (2026-10-22)
 
@@ -78,3 +78,10 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Tests agregados: una constante da varianza 0; una alternancia 0/1 da varianza 0,25; 2 Hz domina movimiento y 0,25 Hz domina respiración; la caminata del simulador sube la energía de movimiento frente al cuarto vacío.
 - Problemas / deuda: no hay PCA. No hizo falta para separar las bandas.
 - Siguiente paso sugerido: T-06 — calibración de línea base con el cuarto vacío.
+
+### 2026-10-23 T-06 — Calibración de línea base
+- Qué se hizo: `calibrate(source, seconds)` resume media, desvío y umbral media + k·σ de las cuatro features. `save_calibration` / `load_calibration` persisten JSON (D-010). `observe()` es el camino común fuente → preprocess → features.
+- Archivos tocados: `wifi_sonar/detect/calibrate.py`, `wifi_sonar/detect/observe.py`, `wifi_sonar/detect/__init__.py`, `tests/test_calibrate.py`, `DECISIONS.md`, `DEV_LOOP.md`, `PROGRESS.md`.
+- Tests agregados: umbrales por encima de la media, ida y vuelta por archivo, y la misma semilla produce la misma calibración.
+- Problemas / deuda: asume cuarto vacío durante la captura. No hay todavía asistente en el panel (T-16).
+- Siguiente paso sugerido: T-07 — detector de movimiento con histéresis.

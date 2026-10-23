@@ -121,7 +121,7 @@ Formato: `[ ] ID — Título` · *Depende de* · **Aceptación**
   Ventanas deslizantes (ej. 2 s, paso 0.5 s). Features: varianza, media absoluta de diferencias, energía en bandas (movimiento ~0.5-5 Hz, respiración ~0.1-0.5 Hz) vía FFT/Welch, PCA opcional.
   **Aceptación:** features con valores esperados sobre señales sintéticas conocidas.
 
-- [ ] **T-06 — Calibración de línea base**
+- [x] **T-06 — Calibración de línea base**
   *Depende de:* T-05
   Capturar N segundos con el ambiente vacío; guardar media y desvío de features; umbrales derivados (ej. media + k·σ).
   **Aceptación:** función `calibrate(source, seconds)` + persistencia de la calibración; test con simulador.
