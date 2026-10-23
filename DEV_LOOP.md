@@ -226,12 +226,12 @@ Formato: `[ ] ID — Título` · *Depende de* · **Aceptación**
 
 ### Fase 6 — Deuda sin hardware
 
-- [ ] **T-25 — Favicon**
+- [x] **T-25 — Favicon**
   *Depende de:* T-14
   El navegador deja de pedir `/favicon.ico` en vano.
   **Aceptación:** `GET /favicon.ico` responde 200 con una imagen.
 
-- [ ] **T-26 — Reloj de pared en el historial en vivo**
+- [x] **T-26 — Reloj de pared en el historial en vivo**
   *Depende de:* T-12, T-14
   Los eventos que publica el simulador del panel se guardan con hora real, así la retención puede borrarlos. El gráfico sigue mostrando el tiempo de la traza.
   **Aceptación:** un test fija el reloj y el historial usa ese instante; el snapshot del socket conserva el tiempo de la traza.

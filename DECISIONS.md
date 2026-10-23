@@ -155,3 +155,9 @@ Contexto: T-23 pide Dockerfile o compose para una Raspberry Pi o una mini PC, y 
 Opciones consideradas: una unidad systemd, o una imagen Python.
 Decisión: imagen `python:3.12-slim`, `pip install` del paquete y `python -m wifi_sonar`. Compose publica el puerto 8000. `web/` se copia al lado del paquete porque el panel lo busca ahí, no dentro del wheel.
 Consecuencias: no hace falta un venv en la máquina de destino. Quien ya corre el panel en el puerto 8000 tiene que pararlo antes.
+
+### D-027 — Historial en vivo con hora de reloj (2026-10-23)
+Contexto: la retención compara `ts` con un reloj. El simulador numera la traza desde cero, así que esos eventos no envejecen.
+Opciones consideradas: cambiar también el gráfico, o separar el tiempo que se muestra del que se guarda.
+Decisión: `follow(..., stored_clock=time.time)` escribe la hora real en el historial. El campo `ts` del WebSocket y de `latest` sigue siendo el segundo de la traza.
+Consecuencias: un evento del panel se puede purgar a los 7 días. El gráfico no salta a un número de Unix.

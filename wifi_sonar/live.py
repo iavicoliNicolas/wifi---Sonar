@@ -1,6 +1,7 @@
 """Background simulator that publishes snapshots for the local panel."""
 
 import threading
+import time
 
 from fastapi import FastAPI
 
@@ -37,7 +38,7 @@ def live_loop(app: FastAPI, stop: threading.Event, *, pace_s: float = 0.1) -> No
             stream = _rssi_snapshots(state.config.rssi_devices, seed)
         else:
             source = scenario(seed, state.config.n_subcarriers)
-            stream = follow(state, source, hz=10.0)
+            stream = follow(state, source, hz=10.0, stored_clock=time.time)
         for snapshot in stream:
             if stop.is_set() or state.paused or state.config.model_dump_json() != token:
                 break

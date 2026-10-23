@@ -155,7 +155,8 @@ class SonarState:
             sample = detector.update(features)
             self._push(sample.state, sample.motion.score, sample.ts)
 
-    def _push(self, state: str, score: float, ts: float) -> None:
+    def _push(self, state: str, score: float, ts: float, *, stored_ts: float | None = None) -> None:
+        recorded = ts if stored_ts is None else stored_ts
         self.latest = {
             "state": state,
             "score": score,
@@ -164,7 +165,7 @@ class SonarState:
             "calibrated": self.calibration is not None,
         }
         if not self.history or self.history[-1]["state"] != state:
-            event = {"ts": ts, "state": state, "score": score}
+            event = {"ts": recorded, "state": state, "score": score}
             self.history.append(event)
             if self.store is not None:
                 self.store.add_event(ts, state, score)

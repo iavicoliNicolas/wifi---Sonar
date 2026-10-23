@@ -1,7 +1,7 @@
 """WebSocket fan-out. A slow client loses old snapshots instead of blocking the sensor."""
 
 import asyncio
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 
 import numpy as np
 
@@ -63,8 +63,13 @@ def follow(
     *,
     hz: float = 10.0,
     bins: int = 8,
+    stored_clock: Callable[[], float] | None = None,
 ) -> list[dict[str, object]]:
-    """Snapshots at ``hz`` over simulated time, each with state and a short amplitude vector."""
+    """Snapshots at ``hz`` over simulated time, each with state and a short amplitude vector.
+
+    ``stored_clock`` stamps the history with wall time. The snapshot ``ts`` stays
+    on the trace so the panel timeline does not jump to a Unix timestamp.
+    """
     if hz <= 0:
         raise ValueError("hz must be positive")
     frames = [frame for frame in source.frames()]
@@ -81,7 +86,7 @@ def follow(
     )
     windows = extract_features(preprocess(frames))
     decisions = [(item.timestamp, detector.update(item)) for item in windows]
-    return list(_snapshots(state, frames, decisions, hz=hz, bins=bins))
+    return list(_snapshots(state, frames, decisions, hz=hz, bins=bins, stored_clock=stored_clock))
 
 
 def _snapshots(
@@ -91,6 +96,7 @@ def _snapshots(
     *,
     hz: float,
     bins: int,
+    stored_clock: Callable[[], float] | None = None,
 ) -> Iterator[dict[str, object]]:
     period = 1.0 / hz
     cursor = frames[0].timestamp
@@ -107,7 +113,12 @@ def _snapshots(
         frame = frames[frame_index]
         sample_state = "empty" if current is None else current.state
         score = 0.0 if current is None else current.motion.score
-        state._push(sample_state, score, cursor)
+        state._push(
+            sample_state,
+            score,
+            cursor,
+            stored_ts=None if stored_clock is None else stored_clock(),
+        )
         yield {
             "ts": cursor,
             "state": sample_state,

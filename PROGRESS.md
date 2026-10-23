@@ -1,7 +1,7 @@
 # PROGRESS
 
 ## Estado actual
-Fase: 5 — Cierre · Última tarea completada: T-24 · Próxima: ninguna (T-00…T-24 cerradas)
+Fase: 6 — Deuda sin hardware · Última tarea completada: T-26 · Próxima: T-27
 
 ## Inventario del repo (2026-10-22)
 
@@ -211,3 +211,10 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Tests agregados: ninguno nuevo. `make test` y `make lint` siguen en verde, y el contenedor de T-23 responde en el puerto 8000.
 - Problemas / deuda: la captura de calibración sigue siendo el simulador vacío hasta que haya una placa. El favicon sigue en 404.
 - Siguiente paso sugerido: ninguno del backlog. El próximo trabajo real es conectar un ESP32 propio siguiendo `docs/hardware.md`.
+
+### 2026-10-23 T-25 — Favicon
+- Qué se hizo: `/favicon.ico` sirve un PNG de 16×16 y el HTML lo declara. El navegador deja de recibir 404.
+- Archivos tocados: `web/favicon.png`, `web/index.html`, `wifi_sonar/api/app.py`, `tests/test_panel.py`, `DEV_LOOP.md`, `PROGRESS.md`.
+- Tests agregados: el icono responde 200, es un PNG y la página lo enlaza.
+- Problemas / deuda: el historial en vivo sigue con el tiempo de la traza, que empieza en cero.
+- Siguiente paso sugerido: T-26 — guardar los eventos en vivo con hora de reloj.

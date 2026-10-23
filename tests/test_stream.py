@@ -36,6 +36,22 @@ def test_follow_emits_about_ten_hertz_and_ends_in_motion() -> None:
     assert snapshots[-1]["state"] == "motion"
 
 
+def test_follow_stores_wall_time_and_keeps_trace_time_on_the_snapshot() -> None:
+    state = SonarState(config=SonarConfig(n_subcarriers=8))
+    state.calibrate(8)
+    source = SimulatedSource(
+        seed=3,
+        duration_s=4.0,
+        n_subcarriers=8,
+        events=(ScenarioEvent("walk", 0.0, 4.0),),
+    )
+    wall = 1_700_000_000.0
+    snapshots = follow(state, source, hz=10.0, stored_clock=lambda: wall)
+    assert snapshots[0]["ts"] < 10
+    assert state.history[0]["ts"] == wall
+    assert state.latest["ts"] == snapshots[-1]["ts"]
+
+
 def test_websocket_receives_a_coherent_state() -> None:
     app = create_app(SonarState(config=SonarConfig(n_subcarriers=8)))
     client = TestClient(app)
