@@ -20,7 +20,7 @@ def scenario(seed: int, n_subcarriers: int) -> SimulatedSource:
     )
 
 
-def live_loop(app: FastAPI, stop: threading.Event) -> None:
+def live_loop(app: FastAPI, stop: threading.Event, *, pace_s: float = 0.1) -> None:
     state = app.state.sonar
     if state.calibration is None:
         state.calibrate(8.0)
@@ -29,13 +29,15 @@ def live_loop(app: FastAPI, stop: threading.Event) -> None:
         if state.paused:
             stop.wait(0.2)
             continue
+        token = state.config.model_dump_json()
         source = scenario(seed, state.config.n_subcarriers)
         seed += 1
         for snapshot in follow(state, source, hz=10.0):
-            if stop.is_set() or state.paused:
+            if stop.is_set() or state.paused or state.config.model_dump_json() != token:
                 break
             app.state.hub.publish(snapshot)
-            stop.wait(0.1)
+            if pace_s > 0:
+                stop.wait(pace_s)
 
 
 def start_live(app: FastAPI) -> threading.Event:

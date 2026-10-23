@@ -1,9 +1,13 @@
 """Sensing session shared by the HTTP API. Optional SQLite keeps it across restarts."""
 
+import json
+import urllib.error
+import urllib.request
 from dataclasses import dataclass, field
 from typing import Any
+from urllib.parse import urlparse
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from wifi_sonar.detect.calibrate import Calibration, calibrate
 from wifi_sonar.detect.observe import observe
@@ -21,6 +25,17 @@ class SonarConfig(BaseModel):
     webhook_url: str | None = None
     sample_rate_hz: float = Field(default=50.0, gt=0.0)
     n_subcarriers: int = Field(default=52, ge=1, le=256)
+
+    @field_validator("webhook_url")
+    @classmethod
+    def webhook_stays_on_this_machine(cls, value: str | None) -> str | None:
+        if value is None or value == "":
+            return None
+        parsed = urlparse(value)
+        host = parsed.hostname
+        if parsed.scheme != "http" or host not in {"127.0.0.1", "localhost"}:
+            raise ValueError("webhook_url must be an http URL on 127.0.0.1 or localhost")
+        return value
 
 
 @dataclass
@@ -107,9 +122,28 @@ class SonarState:
             "calibrated": self.calibration is not None,
         }
         if not self.history or self.history[-1]["state"] != state:
-            self.history.append({"ts": ts, "state": state, "score": score})
+            event = {"ts": ts, "state": state, "score": score}
+            self.history.append(event)
             if self.store is not None:
                 self.store.add_event(ts, state, score)
+            self._notify(event)
+
+    def _notify(self, event: dict[str, object]) -> None:
+        url = self.config.webhook_url
+        if not url:
+            return
+        payload = json.dumps(event).encode("utf-8")
+        request = urllib.request.Request(
+            url,
+            data=payload,
+            headers={"content-type": "application/json"},
+            method="POST",
+        )
+        try:
+            with urllib.request.urlopen(request, timeout=0.5) as response:
+                response.read()
+        except (urllib.error.URLError, TimeoutError, OSError):
+            return
 
     def _now(self) -> float:
         if self.history:

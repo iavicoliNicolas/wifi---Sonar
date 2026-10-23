@@ -22,3 +22,8 @@ def test_panel_shell_is_served() -> None:
     assert 'id="timeline"' in page.text
     assert 'id="cal-start"' in page.text
     assert "salí de la habitación" in script.text
+    assert 'id="sensibility"' in page.text
+    assert 'id="window"' in page.text
+    assert 'id="hysteresis"' in page.text
+    assert 'id="notify"' in page.text
+    assert "Notification" in script.text

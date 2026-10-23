@@ -119,3 +119,9 @@ Contexto: T-16 pide un asistente en el panel: salir de la habitación, cuenta re
 Opciones consideradas: calibrar con la traza que está publicando el simulador en vivo, o seguir usando la captura vacía de `SonarState.calibrate`.
 Decisión: el botón espera 5 segundos y llama a `POST /calibrate`, que hoy graba un cuarto vacío simulado (semilla 1). La calidad sale de la energía de movimiento: menos de 8 s es `corta`; un desvío relativo mayor a 0,8 es `inestable`; una media mayor a 0,01 es `alta`; si no, `buena`.
 Consecuencias: el flujo se prueba sin hardware. La cuenta regresiva es para la persona; la captura todavía no es el WiFi real. Eso cambia cuando exista una fuente de hardware.
+
+### D-021 — Ajustes locales y webhook de loopback (2026-10-23)
+Contexto: T-17 pide sliders de sensibilidad, ventana e histéresis que apliquen en caliente y persistan, más alertas opcionales (notificación del navegador y webhook local).
+Opciones consideradas: un webhook a cualquier URL, o limitarlo a esta máquina.
+Decisión: `python -m wifi_sonar` abre SQLite en `data/sonar.sqlite` (o `WIFI_SONAR_DB`). Sensibilidad es k, la ventana es `min_motion_s` y la histéresis es la del detector. El lazo en vivo abandona la traza en curso en cuanto el JSON del config cambia. El webhook solo acepta `http://127.0.0.1` o `http://localhost`. La notificación es la API del navegador y nace apagada.
+Consecuencias: no hay telemetría. Un webhook caído no tira el detector; el intento corta a los 0,5 s.

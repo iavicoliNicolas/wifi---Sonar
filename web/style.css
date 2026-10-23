@@ -121,12 +121,35 @@ canvas {
   color: var(--muted);
 }
 
+.settings,
 .wizard {
   max-width: 760px;
   margin-top: 1.5rem;
   font-family: "Segoe UI", Helvetica, sans-serif;
 }
 
+.settings label,
+.wizard label {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0.45rem 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.settings input[type="range"] { flex: 1; }
+.settings input[type="url"] {
+  flex: 1;
+  background: #1c1c16;
+  color: var(--ink);
+  border: 1px solid var(--line);
+  padding: 0.35rem 0.5rem;
+}
+
+#config-note { min-height: 1rem; color: var(--live); font-size: 0.8rem; }
+
+.settings h2,
 .wizard h2 {
   margin: 0 0 0.4rem;
   font-size: 0.72rem;

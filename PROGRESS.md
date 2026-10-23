@@ -1,7 +1,7 @@
 # PROGRESS
 
 ## Estado actual
-Fase: 3 — Panel · Última tarea completada: T-16 · Próxima: T-17
+Fase: 3 — Panel · Última tarea completada: T-17 · Próxima: T-18
 
 ## Inventario del repo (2026-10-22)
 
@@ -155,3 +155,10 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Tests agregados: las cuatro etiquetas de calidad; `/calibrate` de un cuarto vacío responde `buena`. En el navegador el botón mostró la cuenta regresiva y el texto "buena — el cuarto vacío quedó estable".
 - Problemas / deuda: la captura sigue siendo el simulador vacío (semilla 1), no la fuente en vivo. Cuando haya hardware, el mismo botón tiene que grabar esa fuente.
 - Siguiente paso sugerido: T-17 — sliders de sensibilidad, ventana e histéresis, con alertas opcionales.
+
+### 2026-10-23 T-17 — Configuración y alertas
+- Qué se hizo: el panel tiene sliders de sensibilidad (k), ventana de movimiento e histéresis. Se guardan en SQLite (`data/sonar.sqlite`) y el simulador en vivo corta la traza actual cuando el config cambia (D-021). Un cambio de estado puede avisar con una notificación del navegador o un webhook que solo acepta `http://127.0.0.1` o `localhost`.
+- Archivos tocados: `wifi_sonar/runtime.py`, `wifi_sonar/live.py`, `wifi_sonar/__main__.py`, `web/index.html`, `web/style.css`, `web/app.js`, `tests/test_alerts.py`, `tests/test_panel.py`, `.gitignore`, `DECISIONS.md`, `DEV_LOOP.md`, `PROGRESS.md`, `README.md`.
+- Tests agregados: un webhook externo se rechaza; un cambio a movimiento hace POST al loopback; subir la ventana a 30 s evita que una caminata de 6 s cuente como movimiento. En el navegador, histéresis 0 y el webhook quedaron después de recargar, y también en el archivo SQLite.
+- Problemas / deuda: la notificación del navegador depende del permiso del usuario. k nuevo se usa en la próxima calibración, no reescribe umbrales ya guardados.
+- Siguiente paso sugerido: T-18 — aviso de sensado activo, pausa y borrado del historial.

@@ -26,6 +26,17 @@ function apply(payload) {
   scores.push(score);
   if (scores.length > SCORE_CAP) scores.shift();
   if (payload.state !== lastState) {
+    const notify = document.querySelector("#notify");
+    if (
+      notify &&
+      notify.checked &&
+      lastState &&
+      (payload.state === "motion" || payload.state === "presence") &&
+      typeof Notification !== "undefined" &&
+      Notification.permission === "granted"
+    ) {
+      new Notification("wifi sonar", { body: name });
+    }
     lastState = payload.state;
     const item = document.createElement("li");
     item.textContent = name;
@@ -141,4 +152,64 @@ calButton.addEventListener("click", () => {
   calibrateRoom();
 });
 
+const sensibility = document.querySelector("#sensibility");
+const windowInput = document.querySelector("#window");
+const hysteresis = document.querySelector("#hysteresis");
+const webhook = document.querySelector("#webhook");
+const notifyBox = document.querySelector("#notify");
+const configNote = document.querySelector("#config-note");
+let config = null;
+let pushTimer = 0;
+
+function showConfig() {
+  document.querySelector("#sensibility-out").textContent = Number(sensibility.value).toFixed(1);
+  document.querySelector("#window-out").textContent = Number(windowInput.value).toFixed(1);
+  document.querySelector("#hysteresis-out").textContent = Number(hysteresis.value).toFixed(2);
+}
+
+async function loadConfig() {
+  config = await (await fetch("/config")).json();
+  sensibility.value = config.k;
+  windowInput.value = config.min_motion_s;
+  hysteresis.value = config.hysteresis;
+  webhook.value = config.webhook_url || "";
+  showConfig();
+}
+
+async function pushConfig() {
+  if (!config) return;
+  config.k = Number(sensibility.value);
+  config.min_motion_s = Number(windowInput.value);
+  config.hysteresis = Number(hysteresis.value);
+  config.webhook_url = webhook.value.trim() || null;
+  const response = await fetch("/config", {
+    method: "PUT",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(config),
+  });
+  if (!response.ok) {
+    configNote.textContent = "no se pudo guardar";
+    return;
+  }
+  config = await response.json();
+  configNote.textContent = "guardado";
+}
+
+function scheduleConfig() {
+  showConfig();
+  clearTimeout(pushTimer);
+  pushTimer = setTimeout(pushConfig, 200);
+}
+
+sensibility.addEventListener("input", scheduleConfig);
+windowInput.addEventListener("input", scheduleConfig);
+hysteresis.addEventListener("input", scheduleConfig);
+webhook.addEventListener("change", scheduleConfig);
+notifyBox.addEventListener("change", () => {
+  if (notifyBox.checked && typeof Notification !== "undefined" && Notification.permission === "default") {
+    Notification.requestPermission();
+  }
+});
+
+loadConfig();
 connect();
