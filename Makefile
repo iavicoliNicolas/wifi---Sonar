@@ -10,6 +10,7 @@ $(BIN)/pytest: pyproject.toml
 	$(PYTHON) -m venv $(VENV)
 	$(BIN)/python -m pip install -U pip
 	$(BIN)/python -m pip install -e ".[dev]"
+	touch $(BIN)/pytest
 
 test: $(BIN)/pytest
 	$(BIN)/python -m pytest

@@ -1,7 +1,7 @@
 # PROGRESS
 
 ## Estado actual
-Fase: 0 — Cimientos · Última tarea completada: T-01 · Próxima: T-02
+Fase: 0 — Cimientos · Última tarea completada: T-02 · Próxima: T-03
 
 ## Inventario del repo (2026-10-22)
 
@@ -50,3 +50,10 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Tests agregados: `tests/test_package.py` comprueba que el paquete importa y que `__version__` es `0.0.1`.
 - Problemas / deuda: `.env` todavía no lo lee nadie. El README de uso completo sigue siendo T-24.
 - Siguiente paso sugerido: T-02 — `CSIFrame` y `SimulatedSource` determinista por seed, con un test de que los eventos cambian la varianza esperada.
+
+### 2026-10-23 T-02 — Modelo de datos y simulador de CSI
+- Qué se hizo: `CSIFrame` (timestamp, rssi, amplitudes, phases, node_id) y `SimulatedSource` determinista por seed. ~52 subportadoras, ruido gaussiano, deriva lenta y eventos `enter` / `walk` / `still` / `leave`. NumPy queda como dependencia de arreglos (D-006). `make` toca `.venv/bin/pytest` después de instalar, así un cambio de `pyproject.toml` no deja el target vencido para siempre.
+- Archivos tocados: `wifi_sonar/sources/frame.py`, `wifi_sonar/sources/simulated.py`, `wifi_sonar/sources/__init__.py`, `wifi_sonar/__init__.py`, `tests/test_simulated.py`, `pyproject.toml`, `DECISIONS.md`, `DEV_LOOP.md`, `PROGRESS.md`.
+- Tests agregados: forma del frame, repetibilidad con la misma semilla, y varianza vacío < quietud < caminata, además de un tramo de caminata más ruidoso que el cuarto vacío que lo rodea.
+- Problemas / deuda: el simulador no modela multitrayecto geométrico; alcanza para el pipeline sintético. SciPy sigue afuera.
+- Siguiente paso sugerido: T-03 — interfaz `CSISource` y `ReplaySource` desde archivo.

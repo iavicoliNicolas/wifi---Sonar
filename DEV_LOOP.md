@@ -99,7 +99,7 @@ Formato: `[ ] ID — Título` · *Depende de* · **Aceptación**
   Gestor de dependencias, `Makefile` o scripts (`dev`, `test`, `lint`), `.gitignore`, `.env.example`, pre-commit opcional.
   **Aceptación:** clon limpio + un comando = tests corriendo.
 
-- [ ] **T-02 — Modelo de datos y simulador de CSI**
+- [x] **T-02 — Modelo de datos y simulador de CSI**
   *Depende de:* T-01
   Definir `CSIFrame`. Implementar `SimulatedSource`: ~52 subportadoras, ruido gaussiano, deriva lenta y eventos configurables (persona entra, camina, se queda quieta, sale).
   **Aceptación:** generador determinista por seed; test que verifica que los eventos alteran la varianza esperada.
