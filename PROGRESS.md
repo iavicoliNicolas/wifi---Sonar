@@ -1,7 +1,7 @@
 # PROGRESS
 
 ## Estado actual
-Fase: 1 — Núcleo de señal · Última tarea completada: T-04 · Próxima: T-05
+Fase: 1 — Núcleo de señal · Última tarea completada: T-05 · Próxima: T-06
 
 ## Inventario del repo (2026-10-22)
 
@@ -71,3 +71,10 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Tests agregados: un pico de 1000 deja de dominar la varianza; un NaN queda entre sus vecinos; un hueco inserta un frame; una subportadora en cero se va y dos escalas distintas convergen; una traza del simulador sigue siendo finita.
 - Problemas / deuda: el Hampel es un lazo en Python. Si las trazas largas se ponen lentas, se vectoriza.
 - Siguiente paso sugerido: T-05 — features por ventana (varianza, MAD, energía de movimiento y de respiración).
+
+### 2026-10-23 T-05 — Features por ventana
+- Qué se hizo: `extract_features()` calcula varianza, media de diferencias absolutas y energía de movimiento (2 s, 0,5–5 Hz) y de respiración (8 s, 0,1–0,5 Hz) con un periodograma (D-009).
+- Archivos tocados: `wifi_sonar/pipeline/features.py`, `tests/test_features.py`, `DECISIONS.md`, `DEV_LOOP.md`, `PROGRESS.md`.
+- Tests agregados: una constante da varianza 0; una alternancia 0/1 da varianza 0,25; 2 Hz domina movimiento y 0,25 Hz domina respiración; la caminata del simulador sube la energía de movimiento frente al cuarto vacío.
+- Problemas / deuda: no hay PCA. No hizo falta para separar las bandas.
+- Siguiente paso sugerido: T-06 — calibración de línea base con el cuarto vacío.

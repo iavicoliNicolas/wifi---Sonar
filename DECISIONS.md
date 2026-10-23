@@ -47,3 +47,9 @@ Contexto: T-04 pide Hampel, interpolación de paquetes perdidos, normalización 
 Opciones consideradas: un filtro de mediana global, o tratar cada subportadora en el tiempo.
 Decisión: por subportadora, en este orden: rellenar NaN, insertar muestras cuando el hueco supera 1,5 veces el paso mediano, Hampel (ventana impar, el punto se reemplaza si se aleja de la mediana local; si el MAD es 0 y el punto difiere, también), tirar subportadoras cuya mediana absoluta es < 5 % de la referencia, y dividir por esa mediana absoluta.
 Consecuencias: la salida queda en una escala común. Un pico aislado no domina la varianza.
+
+### D-009 — Features por ventana (2026-10-23)
+Contexto: T-05 pide ventanas (ejemplo 2 s, paso 0,5 s), varianza, media de diferencias absolutas y energía en bandas de movimiento (0,5–5 Hz) y respiración (0,1–0,5 Hz) vía FFT o Welch.
+Opciones consideradas: SciPy `welch`, o un periodograma con `rfft` y ventana de Hann.
+Decisión: la serie es la media de subportadoras. Varianza, MAD y energía de movimiento salen de la ventana de 2 s. La respiración usa 8 s, porque en 2 s el salto de frecuencia es 0,5 Hz y esa banda no se resuelve. El espectro es un periodograma normalizado por la energía de la ventana, no Welch: no hace falta SciPy para una senoide conocida.
+Consecuencias: una senoide de 2 Hz carga la banda de movimiento; una de 0,25 Hz carga la de respiración. SciPy sigue afuera.
