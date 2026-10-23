@@ -175,7 +175,7 @@ Formato: `[ ] ID — Título` · *Depende de* · **Aceptación**
   Heatmap de amplitud (subportadora × tiempo), gráfico de score con umbrales, timeline de eventos.
   **Aceptación:** 60 fps aceptables con 100 Hz de entrada; sin fugas de memoria tras 10 min.
 
-- [ ] **T-16 — Asistente de calibración en el panel**
+- [x] **T-16 — Asistente de calibración en el panel**
   *Depende de:* T-14, T-06
   Flujo guiado: "salí de la habitación" → cuenta regresiva → captura → resumen de calidad.
   **Aceptación:** se calibra de punta a punta desde la UI.

@@ -1,5 +1,11 @@
-from wifi_sonar.detect.calibrate import calibrate, load_calibration, save_calibration
-from wifi_sonar.sources.simulated import SimulatedSource
+from wifi_sonar.detect.calibrate import (
+    Calibration,
+    calibrate,
+    load_calibration,
+    quality_report,
+    save_calibration,
+)
+from wifi_sonar.sources.simulated import ScenarioEvent, SimulatedSource
 
 
 def test_calibrate_empty_room_and_roundtrip(tmp_path) -> None:
@@ -14,6 +20,39 @@ def test_calibrate_empty_room_and_roundtrip(tmp_path) -> None:
     assert loaded.k == 6.0
     assert loaded.seconds == 12.0
     assert loaded.thresholds == calibration.thresholds
+
+
+def test_quality_report_labels_the_capture() -> None:
+    empty = calibrate(SimulatedSource(seed=1, duration_s=12.0, n_subcarriers=8), 12.0)
+    assert quality_report(empty)["label"] == "buena"
+    short = Calibration(
+        mean=empty.mean,
+        std=empty.std,
+        thresholds=empty.thresholds,
+        k=empty.k,
+        seconds=4.0,
+    )
+    assert quality_report(short)["label"] == "corta"
+    disturbed = calibrate(
+        SimulatedSource(
+            seed=1,
+            duration_s=12.0,
+            n_subcarriers=8,
+            events=(ScenarioEvent("walk", 6.0, 6.0),),
+        ),
+        12.0,
+    )
+    assert quality_report(disturbed)["label"] == "inestable"
+    loud = calibrate(
+        SimulatedSource(
+            seed=1,
+            duration_s=12.0,
+            n_subcarriers=8,
+            events=(ScenarioEvent("walk", 0.0, 12.0),),
+        ),
+        12.0,
+    )
+    assert quality_report(loud)["label"] == "alta"
 
 
 def test_same_seed_calibrates_identically() -> None:

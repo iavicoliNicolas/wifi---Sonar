@@ -54,6 +54,35 @@ def calibrate(source: CSISource, seconds: float, *, k: float = 6.0) -> Calibrati
     return calibration_from_features(features, k=k, seconds=seconds)
 
 
+def quality_report(calibration: Calibration) -> dict[str, object]:
+    """Say whether an empty-room capture looks usable.
+
+    A short capture is ``corta``. A capture whose motion energy jumps (someone
+    walked in halfway) is ``inestable``. A loud but steady capture is ``alta``:
+    the room was probably not empty. Otherwise it is ``buena``.
+    """
+    mean = calibration.mean["motion_energy"]
+    spread = calibration.std["motion_energy"] / max(abs(mean), 1e-12)
+    if calibration.seconds < 8.0:
+        label = "corta"
+        detail = "la captura fue breve; repetila con la habitación vacía"
+    elif spread > 0.8:
+        label = "inestable"
+        detail = "la señal cambió durante la captura; repetila con la habitación vacía"
+    elif mean > 0.01:
+        label = "alta"
+        detail = "la línea base quedó alta; puede haber alguien en la habitación"
+    else:
+        label = "buena"
+        detail = "el cuarto vacío quedó estable"
+    return {
+        "label": label,
+        "detail": detail,
+        "motion_spread": spread,
+        "motion_mean": mean,
+    }
+
+
 def calibration_from_features(
     features: Sequence[WindowFeatures],
     *,

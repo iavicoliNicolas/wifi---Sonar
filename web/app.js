@@ -105,4 +105,40 @@ function connect() {
   };
 }
 
+const calButton = document.querySelector("#cal-start");
+const calPrompt = document.querySelector("#cal-prompt");
+const calCount = document.querySelector("#cal-count");
+const calResult = document.querySelector("#cal-result");
+let calibrating = false;
+
+async function calibrateRoom() {
+  if (calibrating) return;
+  calibrating = true;
+  calButton.disabled = true;
+  calResult.textContent = "";
+  calPrompt.textContent = "salí de la habitación";
+  calCount.hidden = false;
+  for (let left = 5; left >= 1; left -= 1) {
+    calCount.textContent = String(left);
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+  }
+  calCount.textContent = "capturando";
+  const response = await fetch("/calibrate", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ seconds: 12 }),
+  });
+  const body = await response.json();
+  const quality = body.quality || {};
+  calPrompt.textContent = "listo";
+  calCount.hidden = true;
+  calResult.textContent = (quality.label || "error") + " — " + (quality.detail || "");
+  calButton.disabled = false;
+  calibrating = false;
+}
+
+calButton.addEventListener("click", () => {
+  calibrateRoom();
+});
+
 connect();

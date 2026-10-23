@@ -8,6 +8,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from wifi_sonar.api.stream import FrameHub
+from wifi_sonar.detect.calibrate import quality_report
 from wifi_sonar.runtime import SonarConfig, SonarState
 
 WEB_ROOT = Path(__file__).resolve().parents[2] / "web"
@@ -41,6 +42,7 @@ def create_app(state: SonarState | None = None) -> FastAPI:
             "seconds": calibration.seconds,
             "k": calibration.k,
             "thresholds": calibration.thresholds,
+            "quality": quality_report(calibration),
         }
 
     @app.get("/config")

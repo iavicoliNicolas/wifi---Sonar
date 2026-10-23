@@ -113,3 +113,9 @@ Contexto: T-15 pide heatmap de amplitud, score con umbrales y línea de tiempo, 
 Opciones consideradas: una librería de charts, o canvas 2D con buffers acotados.
 Decisión: sin librería nueva. El heatmap y el score se dibujan en canvas. Se guardan como máximo 180 muestras y 12 cambios de estado; lo viejo se descarta. Varios mensajes en el mismo frame se dibujan una sola vez, en el próximo `requestAnimationFrame`. La línea horizontal del score está en 0,5 porque el score del detector ya está recortado a 0–1. El título del estado se redujo para que los tres gráficos quepan en una ventana de unos 800 px de alto.
 Consecuencias: el panel no acumula la traza. El umbral pintado es una referencia visual, no un segundo detector.
+
+### D-020 — Calidad de la calibración (2026-10-23)
+Contexto: T-16 pide un asistente en el panel: salir de la habitación, cuenta regresiva, captura y un resumen de calidad.
+Opciones consideradas: calibrar con la traza que está publicando el simulador en vivo, o seguir usando la captura vacía de `SonarState.calibrate`.
+Decisión: el botón espera 5 segundos y llama a `POST /calibrate`, que hoy graba un cuarto vacío simulado (semilla 1). La calidad sale de la energía de movimiento: menos de 8 s es `corta`; un desvío relativo mayor a 0,8 es `inestable`; una media mayor a 0,01 es `alta`; si no, `buena`.
+Consecuencias: el flujo se prueba sin hardware. La cuenta regresiva es para la persona; la captura todavía no es el WiFi real. Eso cambia cuando exista una fuente de hardware.

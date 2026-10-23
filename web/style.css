@@ -120,3 +120,41 @@ canvas {
   border-bottom: 1px solid var(--line);
   color: var(--muted);
 }
+
+.wizard {
+  max-width: 760px;
+  margin-top: 1.5rem;
+  font-family: "Segoe UI", Helvetica, sans-serif;
+}
+
+.wizard h2 {
+  margin: 0 0 0.4rem;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+#cal-prompt,
+#cal-count,
+#cal-result {
+  margin: 0.3rem 0;
+}
+
+#cal-count {
+  font-size: 2rem;
+  color: var(--live);
+}
+
+#cal-start {
+  margin-top: 0.6rem;
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--line);
+  padding: 0.45rem 0.8rem;
+  font: inherit;
+  cursor: pointer;
+}
+
+#cal-start:disabled { color: var(--muted); cursor: default; }

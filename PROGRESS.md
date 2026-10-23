@@ -1,7 +1,7 @@
 # PROGRESS
 
 ## Estado actual
-Fase: 3 — Panel · Última tarea completada: T-15 · Próxima: T-16
+Fase: 3 — Panel · Última tarea completada: T-16 · Próxima: T-17
 
 ## Inventario del repo (2026-10-22)
 
@@ -148,3 +148,10 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Tests agregados: el HTML sirve los tres gráficos y el script declara el tope y `requestAnimationFrame`. Un ensayo aparte de 60.000 mensajes (10 min a 100 Hz) dejó el heatmap en 180, el score en 180, la línea de tiempo en 12 y un solo frame pendiente.
 - Problemas / deuda: el umbral dibujado es 0,5 del score ya normalizado, no el umbral crudo de energía. Falta el favicon (`/favicon.ico` responde 404).
 - Siguiente paso sugerido: T-16 — asistente de calibración en el panel.
+
+### 2026-10-23 T-16 — Asistente de calibración
+- Qué se hizo: el panel pide salir de la habitación, cuenta 5 segundos y llama a `POST /calibrate`. La respuesta incluye un resumen de calidad: `buena`, `corta`, `inestable` o `alta` (D-020).
+- Archivos tocados: `wifi_sonar/detect/calibrate.py`, `wifi_sonar/api/app.py`, `web/index.html`, `web/style.css`, `web/app.js`, `tests/test_calibrate.py`, `tests/test_api.py`, `tests/test_panel.py`, `DECISIONS.md`, `DEV_LOOP.md`, `PROGRESS.md`, `README.md`.
+- Tests agregados: las cuatro etiquetas de calidad; `/calibrate` de un cuarto vacío responde `buena`. En el navegador el botón mostró la cuenta regresiva y el texto "buena — el cuarto vacío quedó estable".
+- Problemas / deuda: la captura sigue siendo el simulador vacío (semilla 1), no la fuente en vivo. Cuando haya hardware, el mismo botón tiene que grabar esa fuente.
+- Siguiente paso sugerido: T-17 — sliders de sensibilidad, ventana e histéresis, con alertas opcionales.

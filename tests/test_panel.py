@@ -20,3 +20,5 @@ def test_panel_shell_is_served() -> None:
     assert 'id="heatmap"' in page.text
     assert 'id="scoreboard"' in page.text
     assert 'id="timeline"' in page.text
+    assert 'id="cal-start"' in page.text
+    assert "salí de la habitación" in script.text

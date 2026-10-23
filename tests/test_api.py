@@ -33,6 +33,7 @@ def test_calibrate_status_and_history() -> None:
     calibrated = client.post("/calibrate", json={"seconds": 8})
     assert calibrated.status_code == 200
     assert "motion_energy" in calibrated.json()["thresholds"]
+    assert calibrated.json()["quality"]["label"] == "buena"
     client.app.state.sonar.run(
         SimulatedSource(
             seed=3,
