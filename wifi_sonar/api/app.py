@@ -31,6 +31,15 @@ def create_app(state: SonarState | None = None) -> FastAPI:
     app.state.sonar = state or SonarState()
     app.state.hub = FrameHub()
 
+    @app.get("/health")
+    def health() -> dict[str, object]:
+        sonar = app.state.sonar
+        return {
+            "ok": True,
+            "paused": sonar.paused,
+            "source": getattr(app.state, "source_status", "up"),
+        }
+
     @app.get("/status")
     def status() -> dict[str, object]:
         current = app.state.sonar.latest

@@ -92,6 +92,15 @@ class SonarState:
         if self.store is not None:
             self.store.save_config(config.model_dump_json())
 
+    def refresh_if_idle(self, empty_for_s: float, *, every_s: float = 120.0) -> bool:
+        """Recalibrate after a long empty stretch. Motion or pause skips it."""
+        if every_s <= 0:
+            raise ValueError("every_s must be positive")
+        if self.paused or self.latest.get("state") != "empty" or empty_for_s < every_s:
+            return False
+        self.calibrate(8.0)
+        return True
+
     def wipe(self) -> None:
         self.history.clear()
         self.calibration = None

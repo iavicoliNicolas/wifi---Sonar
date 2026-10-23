@@ -143,3 +143,9 @@ Contexto: T-21 pide un modo degradado con RSSI, por ejemplo de dispositivos cono
 Opciones consideradas: descubrir equipos en la red, o aceptar solo nombres que escribe quien opera el panel.
 Decisión: `rssi_devices` es una lista de etiquetas. `*`, `scan` y `all` se rechazan. El detector usa la variación de RSSI en 2 s y un salto de 4 dB: vacío o movimiento, nunca presencia quieta. El panel lo dice: "modo RSSI · sensibilidad baja".
 Consecuencias: no hay un escaneo de vecinos. Sin hardware, el simulador genera la traza bajo la etiqueta elegida.
+
+### D-025 — Caída de la fuente y recalibración en vacío (2026-10-23)
+Contexto: T-22 pide reconexión, logs estructurados, health check y deriva lenta cuando el cuarto está vacío.
+Opciones consideradas: reiniciar el proceso, o reabrir solo la fuente.
+Decisión: `iter_resilient` reabre la fuente ante `ConnectionError` y escribe una línea JSON (`event`, `attempt`). `/health` dice `ok`, si está en pausa y el estado de la fuente. `refresh_if_idle` recalibra recién después de 120 s vacíos, y no lo hace si hay movimiento o pausa.
+Consecuencias: cortar la fuente no mata la API. El simulador del panel no usa el reconector; una placa sí puede.

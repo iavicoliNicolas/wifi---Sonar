@@ -1,7 +1,7 @@
 # PROGRESS
 
 ## Estado actual
-Fase: 5 — Cierre · Última tarea completada: T-21 · Próxima: T-22
+Fase: 5 — Cierre · Última tarea completada: T-22 · Próxima: T-23
 
 ## Inventario del repo (2026-10-22)
 
@@ -190,3 +190,10 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Tests agregados: una traza quieta no se mueve y ninguna muestra dice presencia; un balanceo sí es movimiento; el nombre `*` se rechaza. En el navegador, al elegir RSSI apareció el aviso y al volver a CSI se ocultó.
 - Problemas / deuda: sin placa, el modo RSSI en vivo sigue siendo una traza simulada con la etiqueta elegida.
 - Siguiente paso sugerido: T-22 — reconexión, logs, health y recalibración lenta en vacío.
+
+### 2026-10-23 T-22 — Robustez
+- Qué se hizo: `iter_resilient` vuelve a abrir la fuente si se corta el enlace y deja un log JSON. `GET /health` responde aunque la fuente esté cayendo. Si el cuarto queda vacío el tiempo configurado, se recalibra (D-025).
+- Archivos tocados: `wifi_sonar/ops.py`, `wifi_sonar/runtime.py`, `wifi_sonar/api/app.py`, `tests/test_ops.py`, `DECISIONS.md`, `DEV_LOOP.md`, `PROGRESS.md`.
+- Tests agregados: una fuente que muere después del primer frame se reanuda y `/health` sigue en 200 sin armar otra app; el log es un JSON; el cuarto vacío recalibra y el movimiento no.
+- Problemas / deuda: el simulador del panel no pasa por `iter_resilient` porque no se cae. El adaptador ESP32 sí puede usarlo.
+- Siguiente paso sugerido: T-23 — Dockerfile y compose.
