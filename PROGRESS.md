@@ -1,7 +1,7 @@
 # PROGRESS
 
 ## Estado actual
-Fase: 5 — Cierre · Última tarea completada: T-22 · Próxima: T-23
+Fase: 5 — Cierre · Última tarea completada: T-23 · Próxima: T-24
 
 ## Inventario del repo (2026-10-22)
 
@@ -197,3 +197,10 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Tests agregados: una fuente que muere después del primer frame se reanuda y `/health` sigue en 200 sin armar otra app; el log es un JSON; el cuarto vacío recalibra y el movimiento no.
 - Problemas / deuda: el simulador del panel no pasa por `iter_resilient` porque no se cae. El adaptador ESP32 sí puede usarlo.
 - Siguiente paso sugerido: T-23 — Dockerfile y compose.
+
+### 2026-10-23 T-23 — Empaquetado
+- Qué se hizo: `Dockerfile` y `compose.yaml` levantan el panel con el simulador en el puerto 8000. El paquete declara todos los submódulos de `wifi_sonar` para que la imagen no se quede con el paquete raíz solo (D-026).
+- Archivos tocados: `Dockerfile`, `compose.yaml`, `.dockerignore`, `pyproject.toml`, `DECISIONS.md`, `DEV_LOOP.md`, `PROGRESS.md`, `README.md`.
+- Tests agregados: la suite sigue en verde. `docker compose up --build -d` dejó el contenedor en marcha; `/health` respondió `ok` y `/` sirvió el panel.
+- Problemas / deuda: la imagen no incluye las herramientas de desarrollo. El puerto 8000 es el del panel, así que no convive con otro `python -m wifi_sonar` en el mismo puerto.
+- Siguiente paso sugerido: T-24 — README de instalación, calibración, límites y privacidad.

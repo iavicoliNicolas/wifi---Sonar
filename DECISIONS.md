@@ -149,3 +149,9 @@ Contexto: T-22 pide reconexión, logs estructurados, health check y deriva lenta
 Opciones consideradas: reiniciar el proceso, o reabrir solo la fuente.
 Decisión: `iter_resilient` reabre la fuente ante `ConnectionError` y escribe una línea JSON (`event`, `attempt`). `/health` dice `ok`, si está en pausa y el estado de la fuente. `refresh_if_idle` recalibra recién después de 120 s vacíos, y no lo hace si hay movimiento o pausa.
 Consecuencias: cortar la fuente no mata la API. El simulador del panel no usa el reconector; una placa sí puede.
+
+### D-026 — Imagen con el simulador (2026-10-23)
+Contexto: T-23 pide Dockerfile o compose para una Raspberry Pi o una mini PC, y que `docker compose up` deje el simulador andando.
+Opciones consideradas: una unidad systemd, o una imagen Python.
+Decisión: imagen `python:3.12-slim`, `pip install` del paquete y `python -m wifi_sonar`. Compose publica el puerto 8000. `web/` se copia al lado del paquete porque el panel lo busca ahí, no dentro del wheel.
+Consecuencias: no hace falta un venv en la máquina de destino. Quien ya corre el panel en el puerto 8000 tiene que pararlo antes.
