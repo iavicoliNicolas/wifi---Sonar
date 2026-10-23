@@ -1,7 +1,7 @@
 # PROGRESS
 
 ## Estado actual
-Fase: 0 — Cimientos · Última tarea completada: T-03 · Próxima: T-04
+Fase: 1 — Núcleo de señal · Última tarea completada: T-04 · Próxima: T-05
 
 ## Inventario del repo (2026-10-22)
 
@@ -64,3 +64,10 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Tests agregados: el mismo `collect()` lee el simulador y el replay JSONL/CSV con los mismos frames; el replay acelerado duerme una fracción del delta grabado.
 - Problemas / deuda: una línea corrupta aborta el archivo. El parser tolerante queda para el adaptador ESP32 (T-19).
 - Siguiente paso sugerido: T-04 — preprocesamiento (Hampel, huecos, normalización, subportadoras nulas).
+
+### 2026-10-23 T-04 — Preprocesamiento
+- Qué se hizo: `preprocess()` rellena NaN, interpola huecos de tiempo, aplica Hampel por subportadora, descarta subportadoras nulas y normaliza por la mediana absoluta (D-008).
+- Archivos tocados: `wifi_sonar/pipeline/preprocess.py`, `tests/test_preprocess.py`, `DECISIONS.md`, `DEV_LOOP.md`, `PROGRESS.md`.
+- Tests agregados: un pico de 1000 deja de dominar la varianza; un NaN queda entre sus vecinos; un hueco inserta un frame; una subportadora en cero se va y dos escalas distintas convergen; una traza del simulador sigue siendo finita.
+- Problemas / deuda: el Hampel es un lazo en Python. Si las trazas largas se ponen lentas, se vectoriza.
+- Siguiente paso sugerido: T-05 — features por ventana (varianza, MAD, energía de movimiento y de respiración).

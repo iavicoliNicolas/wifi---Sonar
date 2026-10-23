@@ -41,3 +41,9 @@ Contexto: T-03 pide una interfaz común y un `ReplaySource` que lea grabaciones 
 Opciones consideradas: solo JSONL, solo CSV, o los dos con un protocolo explícito.
 Decisión: `CSISource.frames()` es la interfaz. `collect()` es el único ingreso que usa el pipeline. JSONL guarda un objeto por línea (timestamp, rssi, amplitudes, phases, node_id). CSV usa el mismo contenido con columnas `amp*` y `phase*`. `speed <= 0` no duerme; `speed > 0` escala los deltas de timestamp. El reloj y el sleep se pueden inyectar para testear sin esperar.
 Consecuencias: T-13 puede reusar los mismos writers. No hace falta un tercer formato.
+
+### D-008 — Preprocesamiento (2026-10-23)
+Contexto: T-04 pide Hampel, interpolación de paquetes perdidos, normalización por subportadora y descarte de subportadoras nulas.
+Opciones consideradas: un filtro de mediana global, o tratar cada subportadora en el tiempo.
+Decisión: por subportadora, en este orden: rellenar NaN, insertar muestras cuando el hueco supera 1,5 veces el paso mediano, Hampel (ventana impar, el punto se reemplaza si se aleja de la mediana local; si el MAD es 0 y el punto difiere, también), tirar subportadoras cuya mediana absoluta es < 5 % de la referencia, y dividir por esa mediana absoluta.
+Consecuencias: la salida queda en una escala común. Un pico aislado no domina la varianza.
