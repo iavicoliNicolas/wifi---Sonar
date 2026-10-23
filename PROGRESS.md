@@ -1,7 +1,7 @@
 # PROGRESS
 
 ## Estado actual
-Fase: 6 — Deuda sin hardware · Última tarea completada: T-26 · Próxima: T-27
+Fase: 6 — Deuda sin hardware · Última tarea completada: T-27 · Próxima: T-28
 
 ## Inventario del repo (2026-10-22)
 
@@ -218,3 +218,10 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Tests agregados: el icono responde 200, es un PNG y la página lo enlaza.
 - Problemas / deuda: el historial en vivo sigue con el tiempo de la traza, que empieza en cero.
 - Siguiente paso sugerido: T-26 — guardar los eventos en vivo con hora de reloj.
+
+### 2026-10-23 T-26 — Reloj de pared
+- Qué se hizo: el simulador en vivo guarda cada cambio de estado con `time.time()`. El WebSocket sigue mandando el tiempo de la traza, así la línea de tiempo no muestra un timestamp enorme (D-027).
+- Archivos tocados: `wifi_sonar/api/stream.py`, `wifi_sonar/runtime.py`, `wifi_sonar/live.py`, `tests/test_stream.py`, `DECISIONS.md`, `DEV_LOOP.md`, `PROGRESS.md`.
+- Tests agregados: con el reloj fijo en 1_700_000_000 el historial usa ese instante y el primer snapshot sigue por debajo de 10 s.
+- Problemas / deuda: `run()` sobre una traza grabada sigue usando el tiempo del archivo. La retención de esas trazas se prueba con timestamps explícitos.
+- Siguiente paso sugerido: T-27 — calibrar una fuente conectada cuando la hay.

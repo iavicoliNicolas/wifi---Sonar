@@ -236,7 +236,7 @@ Formato: `[ ] ID — Título` · *Depende de* · **Aceptación**
   Los eventos que publica el simulador del panel se guardan con hora real, así la retención puede borrarlos. El gráfico sigue mostrando el tiempo de la traza.
   **Aceptación:** un test fija el reloj y el historial usa ese instante; el snapshot del socket conserva el tiempo de la traza.
 
-- [ ] **T-27 — Calibrar la fuente conectada**
+- [x] **T-27 — Calibrar la fuente conectada**
   *Depende de:* T-16
   Si hay una captura reciente marcada como fuente real, la calibración sale de ahí. Si no, sigue el cuarto vacío simulado.
   **Aceptación:** una fuente quieta distinta de la semilla 1 cambia los umbrales; sin fuente, el resultado sigue siendo el de la semilla 1.

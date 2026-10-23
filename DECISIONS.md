@@ -161,3 +161,9 @@ Contexto: la retención compara `ts` con un reloj. El simulador numera la traza 
 Opciones consideradas: cambiar también el gráfico, o separar el tiempo que se muestra del que se guarda.
 Decisión: `follow(..., stored_clock=time.time)` escribe la hora real en el historial. El campo `ts` del WebSocket y de `latest` sigue siendo el segundo de la traza.
 Consecuencias: un evento del panel se puede purgar a los 7 días. El gráfico no salta a un número de Unix.
+
+### D-028 — Calibración de la fuente que está conectada (2026-10-23)
+Contexto: el botón calibra un cuarto vacío simulado (semilla 1). Con una placa, tiene que usar lo que esa placa acaba de mandar.
+Opciones consideradas: calibrar siempre el buffer en vivo, o solo cuando alguien marcó que esa captura es la fuente real.
+Decisión: `calibrate(seconds, source)` usa la fuente dada. `capture_from_recent` usa los frames de `remember`. Sin eso, sigue la semilla 1. El simulador del panel no prende el flag: su escena incluye una caminata y la calibración dejaría de ser "buena".
+Consecuencias: el demo no cambia. El ingreso por UDP puede prender el flag cuando haya líneas propias.

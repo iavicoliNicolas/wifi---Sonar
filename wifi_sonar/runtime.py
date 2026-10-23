@@ -3,7 +3,7 @@
 import json
 import urllib.error
 import urllib.request
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Any, Literal
 from urllib.parse import urlparse
 
@@ -13,6 +13,8 @@ from wifi_sonar.detect.calibrate import Calibration, calibrate
 from wifi_sonar.detect.observe import observe
 from wifi_sonar.detect.presence import PresenceDetector
 from wifi_sonar.sources.base import CSISource
+from wifi_sonar.sources.frame import CSIFrame
+from wifi_sonar.sources.listed import ListedSource
 from wifi_sonar.sources.simulated import SimulatedSource
 
 
@@ -74,6 +76,8 @@ class SonarState:
         }
     )
     history: list[dict[str, object]] = field(default_factory=list)
+    recent: list[CSIFrame] = field(default_factory=list)
+    capture_from_recent: bool = False
 
     def __post_init__(self) -> None:
         if self.store is None:
@@ -111,6 +115,7 @@ class SonarState:
             "sensing": not self.paused,
             "calibrated": False,
         }
+        self.recent.clear()
         if self.store is not None:
             self.store.clear()
 
@@ -124,16 +129,25 @@ class SonarState:
         self.history = self.store.events()
         return removed
 
-    def calibrate(self, seconds: float) -> Calibration:
+    def remember(self, frame: CSIFrame) -> None:
+        self.recent.append(frame)
+        if len(self.recent) > 5000:
+            self.recent = self.recent[-4000:]
+
+    def calibrate(self, seconds: float, source: CSISource | None = None) -> Calibration:
         if seconds <= 0:
             raise ValueError("seconds must be positive")
-        source = SimulatedSource(
-            seed=1,
-            duration_s=seconds,
-            sample_rate_hz=self.config.sample_rate_hz,
-            n_subcarriers=self.config.n_subcarriers,
-        )
-        self.calibration = calibrate(source, seconds, k=self.config.k)
+        chosen = source if source is not None else self._recent_source(seconds)
+        if chosen is None:
+            chosen = SimulatedSource(
+                seed=1,
+                duration_s=seconds,
+                sample_rate_hz=self.config.sample_rate_hz,
+                n_subcarriers=self.config.n_subcarriers,
+            )
+        else:
+            chosen = _shift_window(chosen, seconds)
+        self.calibration = calibrate(chosen, seconds, k=self.config.k)
         self.latest["calibrated"] = True
         if self.store is not None:
             self.store.save_calibration(self.calibration)
@@ -168,7 +182,7 @@ class SonarState:
             event = {"ts": recorded, "state": state, "score": score}
             self.history.append(event)
             if self.store is not None:
-                self.store.add_event(ts, state, score)
+                self.store.add_event(recorded, state, score)
             self._notify(event)
 
     def _notify(self, event: dict[str, object]) -> None:
@@ -188,7 +202,30 @@ class SonarState:
         except (urllib.error.URLError, TimeoutError, OSError):
             return
 
+    def _recent_source(self, seconds: float) -> ListedSource | None:
+        if not self.capture_from_recent or len(self.recent) < 3:
+            return None
+        end = self.recent[-1].timestamp
+        window = [frame for frame in self.recent if frame.timestamp >= end - seconds]
+        if len(window) < 3:
+            return None
+        return ListedSource(window)
+
     def _now(self) -> float:
         if self.history:
             return float(self.history[-1]["ts"])
         return 0.0
+
+
+def _shift_window(source: CSISource, seconds: float) -> ListedSource:
+    """Keep ``seconds`` from the first frame and restart timestamps at zero."""
+    frames: list[CSIFrame] = []
+    start: float | None = None
+    for frame in source.frames():
+        if start is None:
+            start = frame.timestamp
+        relative = frame.timestamp - start
+        if relative > seconds:
+            break
+        frames.append(replace(frame, timestamp=relative))
+    return ListedSource(frames)
