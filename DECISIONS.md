@@ -95,3 +95,9 @@ Contexto: T-12 pide eventos de cambio de estado, calibraciones, config, una migr
 Opciones consideradas: archivos JSON sueltos, o una base embebida.
 Decisión: un archivo SQLite con `meta.schema = 1` y tablas `events`, `calibrations`, `config`. `SonarState` lo usa si se le pasa un `Store`; si no, sigue en memoria para los tests chicos. `purge(retention_s, now)` borra eventos con `ts` anterior a `now - retention_s`. `run()` dispara esa limpieza.
 Consecuencias: no hay un servidor de base de datos. Los timestamps de una traza simulada son segundos de la traza; la retención tiene sentido cuando `ts` es tiempo de reloj.
+
+### D-017 — Grabación JSONL más etiquetas al lado (2026-10-23)
+Contexto: T-13 pide grabar CSI crudo y etiquetas manuales, y que el replay dé el mismo resultado del detector.
+Opciones consideradas: meter la etiqueta en cada frame, o un sidecar.
+Decisión: el crudo reusa el JSONL de T-03. Las etiquetas van en `nombre.jsonl.labels.json` como lista de `{kind, start_s, duration_s}`. El detector corre sobre `preprocess` + features, igual en vivo y en `ReplaySource`.
+Consecuencias: no hay un formato nuevo de frames. Una etiqueta no identifica personas; dice qué pasó en el escenario (caminata, quietud).

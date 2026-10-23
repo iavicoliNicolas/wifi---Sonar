@@ -1,7 +1,7 @@
 # PROGRESS
 
 ## Estado actual
-Fase: 2 — Servicio y tiempo real · Última tarea completada: T-12 · Próxima: T-13
+Fase: 2 — Servicio y tiempo real · Última tarea completada: T-13 · Próxima: T-14
 
 ## Inventario del repo (2026-10-22)
 
@@ -127,3 +127,10 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Tests agregados: reabrir el archivo recupera config, calibración y el último estado; la retención borra los eventos anteriores al corte.
 - Problemas / deuda: la traza simulada numera el tiempo desde cero, así que la retención no la recorta sola. En vivo hay que guardar tiempo de reloj.
 - Siguiente paso sugerido: T-13 — grabar una sesión y reproducirla con el mismo resultado.
+
+### 2026-10-23 T-13 — Grabación y replay de sesiones
+- Qué se hizo: `record_session` guarda el CSI en JSONL y las etiquetas manuales en un sidecar. El detector sobre el replay coincide con el de la captura original (D-017).
+- Archivos tocados: `wifi_sonar/recording.py`, `tests/test_recording.py`, `DECISIONS.md`, `DEV_LOOP.md`, `PROGRESS.md`.
+- Tests agregados: una caminata grabada se reproduce con la misma secuencia de estados y las etiquetas vuelven iguales.
+- Problemas / deuda: no hay botón de grabar en el panel todavía.
+- Siguiente paso sugerido: T-14 — shell del panel, tema oscuro, conectado al WebSocket.
