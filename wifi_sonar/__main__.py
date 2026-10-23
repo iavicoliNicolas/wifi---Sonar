@@ -6,6 +6,7 @@ from pathlib import Path
 import uvicorn
 
 from wifi_sonar.api import create_app
+from wifi_sonar.ingress import start_udp, udp_port_from_env
 from wifi_sonar.live import start_live
 from wifi_sonar.runtime import SonarConfig, SonarState
 from wifi_sonar.storage import Store
@@ -17,7 +18,11 @@ def main() -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     state = SonarState(config=SonarConfig(n_subcarriers=16), store=Store(path))
     app = create_app(state)
-    start_live(app)
+    udp_port = udp_port_from_env()
+    if udp_port is None:
+        start_live(app)
+    else:
+        start_udp(app, udp_port)
     uvicorn.run(app, host="0.0.0.0", port=8000)
 
 

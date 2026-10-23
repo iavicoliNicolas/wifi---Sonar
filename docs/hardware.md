@@ -13,7 +13,7 @@ El panel se desarrolla y se demuestra con el simulador. Esta página es para el 
 
 1. Un ESP32 queda como transmisor de paquetes hacia tu router, o hacia el otro ESP32.
 2. El segundo ESP32 es el receptor. Imprime una línea `CSI ...` por muestra.
-3. La computadora corre `python -m wifi_sonar` y, cuando conectes la placa, lee esas líneas por UDP `5500` o por el puerto serial.
+3. La computadora corre `python -m wifi_sonar`. Sin `WIFI_SONAR_UDP_PORT` sigue el simulador y no abre un socket. Con `WIFI_SONAR_UDP_PORT=5500` lee las líneas UDP de tu placa. El serial se puede alimentar al mismo parser.
 
 El formato, el flasheo y el límite de “solo tu red” están en [`firmware/README.md`](../firmware/README.md).
 

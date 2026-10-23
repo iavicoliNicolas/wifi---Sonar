@@ -134,10 +134,21 @@ class SonarState:
         if len(self.recent) > 5000:
             self.recent = self.recent[-4000:]
 
-    def calibrate(self, seconds: float, source: CSISource | None = None) -> Calibration:
+    def calibrate(
+        self,
+        seconds: float,
+        source: CSISource | None = None,
+        *,
+        allow_recent: bool = True,
+    ) -> Calibration:
         if seconds <= 0:
             raise ValueError("seconds must be positive")
-        chosen = source if source is not None else self._recent_source(seconds)
+        if source is not None:
+            chosen: CSISource | None = source
+        elif allow_recent:
+            chosen = self._recent_source(seconds)
+        else:
+            chosen = None
         if chosen is None:
             chosen = SimulatedSource(
                 seed=1,
@@ -156,7 +167,7 @@ class SonarState:
     def run(self, source: CSISource) -> None:
         self.purge(self._now())
         if self.calibration is None:
-            self.calibrate(max(12.0, self.config.min_presence_s + 10.0))
+            self.calibrate(max(12.0, self.config.min_presence_s + 10.0), allow_recent=False)
         detector = PresenceDetector(
             self.calibration,
             hysteresis=self.config.hysteresis,

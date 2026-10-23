@@ -241,7 +241,7 @@ Formato: `[ ] ID — Título` · *Depende de* · **Aceptación**
   Si hay una captura reciente marcada como fuente real, la calibración sale de ahí. Si no, sigue el cuarto vacío simulado.
   **Aceptación:** una fuente quieta distinta de la semilla 1 cambia los umbrales; sin fuente, el resultado sigue siendo el de la semilla 1.
 
-- [ ] **T-28 — UDP opcional**
+- [x] **T-28 — UDP opcional**
   *Depende de:* T-19, T-22
   Con `WIFI_SONAR_UDP_PORT` el proceso lee líneas CSI propias. Apagado, sigue el simulador.
   **Aceptación:** un datagrama de prueba se parsea; sin la variable no se abre el socket.

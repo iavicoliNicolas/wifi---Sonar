@@ -33,6 +33,8 @@ make serve
 
 Abrí `http://127.0.0.1:8000`. El simulador publica una escena de 24 segundos (vacío, caminata, quietud) y la repite. Los datos quedan en `data/sonar.sqlite`.
 
+Si tu propia placa manda líneas `CSI`, exportá `WIFI_SONAR_UDP_PORT` (por ejemplo `5500`) antes de `make serve`. Con la variable el simulador no arranca y el proceso lee ese puerto. Sin ella no se abre ningún socket. El formato está en [`firmware/README.md`](firmware/README.md).
+
 Con Docker, en una Raspberry Pi o una mini PC:
 
 ```bash
@@ -50,7 +52,7 @@ El contenedor escucha en el puerto 8000. Si ya tenés otro proceso ahí, paralo 
 
 ![Asistente de calibración con resultado buena](docs/screenshots/calibracion.jpg)
 
-Hoy la captura del botón es un cuarto vacío simulado. Con una placa ESP32, el mismo botón tiene que pasar a grabar esa fuente. Los materiales y el formato de línea están en [`docs/hardware.md`](docs/hardware.md) y [`firmware/README.md`](firmware/README.md).
+Sin placa, el botón calibra un cuarto vacío simulado. Con `WIFI_SONAR_UDP_PORT` el mismo botón usa los frames que esa placa acaba de mandar; la línea base automática del arranque sigue siendo el cuarto vacío, para no calibrar encima de una caminata. Los materiales están en [`docs/hardware.md`](docs/hardware.md).
 
 ## Ajustes
 
@@ -68,7 +70,7 @@ Los cambios se guardan y el simulador los toma en la traza siguiente.
 - CSI a través de varias paredes y pisos deja de servir. No promete ver el edificio.
 - RSSI no ve presencia quieta.
 - El umbral dibujado en el gráfico de score es 0,5 de un score ya normalizado de 0 a 1.
-- Falta un favicon: `/favicon.ico` responde 404.
+- El ingreso UDP procesa de a 50 frames. La histéresis no cruza ese corte.
 
 ## Desarrollo
 

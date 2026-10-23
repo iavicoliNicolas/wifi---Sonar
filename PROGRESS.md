@@ -1,7 +1,7 @@
 # PROGRESS
 
 ## Estado actual
-Fase: 6 — Deuda sin hardware · Última tarea completada: T-27 · Próxima: T-28
+Fase: 6 — Deuda sin hardware · Última tarea completada: T-28 · Próxima: ninguna sin hardware
 
 ## Inventario del repo (2026-10-22)
 
@@ -225,3 +225,17 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Tests agregados: con el reloj fijo en 1_700_000_000 el historial usa ese instante y el primer snapshot sigue por debajo de 10 s.
 - Problemas / deuda: `run()` sobre una traza grabada sigue usando el tiempo del archivo. La retención de esas trazas se prueba con timestamps explícitos.
 - Siguiente paso sugerido: T-27 — calibrar una fuente conectada cuando la hay.
+
+### 2026-10-23 T-27 — Calibrar la fuente conectada
+- Qué se hizo: `calibrate(seconds, source=...)` usa esa fuente. Si `capture_from_recent` está activo y hay tramos guardados con `remember`, calibra esos. Si no hay nada, sigue el cuarto vacío de semilla 1 (D-028).
+- Archivos tocados: `wifi_sonar/runtime.py`, `wifi_sonar/sources/listed.py`, `tests/test_calibrate.py`, `DECISIONS.md`, `DEV_LOOP.md`, `PROGRESS.md`.
+- Tests agregados: una fuente quieta de semilla 4 no coincide con la semilla 1 y queda `buena`; una caminata reciente no queda `buena`; sin tramos, vuelve la semilla 1.
+- Problemas / deuda: el botón del panel no marca `capture_from_recent`. Eso lo prende el ingreso UDP (T-28), no el simulador, para no calibrar encima de la caminata de demostración.
+- Siguiente paso sugerido: T-28 — abrir UDP solo si `WIFI_SONAR_UDP_PORT` está definido.
+
+### 2026-10-23 T-28 — UDP opcional
+- Qué se hizo: con `WIFI_SONAR_UDP_PORT` el proceso abre un socket y parsea líneas CSI propias. Sin la variable sigue el simulador y no se crea el socket (D-029). Los lotes de 50 frames corren el detector. La calibración automática de `run()` sigue siendo el cuarto vacío de semilla 1; el botón, si `capture_from_recent` está activo, usa lo que la placa acaba de mandar.
+- Archivos tocados: `wifi_sonar/sources/esp32.py`, `wifi_sonar/ingress.py`, `wifi_sonar/__main__.py`, `wifi_sonar/runtime.py`, `tests/test_udp.py`, `.env.example`, `README.md`, `docs/hardware.md`, `firmware/README.md`, `DECISIONS.md`, `DEV_LOOP.md`, `PROGRESS.md`.
+- Tests agregados: sin la variable el puerto es `None`; un datagrama `CSI living ...` se vuelve un frame; un lote con caminata deja el estado en movimiento y no usa esa caminata como línea base.
+- Problemas / deuda: cada lote crea un detector nuevo, así que la histéresis no cruza el corte de 50 frames. Un timeout del socket no dispara `iter_resilient`, porque se traga adentro de `udp_lines`. La imagen de compose sigue siendo la de T-23 hasta un rebuild.
+- Siguiente paso sugerido: ninguno sin hardware. El próximo trabajo real es conectar un ESP32 propio y exportar `WIFI_SONAR_UDP_PORT`.
