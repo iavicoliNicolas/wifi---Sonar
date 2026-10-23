@@ -35,3 +35,9 @@ Contexto: T-02 pide `CSIFrame` y un `SimulatedSource` determinista (~52 subporta
 Opciones consideradas: depender de SciPy ya, modelar cada subportadora con un canal geométrico, o una suma de ruido + deriva + un tono por tipo de evento.
 Decisión: NumPy entra ahora (arreglos de amplitud y fase). El cuarto vacío es ruido chico más una deriva de 0,02 Hz. Cada evento suma un seno: caminata 2 Hz y amplitud alta, quietud 0,25 Hz y amplitud baja, entrar/salir transiciones intermedias. La fase por subportadora sale del mismo seed. Sin SciPy hasta que una ventana necesite Welch.
 Consecuencias: la misma semilla y los mismos eventos reproducen la traza. La varianza temporal cumple vacío < quietud < caminata, que es la señal que van a usar T-05 en adelante.
+
+### D-007 — Replay en JSONL y CSV (2026-10-23)
+Contexto: T-03 pide una interfaz común y un `ReplaySource` que lea grabaciones a velocidad real o acelerada, y que el mismo pipeline consuma simulador y replay.
+Opciones consideradas: solo JSONL, solo CSV, o los dos con un protocolo explícito.
+Decisión: `CSISource.frames()` es la interfaz. `collect()` es el único ingreso que usa el pipeline. JSONL guarda un objeto por línea (timestamp, rssi, amplitudes, phases, node_id). CSV usa el mismo contenido con columnas `amp*` y `phase*`. `speed <= 0` no duerme; `speed > 0` escala los deltas de timestamp. El reloj y el sleep se pueden inyectar para testear sin esperar.
+Consecuencias: T-13 puede reusar los mismos writers. No hace falta un tercer formato.

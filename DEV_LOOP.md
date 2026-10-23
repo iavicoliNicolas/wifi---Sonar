@@ -104,7 +104,7 @@ Formato: `[ ] ID — Título` · *Depende de* · **Aceptación**
   Definir `CSIFrame`. Implementar `SimulatedSource`: ~52 subportadoras, ruido gaussiano, deriva lenta y eventos configurables (persona entra, camina, se queda quieta, sale).
   **Aceptación:** generador determinista por seed; test que verifica que los eventos alteran la varianza esperada.
 
-- [ ] **T-03 — Interfaz `CSISource` + replay desde archivo**
+- [x] **T-03 — Interfaz `CSISource` + replay desde archivo**
   *Depende de:* T-02
   Interfaz común, y `ReplaySource` que lee grabaciones (`.csv`/`.jsonl`) a velocidad real o acelerada.
   **Aceptación:** mismo pipeline consume simulador y replay sin cambios.

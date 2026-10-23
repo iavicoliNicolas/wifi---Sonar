@@ -1,7 +1,7 @@
 # PROGRESS
 
 ## Estado actual
-Fase: 0 — Cimientos · Última tarea completada: T-02 · Próxima: T-03
+Fase: 0 — Cimientos · Última tarea completada: T-03 · Próxima: T-04
 
 ## Inventario del repo (2026-10-22)
 
@@ -57,3 +57,10 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Tests agregados: forma del frame, repetibilidad con la misma semilla, y varianza vacío < quietud < caminata, además de un tramo de caminata más ruidoso que el cuarto vacío que lo rodea.
 - Problemas / deuda: el simulador no modela multitrayecto geométrico; alcanza para el pipeline sintético. SciPy sigue afuera.
 - Siguiente paso sugerido: T-03 — interfaz `CSISource` y `ReplaySource` desde archivo.
+
+### 2026-10-23 T-03 — Interfaz CSISource y replay
+- Qué se hizo: protocolo `CSISource.frames()`, `collect()` como ingreso único, y `ReplaySource` para `.jsonl` y `.csv` a velocidad real o acelerada (`speed <= 0` no espera).
+- Archivos tocados: `wifi_sonar/sources/base.py`, `wifi_sonar/sources/replay.py`, `wifi_sonar/pipeline/__init__.py`, `tests/test_replay.py`, `DECISIONS.md`, `DEV_LOOP.md`, `PROGRESS.md`.
+- Tests agregados: el mismo `collect()` lee el simulador y el replay JSONL/CSV con los mismos frames; el replay acelerado duerme una fracción del delta grabado.
+- Problemas / deuda: una línea corrupta aborta el archivo. El parser tolerante queda para el adaptador ESP32 (T-19).
+- Siguiente paso sugerido: T-04 — preprocesamiento (Hampel, huecos, normalización, subportadoras nulas).
