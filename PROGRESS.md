@@ -106,3 +106,10 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Tests agregados: el reporte tiene las dos clases con precisión y recall de al menos 0,95.
 - Problemas / deuda: el número es del simulador, no de una grabación etiquetada de una casa real.
 - Siguiente paso sugerido: T-10 — API HTTP.
+
+### 2026-10-23 T-10 — API HTTP
+- Qué se hizo: FastAPI con `/status`, `/calibrate`, `/config`, `/history` y OpenAPI generado. `SonarState` corre el detector sobre una fuente y guarda los cambios de estado en memoria (D-014).
+- Archivos tocados: `wifi_sonar/api/app.py`, `wifi_sonar/api/__init__.py`, `wifi_sonar/runtime.py`, `tests/test_api.py`, `pyproject.toml`, `DECISIONS.md`, `DEV_LOOP.md`, `PROGRESS.md`.
+- Tests agregados: OpenAPI lista los cuatro caminos; el config rechaza histéresis fuera de rango; calibrar y correr una caminata deja `/status` y `/history` en movimiento.
+- Problemas / deuda: el historial muere con el proceso. `TestClient` avisa que Starlette quiere `httpx2`; los tests pasan con `httpx`.
+- Siguiente paso sugerido: T-11 — WebSocket con descarte de frames viejos.
