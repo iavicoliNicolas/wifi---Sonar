@@ -2,7 +2,7 @@ import socket
 import threading
 import time
 
-from wifi_sonar.ingress import ingest_frames, udp_port_from_env
+from wifi_sonar.ingress import RollingSense, ingest_frames, udp_port_from_env
 from wifi_sonar.runtime import SonarConfig, SonarState
 from wifi_sonar.sources.esp32 import ESP32Source, udp_lines
 from wifi_sonar.sources.simulated import ScenarioEvent, SimulatedSource
@@ -59,3 +59,26 @@ def test_ingest_runs_the_detector_on_a_batch() -> None:
     assert state.capture_from_recent is True
     assert state.latest["state"] == "motion"
     assert state.calibration is not None
+
+
+def test_short_chunks_need_two_seconds_then_report_motion() -> None:
+    state = SonarState(config=SonarConfig(n_subcarriers=8))
+    sense = RollingSense(state)
+    frames = list(
+        SimulatedSource(
+            seed=3,
+            duration_s=6.0,
+            n_subcarriers=8,
+            events=(ScenarioEvent("walk", 0.0, 6.0),),
+        ).frames()
+    )
+    for frame in frames[:40]:
+        assert sense.add(frame) is None
+    assert state.calibration is None
+    states = []
+    for frame in frames[40:]:
+        snapshot = sense.add(frame)
+        if snapshot is not None:
+            states.append(snapshot["state"])
+    assert "motion" in states
+    assert sense.detector is not None

@@ -171,5 +171,5 @@ Consecuencias: el demo no cambia. El ingreso por UDP puede prender el flag cuand
 ### D-029 — UDP solo con puerto explícito (2026-10-23)
 Contexto: el parser de líneas CSI ya existía, pero `python -m wifi_sonar` siempre arrancaba el simulador y no abría un socket.
 Opciones consideradas: escuchar siempre el puerto 5500, o abrirlo solo cuando el operador lo pide.
-Decisión: `WIFI_SONAR_UDP_PORT` reemplaza el simulador en vivo por `udp_lines`. Sin la variable no se crea el socket. Cada lote de 50 frames corre el detector. `run()` calibra con `allow_recent=False`, así la primera caminata no se vuelve la línea base. `start_udp` prende `capture_from_recent` para que el botón de calibrar use los frames de esa placa.
-Consecuencias: el demo sin la variable no cambia. La histéresis no cruza el corte de lote. Un timeout de lectura no cuenta como caída para `iter_resilient`.
+Decisión: `WIFI_SONAR_UDP_PORT` reemplaza el simulador en vivo por `udp_lines`. Sin la variable no se crea el socket. Un solo detector mira los últimos 12 s; no hay estado hasta que la traza cubre 2 s. La calibración automática usa `allow_recent=False`, así la primera caminata no se vuelve la línea base. `start_udp` prende `capture_from_recent` para que el botón de calibrar use los frames de esa placa.
+Consecuencias: el demo sin la variable no cambia. La histéresis sí cruza los datagramas, porque el detector no se reinicia en cada uno. Un timeout de lectura no cuenta como caída para `iter_resilient`.
