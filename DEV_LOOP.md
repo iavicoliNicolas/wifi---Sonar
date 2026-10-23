@@ -224,6 +224,28 @@ Formato: `[ ] ID — Título` · *Depende de* · **Aceptación**
   README con capturas, guía de instalación, guía de calibración, límites conocidos, sección de privacidad.
   **Aceptación:** alguien externo puede reproducir el setup leyendo solo el README.
 
+### Fase 6 — Deuda sin hardware
+
+- [ ] **T-25 — Favicon**
+  *Depende de:* T-14
+  El navegador deja de pedir `/favicon.ico` en vano.
+  **Aceptación:** `GET /favicon.ico` responde 200 con una imagen.
+
+- [ ] **T-26 — Reloj de pared en el historial en vivo**
+  *Depende de:* T-12, T-14
+  Los eventos que publica el simulador del panel se guardan con hora real, así la retención puede borrarlos. El gráfico sigue mostrando el tiempo de la traza.
+  **Aceptación:** un test fija el reloj y el historial usa ese instante; el snapshot del socket conserva el tiempo de la traza.
+
+- [ ] **T-27 — Calibrar la fuente conectada**
+  *Depende de:* T-16
+  Si hay una captura reciente marcada como fuente real, la calibración sale de ahí. Si no, sigue el cuarto vacío simulado.
+  **Aceptación:** una fuente quieta distinta de la semilla 1 cambia los umbrales; sin fuente, el resultado sigue siendo el de la semilla 1.
+
+- [ ] **T-28 — UDP opcional**
+  *Depende de:* T-19, T-22
+  Con `WIFI_SONAR_UDP_PORT` el proceso lee líneas CSI propias. Apagado, sigue el simulador.
+  **Aceptación:** un datagrama de prueba se parsea; sin la variable no se abre el socket.
+
 ---
 
 ## 5. Plantilla de `PROGRESS.md`

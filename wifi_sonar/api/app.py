@@ -87,6 +87,10 @@ def create_app(state: SonarState | None = None) -> FastAPI:
     def panel() -> FileResponse:
         return FileResponse(WEB_ROOT / "index.html")
 
+    @app.get("/favicon.ico")
+    def favicon() -> FileResponse:
+        return FileResponse(WEB_ROOT / "favicon.png", media_type="image/png")
+
     app.mount("/static", StaticFiles(directory=WEB_ROOT), name="static")
 
     @app.websocket("/ws")

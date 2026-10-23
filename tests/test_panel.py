@@ -7,6 +7,11 @@ def test_panel_shell_is_served() -> None:
     client = TestClient(create_app(SonarState(config=SonarConfig(n_subcarriers=8))))
     page = client.get("/")
     assert page.status_code == 200
+    icon = client.get("/favicon.ico")
+    assert icon.status_code == 200
+    assert icon.headers["content-type"].startswith("image/png")
+    assert icon.content.startswith(b"\x89PNG")
+    assert 'rel="icon"' in page.text
     assert 'id="state"' in page.text
     assert "vacío" in page.text
     css = client.get("/static/style.css")
