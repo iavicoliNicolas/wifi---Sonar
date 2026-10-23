@@ -1,4 +1,4 @@
-.PHONY: dev test lint format
+.PHONY: dev test lint format eval
 
 PYTHON ?= python3
 VENV ?= .venv
@@ -22,3 +22,6 @@ lint: $(BIN)/pytest
 format: $(BIN)/pytest
 	$(BIN)/ruff check --fix .
 	$(BIN)/ruff format .
+
+eval: $(BIN)/pytest
+	$(BIN)/python -m wifi_sonar.eval

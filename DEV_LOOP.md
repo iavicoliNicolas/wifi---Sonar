@@ -136,7 +136,7 @@ Formato: `[ ] ID — Título` · *Depende de* · **Aceptación**
   Detecta presencia sin movimiento grande usando banda de respiración / cambio sostenido respecto de la línea base, con ventana más larga.
   **Aceptación:** estados `vacío | presencia | movimiento` con máquina de estados testeada.
 
-- [ ] **T-09 — Métricas de evaluación**
+- [x] **T-09 — Métricas de evaluación**
   *Depende de:* T-08
   Script que corre el pipeline sobre escenarios simulados y/o grabaciones etiquetadas y reporta precisión, recall y latencia.
   **Aceptación:** `make eval` imprime tabla de métricas; se guarda en `docs/eval.md`.

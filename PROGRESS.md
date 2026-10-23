@@ -1,7 +1,7 @@
 # PROGRESS
 
 ## Estado actual
-Fase: 1 — Núcleo de señal · Última tarea completada: T-08 · Próxima: T-09
+Fase: 1 — Núcleo de señal · Última tarea completada: T-09 · Próxima: T-10
 
 ## Inventario del repo (2026-10-22)
 
@@ -99,3 +99,10 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Tests agregados: cuarto vacío se queda en vacío; quietud termina en presencia y no marca movimiento; caminata termina en movimiento.
 - Problemas / deuda: la respiración del simulador es un tono de 0,25 Hz, no un modelo fisiológico.
 - Siguiente paso sugerido: T-09 — `make eval` con precisión, recall y latencia.
+
+### 2026-10-23 T-09 — Métricas de evaluación
+- Qué se hizo: `python -m wifi_sonar.eval` y `make eval` imprimen precisión, recall y latencia de movimiento y presencia, y guardan la tabla en `docs/eval.md` (D-013).
+- Archivos tocados: `wifi_sonar/eval.py`, `tests/test_eval.py`, `Makefile`, `docs/eval.md`, `README.md`, `DECISIONS.md`, `DEV_LOOP.md`, `PROGRESS.md`.
+- Tests agregados: el reporte tiene las dos clases con precisión y recall de al menos 0,95.
+- Problemas / deuda: el número es del simulador, no de una grabación etiquetada de una casa real.
+- Siguiente paso sugerido: T-10 — API HTTP.

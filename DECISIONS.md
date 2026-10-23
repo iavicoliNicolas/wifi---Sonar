@@ -71,3 +71,9 @@ Contexto: T-08 pide estados vacío, presencia y movimiento. La presencia sin cam
 Opciones consideradas: un tercer umbral de varianza, o reutilizar la energía de respiración ya calibrada.
 Decisión: la máquina de estados delega el movimiento en `MotionDetector`. Si no hay movimiento y la energía de respiración supera su umbral durante 2 s, el estado es presencia. Si no, vacío. El movimiento pisa a la presencia.
 Consecuencias: los tres estados se pueden testear con el simulador sin otra feature.
+
+### D-013 — Evaluación en dos trazas (2026-10-23)
+Contexto: T-09 pide `make eval` con precisión, recall y latencia sobre escenarios simulados.
+Opciones consideradas: una sola traza mezclada, o una traza por clase.
+Decisión: caminatas y quietudes se evalúan en trazas separadas. Mezclarlas en una sola normalización (la mediana de toda la captura) aplasta la quietud después de una caminata y genera falsos positivos de presencia. La latencia es el promedio hasta la primera muestra correcta, con 1,5 s de gracia para contar el acierto.
+Consecuencias: `docs/eval.md` se regenera con `make eval`. No es una métrica sobre CSI real.

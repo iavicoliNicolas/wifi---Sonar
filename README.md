@@ -11,8 +11,9 @@ Hace falta Python 3.11 o superior. En Debian o Ubuntu, el módulo `venv` está e
 ```bash
 make test
 make lint
+make eval
 ```
 
-`make test` crea `.venv`, instala el paquete en modo editable con las herramientas de desarrollo y corre pytest. `make dev` solo prepara ese entorno.
+`make test` crea `.venv`, instala el paquete en modo editable con las herramientas de desarrollo y corre pytest. `make dev` solo prepara ese entorno. `make eval` corre el simulador y escribe precisión, recall y latencia en `docs/eval.md`.
 
 Alcance: presencia, movimiento y zona aproximada dentro de tu casa, con consentimiento de quienes viven ahí. No identifica personas.
