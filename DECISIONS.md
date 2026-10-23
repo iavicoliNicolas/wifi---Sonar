@@ -125,3 +125,9 @@ Contexto: T-17 pide sliders de sensibilidad, ventana e histéresis que apliquen 
 Opciones consideradas: un webhook a cualquier URL, o limitarlo a esta máquina.
 Decisión: `python -m wifi_sonar` abre SQLite en `data/sonar.sqlite` (o `WIFI_SONAR_DB`). Sensibilidad es k, la ventana es `min_motion_s` y la histéresis es la del detector. El lazo en vivo abandona la traza en curso en cuanto el JSON del config cambia. El webhook solo acepta `http://127.0.0.1` o `http://localhost`. La notificación es la API del navegador y nace apagada.
 Consecuencias: no hay telemetría. Un webhook caído no tira el detector; el intento corta a los 0,5 s.
+
+### D-022 — Línea de texto del ESP32 (2026-10-23)
+Contexto: T-19 pide un `ESP32Source` por serial o UDP, parser tolerante y un documento de hardware. No hay una placa en esta máquina.
+Opciones consideradas: depender de `pyserial`, o parsear texto y dejar el transporte afuera.
+Decisión: la línea es `CSI <nodo> <timestamp> <rssi> <amps separadas por coma> <fases o ->`. Lo que no entra se descarta. `ESP32Source` recibe un iterable de líneas, así el test no abre un puerto. `udp_lines` es un socket de la stdlib para cuando la placa sea tuya. El flasheo apunta al ejemplo oficial esp-csi; este repo no distribuye firmware.
+Consecuencias: el desarrollo sigue sin hardware. El parser no identifica personas ni mira redes ajenas.

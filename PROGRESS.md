@@ -1,7 +1,7 @@
 # PROGRESS
 
 ## Estado actual
-Fase: 4 — Hardware · Última tarea completada: T-18 · Próxima: T-19
+Fase: 4 — Hardware · Última tarea completada: T-19 · Próxima: T-20
 
 ## Inventario del repo (2026-10-22)
 
@@ -169,3 +169,10 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Tests agregados: con la sesión en pausa una caminata no entra al historial; `DELETE /history` deja la base vacía y el config intacto; `/sensing` se refleja en `/status`. En el navegador el banner pasó a "sensado en pausa" y el borrado confirmado respondió 200.
 - Problemas / deuda: al reanudar, el simulador vuelve a grabar eventos. La pausa no apaga el transmisor de WiFi del router.
 - Siguiente paso sugerido: T-19 — adaptador ESP32 y el formato de línea.
+
+### 2026-10-23 T-19 — Adaptador ESP32
+- Qué se hizo: `parse_csi_line` lee el formato `CSI nodo timestamp rssi amps fases` y descarta líneas rotas. `ESP32Source` implementa `CSISource`. `docs/hardware.md` lista materiales y `firmware/README.md` dice cómo flashear el ejemplo oficial de Espressif, sin traer un binario (D-022).
+- Archivos tocados: `wifi_sonar/sources/esp32.py`, `tests/test_esp32.py`, `firmware/README.md`, `docs/hardware.md`, `DECISIONS.md`, `DEV_LOOP.md`, `PROGRESS.md`.
+- Tests agregados: una línea ficticia se parsea; basura, comentarios y fases de otro largo se saltan; el source se queda con las líneas buenas.
+- Problemas / deuda: nadie abre el UDP en el proceso del panel todavía. El simulador sigue siendo la fuente en vivo.
+- Siguiente paso sugerido: T-20 — varias zonas y fusión OR/votación.

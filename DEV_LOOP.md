@@ -192,7 +192,7 @@ Formato: `[ ] ID — Título` · *Depende de* · **Aceptación**
 
 ### Fase 4 — Hardware real
 
-- [ ] **T-19 — Adaptador ESP32 CSI**
+- [x] **T-19 — Adaptador ESP32 CSI**
   *Depende de:* T-03
   `ESP32Source` por serial y/o UDP. Incluir `firmware/` con instrucciones de flasheo (esp-csi) y formato de línea documentado. Parser tolerante a líneas corruptas.
   **Aceptación:** parser con tests sobre muestras reales/ficticias del formato; documento `docs/hardware.md` con lista de materiales y pasos.
