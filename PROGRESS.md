@@ -1,7 +1,7 @@
 # PROGRESS
 
 ## Estado actual
-Fase: 2 — Servicio y tiempo real · Última tarea completada: T-11 · Próxima: T-12
+Fase: 2 — Servicio y tiempo real · Última tarea completada: T-12 · Próxima: T-13
 
 ## Inventario del repo (2026-10-22)
 
@@ -120,3 +120,10 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Tests agregados: la cola de 2 se queda con los dos últimos; el stream de una caminata termina en movimiento; el cliente WebSocket recibe estado, score y amplitudes coherentes.
 - Problemas / deuda: el productor en vivo (hilo que lee la fuente todo el tiempo) llega con el servicio de T-22. Hoy el test empuja los snapshots.
 - Siguiente paso sugerido: T-12 — SQLite para eventos, calibraciones y config.
+
+### 2026-10-23 T-12 — Persistencia local
+- Qué se hizo: `Store` abre SQLite, crea el esquema 1 y guarda eventos, calibraciones y config. `SonarState` recarga eso al arrancar y `purge` borra eventos viejos (D-016).
+- Archivos tocados: `wifi_sonar/storage/db.py`, `wifi_sonar/storage/__init__.py`, `wifi_sonar/runtime.py`, `wifi_sonar/api/app.py`, `tests/test_storage.py`, `DECISIONS.md`, `DEV_LOOP.md`, `PROGRESS.md`.
+- Tests agregados: reabrir el archivo recupera config, calibración y el último estado; la retención borra los eventos anteriores al corte.
+- Problemas / deuda: la traza simulada numera el tiempo desde cero, así que la retención no la recorta sola. En vivo hay que guardar tiempo de reloj.
+- Siguiente paso sugerido: T-13 — grabar una sesión y reproducirla con el mismo resultado.

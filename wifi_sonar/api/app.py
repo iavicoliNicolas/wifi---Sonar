@@ -43,7 +43,7 @@ def create_app(state: SonarState | None = None) -> FastAPI:
 
     @app.put("/config")
     def put_config(config: SonarConfig) -> SonarConfig:
-        app.state.sonar.config = config
+        app.state.sonar.replace_config(config)
         return config
 
     @app.get("/history")

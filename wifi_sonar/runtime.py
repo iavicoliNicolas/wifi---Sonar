@@ -1,6 +1,7 @@
-"""In-memory sensing session shared by the HTTP API."""
+"""Sensing session shared by the HTTP API. Optional SQLite keeps it across restarts."""
 
 from dataclasses import dataclass, field
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -26,6 +27,7 @@ class SonarConfig(BaseModel):
 class SonarState:
     config: SonarConfig = field(default_factory=SonarConfig)
     calibration: Calibration | None = None
+    store: Any | None = None
     paused: bool = False
     latest: dict[str, object] = field(
         default_factory=lambda: {
@@ -38,6 +40,33 @@ class SonarState:
     )
     history: list[dict[str, object]] = field(default_factory=list)
 
+    def __post_init__(self) -> None:
+        if self.store is None:
+            return
+        raw_config = self.store.load_config()
+        if raw_config:
+            self.config = SonarConfig.model_validate_json(raw_config)
+        saved = self.store.latest_calibration()
+        if saved is not None:
+            self.calibration = saved
+            self.latest["calibrated"] = True
+        self.history = self.store.events()
+
+    def replace_config(self, config: SonarConfig) -> None:
+        self.config = config
+        if self.store is not None:
+            self.store.save_config(config.model_dump_json())
+
+    def purge(self, now: float) -> int:
+        if self.store is None:
+            cutoff = now - self.config.retention_s
+            before = len(self.history)
+            self.history = [item for item in self.history if float(item["ts"]) >= cutoff]
+            return before - len(self.history)
+        removed = int(self.store.purge(self.config.retention_s, now))
+        self.history = self.store.events()
+        return removed
+
     def calibrate(self, seconds: float) -> Calibration:
         if seconds <= 0:
             raise ValueError("seconds must be positive")
@@ -49,9 +78,12 @@ class SonarState:
         )
         self.calibration = calibrate(source, seconds, k=self.config.k)
         self.latest["calibrated"] = True
+        if self.store is not None:
+            self.store.save_calibration(self.calibration)
         return self.calibration
 
     def run(self, source: CSISource) -> None:
+        self.purge(self._now())
         if self.calibration is None:
             self.calibrate(max(12.0, self.config.min_presence_s + 10.0))
         detector = PresenceDetector(
@@ -76,3 +108,10 @@ class SonarState:
         }
         if not self.history or self.history[-1]["state"] != state:
             self.history.append({"ts": ts, "state": state, "score": score})
+            if self.store is not None:
+                self.store.add_event(ts, state, score)
+
+    def _now(self) -> float:
+        if self.history:
+            return float(self.history[-1]["ts"])
+        return 0.0

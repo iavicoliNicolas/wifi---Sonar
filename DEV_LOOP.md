@@ -153,7 +153,7 @@ Formato: `[ ] ID — Título` · *Depende de* · **Aceptación**
   Canal con frames reducidos, features y estado a ~10 Hz.
   **Aceptación:** cliente de test recibe estado coherente; backpressure manejado (descarta frames viejos).
 
-- [ ] **T-12 — Persistencia local**
+- [x] **T-12 — Persistencia local**
   *Depende de:* T-10
   SQLite para eventos (cambios de estado), calibraciones y config. Retención configurable.
   **Aceptación:** migración inicial, tests, limpieza automática por antigüedad.

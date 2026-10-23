@@ -89,3 +89,9 @@ Contexto: T-11 pide un canal a ~10 Hz con frames reducidos, features y estado, y
 Opciones consideradas: bloquear al productor cuando el cliente no lee, o una cola acotada que tira lo más viejo.
 Decisión: `FrameHub` tiene cola de 8 por cliente. Si está llena, se descarta el snapshot más viejo. `follow()` publica sobre el tiempo simulado a 10 Hz con 8 bins de amplitud (media por grupo de subportadoras), más estado y score.
 Consecuencias: un panel lento no frena el sensor. No se prometen 10 Hz de reloj de pared si la máquina está ocupada; el ritmo es el de la traza.
+
+### D-016 — SQLite en la stdlib (2026-10-23)
+Contexto: T-12 pide eventos de cambio de estado, calibraciones, config, una migración inicial y limpieza por antigüedad. D-001 reservó SQLite de la stdlib.
+Opciones consideradas: archivos JSON sueltos, o una base embebida.
+Decisión: un archivo SQLite con `meta.schema = 1` y tablas `events`, `calibrations`, `config`. `SonarState` lo usa si se le pasa un `Store`; si no, sigue en memoria para los tests chicos. `purge(retention_s, now)` borra eventos con `ts` anterior a `now - retention_s`. `run()` dispara esa limpieza.
+Consecuencias: no hay un servidor de base de datos. Los timestamps de una traza simulada son segundos de la traza; la retención tiene sentido cuando `ts` es tiempo de reloj.
