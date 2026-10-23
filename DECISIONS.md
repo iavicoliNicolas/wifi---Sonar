@@ -107,3 +107,9 @@ Contexto: T-14 pide el shell del panel, tema oscuro, estado de conexión y el in
 Opciones consideradas: un framework de UI, o HTML/CSS/JS estático.
 Decisión: archivos en `web/` servidos por FastAPI. El proceso `python -m wifi_sonar` publica el simulador a 10 Hz. Uvicorn necesita el paquete `websockets` para aceptar `/ws`; el `TestClient` no lo usa, por eso el hueco apareció recién al abrir el navegador.
 Consecuencias: no hay Node ni bundler. `make serve` levanta el panel en el puerto 8000.
+
+### D-019 — Gráficos del panel con buffers fijos (2026-10-23)
+Contexto: T-15 pide heatmap de amplitud, score con umbrales y línea de tiempo, a un ritmo que aguante 100 Hz de entrada sin perder el frame ni crecer la memoria en 10 minutos.
+Opciones consideradas: una librería de charts, o canvas 2D con buffers acotados.
+Decisión: sin librería nueva. El heatmap y el score se dibujan en canvas. Se guardan como máximo 180 muestras y 12 cambios de estado; lo viejo se descarta. Varios mensajes en el mismo frame se dibujan una sola vez, en el próximo `requestAnimationFrame`. La línea horizontal del score está en 0,5 porque el score del detector ya está recortado a 0–1. El título del estado se redujo para que los tres gráficos quepan en una ventana de unos 800 px de alto.
+Consecuencias: el panel no acumula la traza. El umbral pintado es una referencia visual, no un segundo detector.

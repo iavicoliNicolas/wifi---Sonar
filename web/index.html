@@ -15,6 +15,20 @@
       <p class="kicker">esta habitación</p>
       <h1 id="state" data-state="empty">vacío</h1>
       <p id="score" class="score">score 0.00</p>
+      <section class="charts">
+        <figure>
+          <figcaption>amplitud por subportadora</figcaption>
+          <canvas id="heatmap" width="720" height="120"></canvas>
+        </figure>
+        <figure>
+          <figcaption>score y umbral</figcaption>
+          <canvas id="scoreboard" width="720" height="120"></canvas>
+        </figure>
+        <figure>
+          <figcaption>línea de tiempo</figcaption>
+          <ol id="timeline"></ol>
+        </figure>
+      </section>
     </main>
     <script src="/static/app.js"></script>
   </body>

@@ -1,7 +1,7 @@
 # PROGRESS
 
 ## Estado actual
-Fase: 3 — Panel · Última tarea completada: T-14 · Próxima: T-15
+Fase: 3 — Panel · Última tarea completada: T-15 · Próxima: T-16
 
 ## Inventario del repo (2026-10-22)
 
@@ -141,3 +141,10 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Tests agregados: `GET /` sirve el shell y el CSS declara el color de movimiento. En el navegador, con el socket conectado, el indicador pasó por vacío, presencia y movimiento.
 - Problemas / deuda: todavía no hay gráficos ni calibración en la página.
 - Siguiente paso sugerido: T-15 — heatmap, score y línea de tiempo.
+
+### 2026-10-23 T-15 — Visualizaciones en vivo
+- Qué se hizo: el panel dibuja un heatmap de amplitud (subportadora × tiempo), el score con una línea de umbral en 0,5 y una línea de tiempo de cambios de estado. Los buffers quedan fijos (180 columnas y 12 eventos) y `requestAnimationFrame` junta ráfagas, así 100 Hz de entrada no acumula muestras ni redibuja más de una vez por frame (D-019). El estado grande se achicó para que los tres gráficos entren en la misma vista.
+- Archivos tocados: `web/index.html`, `web/style.css`, `web/app.js`, `tests/test_panel.py`, `DECISIONS.md`, `DEV_LOOP.md`, `PROGRESS.md`, `README.md`.
+- Tests agregados: el HTML sirve los tres gráficos y el script declara el tope y `requestAnimationFrame`. Un ensayo aparte de 60.000 mensajes (10 min a 100 Hz) dejó el heatmap en 180, el score en 180, la línea de tiempo en 12 y un solo frame pendiente.
+- Problemas / deuda: el umbral dibujado es 0,5 del score ya normalizado, no el umbral crudo de energía. Falta el favicon (`/favicon.ico` responde 404).
+- Siguiente paso sugerido: T-16 — asistente de calibración en el panel.

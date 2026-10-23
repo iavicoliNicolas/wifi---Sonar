@@ -12,5 +12,11 @@ def test_panel_shell_is_served() -> None:
     css = client.get("/static/style.css")
     assert css.status_code == 200
     assert "--motion" in css.text
+    assert "clamp(3.2rem, 8vw, 5.6rem)" in css.text
     script = client.get("/static/app.js")
     assert "/ws" in script.text
+    assert "HEAT_COLS = 180" in script.text
+    assert "requestAnimationFrame" in script.text
+    assert 'id="heatmap"' in page.text
+    assert 'id="scoreboard"' in page.text
+    assert 'id="timeline"' in page.text

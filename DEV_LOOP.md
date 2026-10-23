@@ -170,7 +170,7 @@ Formato: `[ ] ID — Título` · *Depende de* · **Aceptación**
   Layout, estado de conexión, indicador grande `vacío / presencia / movimiento`, tema oscuro.
   **Aceptación:** el panel se conecta al WS y refleja el estado en vivo con el simulador.
 
-- [ ] **T-15 — Visualizaciones en vivo**
+- [x] **T-15 — Visualizaciones en vivo**
   *Depende de:* T-14
   Heatmap de amplitud (subportadora × tiempo), gráfico de score con umbrales, timeline de eventos.
   **Aceptación:** 60 fps aceptables con 100 Hz de entrada; sin fugas de memoria tras 10 min.
