@@ -1,7 +1,7 @@
 # PROGRESS
 
 ## Estado actual
-Fase: 1 — Núcleo de señal · Última tarea completada: T-07 · Próxima: T-08
+Fase: 1 — Núcleo de señal · Última tarea completada: T-08 · Próxima: T-09
 
 ## Inventario del repo (2026-10-22)
 
@@ -92,3 +92,10 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Tests agregados: 20 caminatas, al menos 19 detectadas y el detector se apaga entre ellas; 10 min de cuarto vacío con como máximo un falso positivo; el score queda en 0–1.
 - Problemas / deuda: los umbrales salen del simulador. Con CSI real hay que recalibrar k.
 - Siguiente paso sugerido: T-08 — presencia quieta y estados vacío / presencia / movimiento.
+
+### 2026-10-23 T-08 — Detector de presencia
+- Qué se hizo: `PresenceDetector` emite `empty`, `presence` o `motion`. La presencia exige 2 s de banda de respiración sobre el umbral y cede si hay movimiento (D-012).
+- Archivos tocados: `wifi_sonar/detect/presence.py`, `wifi_sonar/detect/__init__.py`, `tests/test_presence.py`, `DECISIONS.md`, `DEV_LOOP.md`, `PROGRESS.md`.
+- Tests agregados: cuarto vacío se queda en vacío; quietud termina en presencia y no marca movimiento; caminata termina en movimiento.
+- Problemas / deuda: la respiración del simulador es un tono de 0,25 Hz, no un modelo fisiológico.
+- Siguiente paso sugerido: T-09 — `make eval` con precisión, recall y latencia.

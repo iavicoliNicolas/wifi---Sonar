@@ -65,3 +65,9 @@ Contexto: T-07 compara features con la línea base, con histéresis y duración 
 Opciones consideradas: umbral solo de varianza, o energía de la banda de movimiento.
 Decisión: hay movimiento si la energía de movimiento supera el umbral y además supera a la de respiración, y eso se sostiene 0,5 s. La histéresis (0,5) baja el umbral de apagado. El score es el exceso sobre el umbral de apagado, recortado a 0–1. El Hampel pasa a ser vectorizado para que 10 min de traza corran en el test.
 Consecuencias: una persona quieta no enciende el detector aunque algo de su tono se cuele en la banda de movimiento. El test de 20 caminatas y 10 min de vacío queda en verde.
+
+### D-012 — Presencia quieta (2026-10-23)
+Contexto: T-08 pide estados vacío, presencia y movimiento. La presencia sin caminata usa la banda de respiración y una ventana más larga.
+Opciones consideradas: un tercer umbral de varianza, o reutilizar la energía de respiración ya calibrada.
+Decisión: la máquina de estados delega el movimiento en `MotionDetector`. Si no hay movimiento y la energía de respiración supera su umbral durante 2 s, el estado es presencia. Si no, vacío. El movimiento pisa a la presencia.
+Consecuencias: los tres estados se pueden testear con el simulador sin otra feature.
