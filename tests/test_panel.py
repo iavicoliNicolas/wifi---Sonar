@@ -30,3 +30,4 @@ def test_panel_shell_is_served() -> None:
     assert "sensado activo" in page.text
     assert 'id="pause"' in page.text
     assert 'id="wipe"' in page.text
+    assert 'id="zones"' in page.text

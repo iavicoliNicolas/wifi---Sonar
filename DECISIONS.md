@@ -131,3 +131,9 @@ Contexto: T-19 pide un `ESP32Source` por serial o UDP, parser tolerante y un doc
 Opciones consideradas: depender de `pyserial`, o parsear texto y dejar el transporte afuera.
 Decisión: la línea es `CSI <nodo> <timestamp> <rssi> <amps separadas por coma> <fases o ->`. Lo que no entra se descarta. `ESP32Source` recibe un iterable de líneas, así el test no abre un puerto. `udp_lines` es un socket de la stdlib para cuando la placa sea tuya. El flasheo apunta al ejemplo oficial esp-csi; este repo no distribuye firmware.
 Consecuencias: el desarrollo sigue sin hardware. El parser no identifica personas ni mira redes ajenas.
+
+### D-023 — Fusión por zona (2026-10-23)
+Contexto: T-20 pide varios receptores, un estado por nodo, fusión OR o votación y zonas con nombre.
+Opciones consideradas: un mapa geométrico, o una lista de nombres con los nodos que miran esa habitación.
+Decisión: cada zona es un nombre y una lista de `node_id`. OR se queda con el estado más activo (movimiento > presencia > vacío). La votación es por mayoría y, si empatan, gana el más activo. Sin zonas configuradas, el panel muestra "esta habitación" con el estado del simulador.
+Consecuencias: no hay plano de la casa. Un nodo que no reporta no vota.

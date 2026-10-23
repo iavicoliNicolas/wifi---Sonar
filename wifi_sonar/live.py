@@ -5,6 +5,7 @@ import threading
 from fastapi import FastAPI
 
 from wifi_sonar.api.stream import follow
+from wifi_sonar.detect.zones import zone_states
 from wifi_sonar.sources.simulated import ScenarioEvent, SimulatedSource
 
 
@@ -35,9 +36,19 @@ def live_loop(app: FastAPI, stop: threading.Event, *, pace_s: float = 0.1) -> No
         for snapshot in follow(state, source, hz=10.0):
             if stop.is_set() or state.paused or state.config.model_dump_json() != token:
                 break
+            snapshot["zones"] = _zones(str(snapshot["state"]), state.config)
             app.state.hub.publish(snapshot)
             if pace_s > 0:
                 stop.wait(pace_s)
+
+
+def _zones(sample_state: str, config: object) -> list[dict[str, str]]:
+    zones = getattr(config, "zones", ())
+    mode = getattr(config, "fusion", "or")
+    if zones:
+        mapping = {"sim-0": sample_state}
+        return zone_states(mapping, [(zone.name, zone.node_ids) for zone in zones], mode)
+    return [{"name": "esta habitación", "state": sample_state}]
 
 
 def start_live(app: FastAPI) -> threading.Event:

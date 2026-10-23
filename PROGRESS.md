@@ -1,7 +1,7 @@
 # PROGRESS
 
 ## Estado actual
-Fase: 4 — Hardware · Última tarea completada: T-19 · Próxima: T-20
+Fase: 4 — Hardware · Última tarea completada: T-20 · Próxima: T-21
 
 ## Inventario del repo (2026-10-22)
 
@@ -176,3 +176,10 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Tests agregados: una línea ficticia se parsea; basura, comentarios y fases de otro largo se saltan; el source se queda con las líneas buenas.
 - Problemas / deuda: nadie abre el UDP en el proceso del panel todavía. El simulador sigue siendo la fuente en vivo.
 - Siguiente paso sugerido: T-20 — varias zonas y fusión OR/votación.
+
+### 2026-10-23 T-20 — Zonas
+- Qué se hizo: `fuse_states` combina nodos con OR (el estado más activo) o votación (mayoría; el empate queda en el más activo). El config guarda zonas y el modo. El panel lista cada zona (D-023).
+- Archivos tocados: `wifi_sonar/detect/zones.py`, `wifi_sonar/runtime.py`, `wifi_sonar/live.py`, `web/index.html`, `web/style.css`, `web/app.js`, `tests/test_zones.py`, `tests/test_panel.py`, `DECISIONS.md`, `DEV_LOOP.md`, `PROGRESS.md`.
+- Tests agregados: una caminata simulada en el living y un pasillo vacío fusionan en movimiento para la casa y vacío para el pasillo; la votación no deja que un solo nodo gane si está en minoría. En el navegador la zona "esta habitación" mostró el mismo estado que la palabra grande.
+- Problemas / deuda: el simulador en vivo sigue siendo un solo nodo (`sim-0`).
+- Siguiente paso sugerido: T-21 — modo RSSI degradado, marcado como sensibilidad baja.

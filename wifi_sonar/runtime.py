@@ -4,7 +4,7 @@ import json
 import urllib.error
 import urllib.request
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, Literal
 from urllib.parse import urlparse
 
 from pydantic import BaseModel, Field, field_validator
@@ -16,6 +16,11 @@ from wifi_sonar.sources.base import CSISource
 from wifi_sonar.sources.simulated import SimulatedSource
 
 
+class ZoneSpec(BaseModel):
+    name: str = Field(min_length=1, max_length=40)
+    node_ids: list[str] = Field(default_factory=list)
+
+
 class SonarConfig(BaseModel):
     hysteresis: float = Field(default=0.5, ge=0.0, lt=1.0)
     min_motion_s: float = Field(default=0.5, ge=0.0)
@@ -25,6 +30,8 @@ class SonarConfig(BaseModel):
     webhook_url: str | None = None
     sample_rate_hz: float = Field(default=50.0, gt=0.0)
     n_subcarriers: int = Field(default=52, ge=1, le=256)
+    fusion: Literal["or", "vote"] = "or"
+    zones: list[ZoneSpec] = Field(default_factory=list)
 
     @field_validator("webhook_url")
     @classmethod

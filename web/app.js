@@ -19,6 +19,18 @@ function apply(payload) {
   stateEl.dataset.state = payload.state;
   const score = Number(payload.score || 0);
   scoreEl.textContent = "score " + score.toFixed(2);
+  const zoneList = document.querySelector("#zones");
+  if (zoneList && Array.isArray(payload.zones)) {
+    zoneList.replaceChildren();
+    payload.zones.forEach((zone) => {
+      const item = document.createElement("li");
+      item.textContent = zone.name;
+      const mark = document.createElement("span");
+      mark.textContent = NAMES[zone.state] || zone.state;
+      item.append(mark);
+      zoneList.append(item);
+    });
+  }
   if (Array.isArray(payload.amplitudes)) {
     heat.push(payload.amplitudes.slice());
     if (heat.length > HEAT_COLS) heat.shift();
