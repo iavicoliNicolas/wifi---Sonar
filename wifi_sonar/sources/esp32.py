@@ -6,7 +6,8 @@ networks and it does not ship firmware.
 
 import socket
 import threading
-from collections.abc import Iterable, Iterator
+from collections.abc import Callable, Iterable, Iterator
+from typing import Any
 
 import numpy as np
 
@@ -74,19 +75,26 @@ def udp_lines(
     *,
     host: str = "0.0.0.0",
     stop: threading.Event | None = None,
+    socket_factory: Callable[..., Any] | None = None,
 ) -> Iterator[str]:
     """Yield datagrams as text. Bind this only when your own board is sending."""
     if port < 1 or port > 65535:
         raise ValueError("port must be between 1 and 65535")
-    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    opener = socket.socket if socket_factory is None else socket_factory
+    sock = opener(socket.AF_INET, socket.SOCK_DGRAM)
     sock.settimeout(0.3)
     try:
-        sock.bind((host, port))
+        try:
+            sock.bind((host, port))
+        except OSError as exc:
+            raise ConnectionError("udp socket closed") from exc
         while stop is None or not stop.is_set():
             try:
                 data, _addr = sock.recvfrom(65535)
             except TimeoutError:
                 continue
+            except OSError as exc:
+                raise ConnectionError("udp socket closed") from exc
             text = data.decode("utf-8", errors="replace")
             for line in text.splitlines():
                 if line.strip():

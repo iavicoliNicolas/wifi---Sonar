@@ -1,8 +1,12 @@
+import json
+import logging
 import socket
 import threading
 import time
 
-from wifi_sonar.ingress import RollingSense, ingest_frames, udp_port_from_env
+from wifi_sonar.api import create_app
+from wifi_sonar.ingress import RollingSense, consume_udp, ingest_frames, udp_port_from_env
+from wifi_sonar.ops import iter_resilient
 from wifi_sonar.runtime import SonarConfig, SonarState
 from wifi_sonar.sources.esp32 import ESP32Source, udp_lines
 from wifi_sonar.sources.simulated import ScenarioEvent, SimulatedSource
@@ -82,3 +86,87 @@ def test_short_chunks_need_two_seconds_then_report_motion() -> None:
             states.append(snapshot["state"])
     assert "motion" in states
     assert sense.detector is not None
+
+
+class _AlwaysDown:
+    def frames(self):
+        raise ConnectionError("udp socket closed")
+
+
+def test_repeated_drops_mark_the_source_down() -> None:
+    app = create_app(SonarState(config=SonarConfig(n_subcarriers=8)))
+    app.state.source_status = "up"
+    consume_udp(app, _AlwaysDown, threading.Event())
+    assert app.state.source_status == "down"
+
+
+def test_a_dead_socket_reopens_and_parses_the_next_datagram(caplog) -> None:
+    probe = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    probe.bind(("127.0.0.1", 0))
+    port = probe.getsockname()[1]
+    probe.close()
+    made = {"n": 0}
+
+    class _Proxy:
+        def __init__(self, inner: socket.socket, *, dead: bool) -> None:
+            self._inner = inner
+            self._dead = dead
+
+        def settimeout(self, value: float | None) -> None:
+            self._inner.settimeout(value)
+
+        def bind(self, address: tuple[str, int]) -> None:
+            self._inner.bind(address)
+
+        def recvfrom(self, bufsize: int, flags: int = 0):
+            if self._dead:
+                raise OSError(9, "Bad file descriptor")
+            return self._inner.recvfrom(bufsize, flags)
+
+        def close(self) -> None:
+            self._inner.close()
+
+    def factory(*args, **kwargs):
+        made["n"] += 1
+        inner = socket.socket(*args, **kwargs)
+        return _Proxy(inner, dead=made["n"] == 1)
+
+    stop = threading.Event()
+    found: list = []
+    payload = b"CSI living 1.0 -40 1,1,1 -\n"
+    sender = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+    def send() -> None:
+        for _ in range(40):
+            if found or stop.is_set():
+                return
+            sender.sendto(payload, ("127.0.0.1", port))
+            time.sleep(0.05)
+
+    threading.Thread(target=send, daemon=True).start()
+
+    def give_up() -> None:
+        time.sleep(3)
+        stop.set()
+
+    threading.Thread(target=give_up, daemon=True).start()
+    caplog.set_level(logging.INFO, logger="wifi_sonar")
+
+    def open_source() -> ESP32Source:
+        return ESP32Source(udp_lines(port, host="127.0.0.1", stop=stop, socket_factory=factory))
+
+    try:
+        for frame in iter_resilient(open_source, retries=2):
+            found.append(frame)
+            stop.set()
+            break
+    finally:
+        stop.set()
+        sender.close()
+    assert found and found[0].node_id == "living"
+    assert found[0].rssi == -40
+    dropped = [
+        json.loads(record.message) for record in caplog.records if record.name == "wifi_sonar"
+    ]
+    assert dropped and dropped[0]["event"] == "source dropped"
+    assert made["n"] >= 2

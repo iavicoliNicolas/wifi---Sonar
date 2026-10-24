@@ -3,6 +3,7 @@
 import os
 import threading
 import time
+from collections.abc import Callable
 
 from fastapi import FastAPI
 
@@ -12,6 +13,7 @@ from wifi_sonar.ops import iter_resilient
 from wifi_sonar.pipeline.features import extract_features
 from wifi_sonar.pipeline.preprocess import preprocess
 from wifi_sonar.runtime import SonarState
+from wifi_sonar.sources.base import CSISource
 from wifi_sonar.sources.esp32 import ESP32Source, udp_lines
 from wifi_sonar.sources.frame import CSIFrame
 from wifi_sonar.sources.listed import ListedSource
@@ -117,22 +119,32 @@ class RollingSense:
             )
 
 
-def start_udp(app: FastAPI, port: int) -> threading.Event:
-    stop = threading.Event()
-    app.state.source_status = "up"
-    app.state.sonar.capture_from_recent = True
+def consume_udp(app: FastAPI, open_source: Callable[[], CSISource], stop: threading.Event) -> None:
+    """Read frames until ``stop``. A dropped link is retried; giving up marks the source down."""
     sense = RollingSense(app.state.sonar)
-
-    def open_source() -> ESP32Source:
-        return ESP32Source(udp_lines(port, stop=stop))
-
-    def loop() -> None:
+    try:
         for frame in iter_resilient(open_source):
             if stop.is_set():
                 return
             snapshot = sense.add(frame)
             if snapshot is not None:
                 app.state.hub.publish(snapshot)
+    except ConnectionError:
+        app.state.source_status = "down"
 
-    threading.Thread(target=loop, name="wifi-sonar-udp", daemon=True).start()
+
+def start_udp(app: FastAPI, port: int) -> threading.Event:
+    stop = threading.Event()
+    app.state.source_status = "up"
+    app.state.sonar.capture_from_recent = True
+
+    def open_source() -> ESP32Source:
+        return ESP32Source(udp_lines(port, stop=stop))
+
+    threading.Thread(
+        target=consume_udp,
+        args=(app, open_source, stop),
+        name="wifi-sonar-udp",
+        daemon=True,
+    ).start()
     return stop

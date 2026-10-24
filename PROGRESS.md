@@ -1,7 +1,7 @@
 # PROGRESS
 
 ## Estado actual
-Fase: 6 — Deuda sin hardware · Última tarea completada: T-28 · Próxima: ninguna sin hardware
+Fase: 7 — Robustez del ingreso real · Última tarea completada: T-29 · Próxima: T-30
 
 ## Inventario del repo (2026-10-22)
 
@@ -238,4 +238,11 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Archivos tocados: `wifi_sonar/sources/esp32.py`, `wifi_sonar/ingress.py`, `wifi_sonar/__main__.py`, `wifi_sonar/runtime.py`, `tests/test_udp.py`, `.env.example`, `README.md`, `docs/hardware.md`, `firmware/README.md`, `DECISIONS.md`, `DEV_LOOP.md`, `PROGRESS.md`.
 - Tests agregados: sin la variable el puerto es `None`; un datagrama `CSI living ...` se vuelve un frame; un lote con caminata deja el estado en movimiento y no usa esa caminata como línea base; trozos de menos de 2 s no calibran y, al completar la caminata, el mismo detector informa movimiento.
 - Problemas / deuda: un timeout del socket no dispara `iter_resilient`, porque se traga adentro de `udp_lines`. La imagen de compose sigue siendo la de T-23 hasta un rebuild.
-- Siguiente paso sugerido: ninguno sin hardware. El próximo trabajo real es conectar un ESP32 propio y exportar `WIFI_SONAR_UDP_PORT`.
+- Siguiente paso sugerido: T-29 — si el socket UDP muere, volver a abrirlo.
+
+### 2026-10-23 T-29 — Reabrir el UDP si el socket muere
+- Qué se hizo: un timeout sin datagramas sigue en silencio. Un `OSError` al leer o al hacer bind se vuelve `ConnectionError`, y `iter_resilient` abre el socket otra vez (D-030). Si las caídas pasan el límite, `/health` queda en `down` y el proceso no se cae.
+- Archivos tocados: `wifi_sonar/sources/esp32.py`, `wifi_sonar/ingress.py`, `tests/test_udp.py`, `DECISIONS.md`, `DEV_LOOP.md`, `PROGRESS.md`, `README.md`.
+- Tests agregados: el primer socket falla al leer y el datagrama siguiente igual se parsea, con un log `source dropped`; caídas repetidas dejan la fuente en `down`.
+- Problemas / deuda: el ingreso sigue publicando una sola zona, «esta habitación», aunque la config tenga un mapa.
+- Siguiente paso sugerido: T-30 — fusionar zonas por `node_id` en el ingreso CSI.

@@ -173,3 +173,9 @@ Contexto: el parser de líneas CSI ya existía, pero `python -m wifi_sonar` siem
 Opciones consideradas: escuchar siempre el puerto 5500, o abrirlo solo cuando el operador lo pide.
 Decisión: `WIFI_SONAR_UDP_PORT` reemplaza el simulador en vivo por `udp_lines`. Sin la variable no se crea el socket. Un solo detector mira los últimos 12 s; no hay estado hasta que la traza cubre 2 s. La calibración automática usa `allow_recent=False`, así la primera caminata no se vuelve la línea base. `start_udp` prende `capture_from_recent` para que el botón de calibrar use los frames de esa placa.
 Consecuencias: el demo sin la variable no cambia. La histéresis sí cruza los datagramas, porque el detector no se reinicia en cada uno. Un timeout de lectura no cuenta como caída para `iter_resilient`.
+
+### D-030 — Un socket UDP muerto se vuelve a abrir (2026-10-23)
+Contexto: el timeout de `udp_lines` es el silencio normal cuando la placa no manda nada. Un `OSError` (el descriptor se cerró, o el puerto no se pudo tomar) mataba el hilo y el panel se quedaba sin fuente.
+Opciones consideradas: reabrir también en cada timeout, o tratar solo el error de verdad como caída.
+Decisión: el timeout sigue adentro del lector. El `OSError` se traduce a `ConnectionError` para que `iter_resilient` abra otro socket. Al agotar los reintentos, `source` pasa a `down`. El proceso HTTP sigue.
+Consecuencias: un datagrama posterior a la caída se parsea. Un puerto ocupado para siempre deja la fuente en `down` en vez de girar sin límite.

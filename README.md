@@ -70,7 +70,7 @@ Los cambios se guardan y el simulador los toma en la traza siguiente.
 - CSI a través de varias paredes y pisos deja de servir. No promete ver el edificio.
 - RSSI no ve presencia quieta.
 - El umbral dibujado en el gráfico de score es 0,5 de un score ya normalizado de 0 a 1.
-- El ingreso UDP decide con una ventana de 2 s y recuerda los últimos 12 s. Un corte del socket no se ve como caída: el timeout se resuelve adentro de la lectura.
+- El ingreso UDP decide con una ventana de 2 s y recuerda los últimos 12 s. Un silencio no es una caída. Si el socket muere, se abre de nuevo; si eso se repite, `/health` pasa a `down` y el proceso sigue.
 
 ## Desarrollo
 

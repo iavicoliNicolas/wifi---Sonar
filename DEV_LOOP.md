@@ -246,6 +246,18 @@ Formato: `[ ] ID — Título` · *Depende de* · **Aceptación**
   Con `WIFI_SONAR_UDP_PORT` el proceso lee líneas CSI propias. Apagado, sigue el simulador.
   **Aceptación:** un datagrama de prueba se parsea; sin la variable no se abre el socket.
 
+### Fase 7 — Robustez del ingreso real
+
+- [x] **T-29 — Reabrir el UDP si el socket muere**
+  *Depende de:* T-22, T-28
+  Un timeout sin datagramas sigue en silencio. Un error del socket cuenta como caída y `iter_resilient` vuelve a abrirlo. Si las caídas se agotan, `/health` dice `down` y el proceso sigue.
+  **Aceptación:** después de un socket muerto, el datagrama siguiente se parsea; sin error no hay reapertura.
+
+- [ ] **T-30 — Zonas en el ingreso CSI**
+  *Depende de:* T-20, T-28
+  Cada `node_id` tiene su propia ventana. El snapshot fusiona con la config (OR o votación). Sin zonas, sigue «esta habitación».
+  **Aceptación:** dos nodos simulados, uno caminando y otro vacío, publican living en movimiento y pasillo vacío.
+
 ---
 
 ## 5. Plantilla de `PROGRESS.md`
