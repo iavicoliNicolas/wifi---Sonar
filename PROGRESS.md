@@ -1,7 +1,7 @@
 # PROGRESS
 
 ## Estado actual
-Fase: 7 — Robustez del ingreso real · Última tarea completada: T-29 · Próxima: T-30
+Fase: 7 — Robustez del ingreso real · Última tarea completada: T-30 · Próxima: T-31
 
 ## Inventario del repo (2026-10-22)
 
@@ -246,3 +246,10 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Tests agregados: el primer socket falla al leer y el datagrama siguiente igual se parsea, con un log `source dropped`; caídas repetidas dejan la fuente en `down`.
 - Problemas / deuda: el ingreso sigue publicando una sola zona, «esta habitación», aunque la config tenga un mapa.
 - Siguiente paso sugerido: T-30 — fusionar zonas por `node_id` en el ingreso CSI.
+
+### 2026-10-23 T-30 — Zonas en el ingreso CSI
+- Qué se hizo: cada `node_id` tiene su ventana de 12 s y su detector. El estado de la habitación es la fusión (OR o votación). Si hay zonas en la config, el snapshot las publica; si no, sigue «esta habitación» (D-031).
+- Archivos tocados: `wifi_sonar/ingress.py`, `tests/test_udp.py`, `DECISIONS.md`, `DEV_LOOP.md`, `PROGRESS.md`, `README.md`.
+- Tests agregados: un nodo que camina y otro vacío, con zonas living y pasillo, publican movimiento y vacío. El estado de la habitación queda en movimiento.
+- Problemas / deuda: el simulador del panel sigue siendo un solo nodo (`sim-0`). No hay botón para guardar la traza reciente.
+- Siguiente paso sugerido: T-31 — botón para grabar en disco lo que ya está en memoria.

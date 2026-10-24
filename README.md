@@ -12,7 +12,7 @@ Tres estados, en tu casa y con acuerdo de quienes viven ahí:
 - **presencia**: alguien quieto. Usa una banda lenta, del estilo de la respiración.
 - **movimiento**: alguien caminando.
 
-Con más de un receptor se puede resumir por zona (living, pasillo) con fusión OR o por votación. El modo RSSI, si lo activás, solo mira dispositivos que vos nombrás y el panel lo marca como sensibilidad baja: no distingue a alguien quieto.
+Con más de un receptor se puede resumir por zona (living, pasillo) con fusión OR o por votación. Cada placa tiene su propia ventana; el panel muestra el mapa de zonas de la configuración. Sin ese mapa hay una sola habitación. El modo RSSI, si lo activás, solo mira dispositivos que vos nombrás y el panel lo marca como sensibilidad baja: no distingue a alguien quieto.
 
 ## Privacidad
 

@@ -253,10 +253,15 @@ Formato: `[ ] ID — Título` · *Depende de* · **Aceptación**
   Un timeout sin datagramas sigue en silencio. Un error del socket cuenta como caída y `iter_resilient` vuelve a abrirlo. Si las caídas se agotan, `/health` dice `down` y el proceso sigue.
   **Aceptación:** después de un socket muerto, el datagrama siguiente se parsea; sin error no hay reapertura.
 
-- [ ] **T-30 — Zonas en el ingreso CSI**
+- [x] **T-30 — Zonas en el ingreso CSI**
   *Depende de:* T-20, T-28
   Cada `node_id` tiene su propia ventana. El snapshot fusiona con la config (OR o votación). Sin zonas, sigue «esta habitación».
   **Aceptación:** dos nodos simulados, uno caminando y otro vacío, publican living en movimiento y pasillo vacío.
+
+- [ ] **T-31 — Grabar la traza reciente**
+  *Depende de:* T-13, T-14
+  Un botón guarda en disco los frames que ya están en memoria, con el mismo JSONL del replay. No arranca una grabación nueva ni manda nada fuera de la máquina.
+  **Aceptación:** un POST deja un archivo que el replay lee; sin frames responde que no hay nada para guardar. El panel tiene el botón.
 
 ---
 

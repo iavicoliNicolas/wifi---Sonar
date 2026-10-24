@@ -179,3 +179,9 @@ Contexto: el timeout de `udp_lines` es el silencio normal cuando la placa no man
 Opciones consideradas: reabrir también en cada timeout, o tratar solo el error de verdad como caída.
 Decisión: el timeout sigue adentro del lector. El `OSError` se traduce a `ConnectionError` para que `iter_resilient` abra otro socket. Al agotar los reintentos, `source` pasa a `down`. El proceso HTTP sigue.
 Consecuencias: un datagrama posterior a la caída se parsea. Un puerto ocupado para siempre deja la fuente en `down` en vez de girar sin límite.
+
+### D-031 — Una ventana por nodo (2026-10-23)
+Contexto: el ingreso UDP mezclaba todos los receptores en una sola traza y publicaba siempre «esta habitación». Dos placas con el mismo segundo de reloj se pisaban.
+Opciones consideradas: un detector global, o uno por `node_id` y después la fusión que ya existe.
+Decisión: cada nodo guarda sus últimos 12 s y su detector. El estado que se guarda es la fusión de esos nodos, con el modo de la config. Las zonas salen del mapa; sin mapa hay una sola habitación.
+Consecuencias: living puede estar en movimiento y el pasillo vacío en el mismo snapshot. El simulador del panel sigue siendo un nodo.

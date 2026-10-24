@@ -7,7 +7,7 @@ import time
 from wifi_sonar.api import create_app
 from wifi_sonar.ingress import RollingSense, consume_udp, ingest_frames, udp_port_from_env
 from wifi_sonar.ops import iter_resilient
-from wifi_sonar.runtime import SonarConfig, SonarState
+from wifi_sonar.runtime import SonarConfig, SonarState, ZoneSpec
 from wifi_sonar.sources.esp32 import ESP32Source, udp_lines
 from wifi_sonar.sources.simulated import ScenarioEvent, SimulatedSource
 
@@ -85,7 +85,43 @@ def test_short_chunks_need_two_seconds_then_report_motion() -> None:
         if snapshot is not None:
             states.append(snapshot["state"])
     assert "motion" in states
-    assert sense.detector is not None
+    assert sense.tracks["sim-0"].detector is not None
+
+
+def test_two_nodes_keep_their_own_zones() -> None:
+    state = SonarState(
+        config=SonarConfig(
+            n_subcarriers=8,
+            zones=[
+                ZoneSpec(name="living", node_ids=["living"]),
+                ZoneSpec(name="pasillo", node_ids=["hall"]),
+            ],
+        )
+    )
+    sense = RollingSense(state)
+    walk = SimulatedSource(
+        seed=3,
+        duration_s=6.0,
+        n_subcarriers=8,
+        events=(ScenarioEvent("walk", 0.0, 6.0),),
+        node_id="living",
+    ).frames()
+    quiet = SimulatedSource(
+        seed=3,
+        duration_s=6.0,
+        n_subcarriers=8,
+        node_id="hall",
+    ).frames()
+    last = None
+    for left, right in zip(walk, quiet, strict=True):
+        for frame in (left, right):
+            snapshot = sense.add(frame)
+            if snapshot is not None:
+                last = snapshot
+    assert last is not None
+    by_name = {zone["name"]: zone["state"] for zone in last["zones"]}
+    assert by_name == {"living": "motion", "pasillo": "empty"}
+    assert last["state"] == "motion"
 
 
 class _AlwaysDown:
