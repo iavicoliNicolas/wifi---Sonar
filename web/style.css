@@ -65,7 +65,7 @@ body {
   color: #c45b4a;
 }
 
-.controls { display: flex; gap: 0.5rem; margin-top: 0.6rem; }
+.controls { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.6rem; align-items: center; }
 
 .controls button {
   background: transparent;
@@ -195,7 +195,7 @@ canvas {
   padding: 0.35rem 0.5rem;
 }
 
-#config-note { min-height: 1rem; color: var(--live); font-size: 0.8rem; }
+#config-note, #record-note { min-height: 1rem; color: var(--live); font-size: 0.8rem; }
 
 .settings h2,
 .wizard h2 {

@@ -1,6 +1,7 @@
 """Record a CSI session with manual labels and play it back through the same detector."""
 
 import json
+import time
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -10,6 +11,7 @@ from wifi_sonar.pipeline.features import extract_features
 from wifi_sonar.pipeline.preprocess import preprocess
 from wifi_sonar.sources.base import CSISource
 from wifi_sonar.sources.frame import CSIFrame
+from wifi_sonar.sources.listed import ListedSource
 from wifi_sonar.sources.replay import ReplaySource, dump_jsonl
 
 
@@ -21,6 +23,17 @@ class Label:
 
     def to_dict(self) -> dict[str, object]:
         return {"kind": self.kind, "start_s": self.start_s, "duration_s": self.duration_s}
+
+
+def save_recent(frames: list[CSIFrame], directory: str | Path) -> Path:
+    """Write frames already in memory. This does not open a new capture."""
+    if len(frames) < 2:
+        raise ValueError("nothing to record")
+    folder = Path(directory)
+    folder.mkdir(parents=True, exist_ok=True)
+    path = folder / f"sesion-{time.time_ns()}.jsonl"
+    record_session(ListedSource(frames), path, [])
+    return path
 
 
 def record_session(source: CSISource, path: str | Path, labels: list[Label]) -> None:

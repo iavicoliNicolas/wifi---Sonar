@@ -258,7 +258,7 @@ Formato: `[ ] ID — Título` · *Depende de* · **Aceptación**
   Cada `node_id` tiene su propia ventana. El snapshot fusiona con la config (OR o votación). Sin zonas, sigue «esta habitación».
   **Aceptación:** dos nodos simulados, uno caminando y otro vacío, publican living en movimiento y pasillo vacío.
 
-- [ ] **T-31 — Grabar la traza reciente**
+- [x] **T-31 — Grabar la traza reciente**
   *Depende de:* T-13, T-14
   Un botón guarda en disco los frames que ya están en memoria, con el mismo JSONL del replay. No arranca una grabación nueva ni manda nada fuera de la máquina.
   **Aceptación:** un POST deja un archivo que el replay lee; sin frames responde que no hay nada para guardar. El panel tiene el botón.

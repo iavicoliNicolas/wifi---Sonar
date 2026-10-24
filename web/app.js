@@ -243,6 +243,8 @@ notifyBox.addEventListener("change", () => {
 
 const sensingEl = document.querySelector("#sensing");
 const pauseButton = document.querySelector("#pause");
+const recordButton = document.querySelector("#record");
+const recordNote = document.querySelector("#record-note");
 const wipeButton = document.querySelector("#wipe");
 const retentionEl = document.querySelector("#retention");
 
@@ -265,6 +267,17 @@ pauseButton.addEventListener("click", async () => {
     body: JSON.stringify({ paused: paused }),
   });
   showSensing(paused);
+});
+
+recordButton.addEventListener("click", async () => {
+  recordNote.textContent = "guardando…";
+  const response = await fetch("/recording", { method: "POST" });
+  if (!response.ok) {
+    recordNote.textContent = "no hay traza reciente";
+    return;
+  }
+  const body = await response.json();
+  recordNote.textContent = "traza guardada · " + body.frames + " muestras";
 });
 
 wipeButton.addEventListener("click", async () => {

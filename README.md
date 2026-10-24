@@ -17,7 +17,7 @@ Con más de un receptor se puede resumir por zona (living, pasillo) con fusión 
 ## Privacidad
 
 - El aviso **sensado activo** queda visible mientras corre.
-- **Pausar** corta la ingesta. **Borrar historial** elimina eventos y calibraciones de esta máquina. La configuración queda.
+- **Pausar** corta la ingesta. **Grabar traza** guarda en esta máquina los frames que ya están en memoria, para repetirlos con el replay. **Borrar historial** elimina eventos y calibraciones. La configuración queda.
 - Los eventos se borran solos según la retención (7 días por defecto).
 - Un webhook, si lo configurás, solo puede ser `http://127.0.0.1` o `http://localhost`.
 - No uses esto para mirar la red de un vecino u otra unidad del edificio.

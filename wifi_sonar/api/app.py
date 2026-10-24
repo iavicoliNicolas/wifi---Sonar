@@ -9,9 +9,17 @@ from pydantic import BaseModel, Field
 
 from wifi_sonar.api.stream import FrameHub
 from wifi_sonar.detect.calibrate import quality_report
+from wifi_sonar.recording import save_recent
 from wifi_sonar.runtime import SonarConfig, SonarState
 
 WEB_ROOT = Path(__file__).resolve().parents[2] / "web"
+
+
+def _recordings_dir(sonar: SonarState) -> Path:
+    store = sonar.store
+    if store is not None:
+        return Path(store.path).parent / "recordings"
+    return Path("data/recordings")
 
 
 class CalibrateBody(BaseModel):
@@ -75,6 +83,16 @@ def create_app(state: SonarState | None = None) -> FastAPI:
     def wipe_history() -> dict[str, bool]:
         app.state.sonar.wipe()
         return {"cleared": True}
+
+    @app.post("/recording")
+    def recording() -> dict[str, object]:
+        sonar = app.state.sonar
+        folder = _recordings_dir(sonar)
+        try:
+            path = save_recent(list(sonar.recent), folder)
+        except ValueError as exc:
+            raise HTTPException(status_code=409, detail="no hay traza reciente") from exc
+        return {"frames": len(sonar.recent), "file": path.name}
 
     @app.post("/sensing")
     def set_sensing(body: SensingBody) -> dict[str, object]:

@@ -77,6 +77,8 @@ def follow(
         return []
     if state.calibration is None:
         state.calibrate(12.0)
+    for frame in frames:
+        state.remember(frame)
     assert state.calibration is not None
     detector = PresenceDetector(
         state.calibration,

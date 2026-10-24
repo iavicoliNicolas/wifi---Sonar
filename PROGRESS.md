@@ -1,7 +1,7 @@
 # PROGRESS
 
 ## Estado actual
-Fase: 7 — Robustez del ingreso real · Última tarea completada: T-30 · Próxima: T-31
+Fase: 7 — Robustez del ingreso real · Última tarea completada: T-31 · Próxima: ninguna sin hardware
 
 ## Inventario del repo (2026-10-22)
 
@@ -253,3 +253,10 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Tests agregados: un nodo que camina y otro vacío, con zonas living y pasillo, publican movimiento y vacío. El estado de la habitación queda en movimiento.
 - Problemas / deuda: el simulador del panel sigue siendo un solo nodo (`sim-0`). No hay botón para guardar la traza reciente.
 - Siguiente paso sugerido: T-31 — botón para grabar en disco lo que ya está en memoria.
+
+### 2026-10-23 T-31 — Grabar la traza reciente
+- Qué se hizo: `POST /recording` escribe el buffer en memoria a un JSONL local y el panel tiene el botón. Sin frames responde 409. El simulador en vivo ahora guarda esos frames en memoria, sin marcarlos como fuente de calibración (D-032).
+- Archivos tocados: `wifi_sonar/recording.py`, `wifi_sonar/api/app.py`, `wifi_sonar/api/stream.py`, `web/index.html`, `web/app.js`, `web/style.css`, `tests/test_recording.py`, `tests/test_panel.py`, `DECISIONS.md`, `DEV_LOOP.md`, `PROGRESS.md`, `README.md`.
+- Tests agregados: el POST vacío responde 409; con frames, el replay lee los mismos timestamps. El HTML incluye el botón.
+- Problemas / deuda: el simulador del panel sigue siendo un solo nodo. La imagen de compose es la de T-23 hasta un rebuild.
+- Siguiente paso sugerido: ninguno sin hardware. Con una placa, exportar `WIFI_SONAR_UDP_PORT`.

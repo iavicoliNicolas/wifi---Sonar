@@ -185,3 +185,9 @@ Contexto: el ingreso UDP mezclaba todos los receptores en una sola traza y publi
 Opciones consideradas: un detector global, o uno por `node_id` y después la fusión que ya existe.
 Decisión: cada nodo guarda sus últimos 12 s y su detector. El estado que se guarda es la fusión de esos nodos, con el modo de la config. Las zonas salen del mapa; sin mapa hay una sola habitación.
 Consecuencias: living puede estar en movimiento y el pasillo vacío en el mismo snapshot. El simulador del panel sigue siendo un nodo.
+
+### D-032 — Grabar solo lo que ya está en memoria (2026-10-23)
+Contexto: T-13 graba una sesión, pero el panel no tenía botón. Grabar «desde ahora» durante la demo mezclaría la caminata del simulador con una captura vacía.
+Opciones consideradas: un botón que abre una captura nueva, o guardar el buffer que el ingreso ya tiene.
+Decisión: `POST /recording` escribe `recent` a `data/recordings/` (o al lado de la base) en el JSONL del replay. Si hay menos de dos frames, responde 409. El simulador en vivo llama a `remember` para que el botón tenga datos, y no prende `capture_from_recent`.
+Consecuencias: calibrar en la demo sigue usando el cuarto vacío. El archivo no sale de la máquina. No hay etiquetas manuales en ese botón: el sidecar queda vacío.
