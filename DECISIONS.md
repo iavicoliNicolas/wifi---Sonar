@@ -191,3 +191,9 @@ Contexto: T-13 graba una sesión, pero el panel no tenía botón. Grabar «desde
 Opciones consideradas: un botón que abre una captura nueva, o guardar el buffer que el ingreso ya tiene.
 Decisión: `POST /recording` escribe `recent` a `data/recordings/` (o al lado de la base) en el JSONL del replay. Si hay menos de dos frames, responde 409. El simulador en vivo llama a `remember` para que el botón tenga datos, y no prende `capture_from_recent`.
 Consecuencias: calibrar en la demo sigue usando el cuarto vacío. El archivo no sale de la máquina. No hay etiquetas manuales en ese botón: el sidecar queda vacío.
+
+### D-033 — La demo del panel tiene dos zonas (2026-10-25)
+Contexto: la fusión por zona ya existía, pero el simulador en vivo publicaba un solo nodo y el panel no podía mostrar dos habitaciones distintas.
+Opciones consideradas: dejar la demo en un nodo hasta tener dos placas, o simular living y pasillo con la misma escena de 24 s.
+Decisión: living lleva la caminata y la quietud. Pasillo no tiene eventos. Si no hay zonas guardadas, el snapshot se llama living y pasillo. Si la config trae un mapa, se fusiona con los `node_id` `living` y `pasillo`.
+Consecuencias: durante la caminata se ven los dos estados a la vez. El ingreso UDP sin mapa sigue en «esta habitación». La calibración de la demo no usa esa caminata.

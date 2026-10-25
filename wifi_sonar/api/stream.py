@@ -91,6 +91,35 @@ def follow(
     return list(_snapshots(state, frames, decisions, hz=hz, bins=bins, stored_clock=stored_clock))
 
 
+def trace_states(state: SonarState, source: CSISource) -> list[tuple[float, str]]:
+    """States for one node. History stays untouched; frames are kept for a later save."""
+    frames = [frame for frame in source.frames()]
+    if not frames:
+        return []
+    if state.calibration is None:
+        state.calibrate(12.0, allow_recent=False)
+    for frame in frames:
+        state.remember(frame)
+    assert state.calibration is not None
+    detector = PresenceDetector(
+        state.calibration,
+        hysteresis=state.config.hysteresis,
+        min_motion_s=state.config.min_motion_s,
+        min_presence_s=state.config.min_presence_s,
+    )
+    windows = extract_features(preprocess(frames))
+    return [(item.timestamp, detector.update(item).state) for item in windows]
+
+
+def state_at(samples: list[tuple[float, str]], ts: float) -> str:
+    current = "empty"
+    for stamp, name in samples:
+        if stamp > ts:
+            break
+        current = name
+    return current
+
+
 def _snapshots(
     state: SonarState,
     frames: list[CSIFrame],

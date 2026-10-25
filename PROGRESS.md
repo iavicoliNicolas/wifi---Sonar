@@ -1,7 +1,7 @@
 # PROGRESS
 
 ## Estado actual
-Fase: 7 — Robustez del ingreso real · Última tarea completada: T-31 · Próxima: ninguna sin hardware
+Fase: 7 — Robustez del ingreso real · Última tarea completada: T-32 · Próxima: ninguna sin hardware
 
 ## Inventario del repo (2026-10-22)
 
@@ -259,4 +259,11 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Archivos tocados: `wifi_sonar/recording.py`, `wifi_sonar/api/app.py`, `wifi_sonar/api/stream.py`, `web/index.html`, `web/app.js`, `web/style.css`, `tests/test_recording.py`, `tests/test_panel.py`, `DECISIONS.md`, `DEV_LOOP.md`, `PROGRESS.md`, `README.md`.
 - Tests agregados: el POST vacío responde 409; con frames, el replay lee los mismos timestamps. El HTML incluye el botón.
 - Problemas / deuda: el simulador del panel sigue siendo un solo nodo. La imagen de compose es la de T-23 hasta un rebuild.
+- Siguiente paso sugerido: T-32 — mostrar living y pasillo en el simulador del panel.
+
+### 2026-10-25 T-32 — Dos zonas en el simulador del panel
+- Qué se hizo: la demo deja de ser un solo nodo. Living recorre vacío, caminata y quietud; pasillo se queda vacío. Cada snapshot trae las dos zonas (D-033). Sin un mapa guardado, el panel muestra esos nombres. `capture_from_recent` sigue apagado.
+- Archivos tocados: `wifi_sonar/live.py`, `wifi_sonar/api/stream.py`, `tests/test_live.py`, `DECISIONS.md`, `DEV_LOOP.md`, `PROGRESS.md`, `README.md`.
+- Tests agregados: a los 2 s las dos zonas están vacías; a los 8 s living está en movimiento y pasillo vacío.
+- Problemas / deuda: la imagen de compose es la de T-23 hasta un rebuild. El modo RSSI sigue siendo una sola etiqueta.
 - Siguiente paso sugerido: ninguno sin hardware. Con una placa, exportar `WIFI_SONAR_UDP_PORT`.

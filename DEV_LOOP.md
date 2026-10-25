@@ -263,6 +263,11 @@ Formato: `[ ] ID — Título` · *Depende de* · **Aceptación**
   Un botón guarda en disco los frames que ya están en memoria, con el mismo JSONL del replay. No arranca una grabación nueva ni manda nada fuera de la máquina.
   **Aceptación:** un POST deja un archivo que el replay lee; sin frames responde que no hay nada para guardar. El panel tiene el botón.
 
+- [x] **T-32 — Dos zonas en el simulador del panel**
+  *Depende de:* T-20, T-31
+  La demo deja de ser un solo nodo. Living recorre la escena de 24 s y pasillo se queda vacío. El snapshot lleva las dos zonas.
+  **Aceptación:** en la caminata, living está en movimiento y pasillo en vacío. Sin mapa guardado, el panel muestra esos dos nombres.
+
 ---
 
 ## 5. Plantilla de `PROGRESS.md`
