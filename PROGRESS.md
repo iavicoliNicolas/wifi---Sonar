@@ -1,7 +1,7 @@
 # PROGRESS
 
 ## Estado actual
-Fase: 7 — Robustez del ingreso real · Última tarea completada: T-32 · Próxima: ninguna sin hardware
+Fase: 7 — Robustez del ingreso real · Última tarea completada: T-33 · Próxima: ninguna sin hardware
 
 ## Inventario del repo (2026-10-22)
 
@@ -266,4 +266,11 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Archivos tocados: `wifi_sonar/live.py`, `wifi_sonar/api/stream.py`, `tests/test_live.py`, `DECISIONS.md`, `DEV_LOOP.md`, `PROGRESS.md`, `README.md`.
 - Tests agregados: a los 2 s las dos zonas están vacías; a los 8 s living está en movimiento y pasillo vacío.
 - Problemas / deuda: la imagen de compose es la de T-23 hasta un rebuild. El modo RSSI sigue siendo una sola etiqueta.
+- Siguiente paso sugerido: T-33 — una fila RSSI por cada nombre que la persona escribió.
+
+### 2026-10-25 T-33 — Una fila RSSI por nombre
+- Qué se hizo: en modo RSSI cada nombre escrito es una fila. En la demo solo el primero se mueve; los demás quedan quietos. No se busca nada en la red y ningún snapshot dice presencia (D-034). Sin nombres, la fila sigue siendo `ap-propio`.
+- Archivos tocados: `wifi_sonar/live.py`, `web/index.html`, `tests/test_rssi.py`, `DECISIONS.md`, `DEV_LOOP.md`, `PROGRESS.md`, `README.md`.
+- Tests agregados: `ap-living` y `tele` aparecen juntos, uno en movimiento y el otro vacío; el estado de la habitación es movimiento y nunca presencia.
+- Problemas / deuda: la imagen de compose es la de T-23 hasta un rebuild.
 - Siguiente paso sugerido: ninguno sin hardware. Con una placa, exportar `WIFI_SONAR_UDP_PORT`.

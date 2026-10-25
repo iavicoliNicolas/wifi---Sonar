@@ -197,3 +197,9 @@ Contexto: la fusión por zona ya existía, pero el simulador en vivo publicaba u
 Opciones consideradas: dejar la demo en un nodo hasta tener dos placas, o simular living y pasillo con la misma escena de 24 s.
 Decisión: living lleva la caminata y la quietud. Pasillo no tiene eventos. Si no hay zonas guardadas, el snapshot se llama living y pasillo. Si la config trae un mapa, se fusiona con los `node_id` `living` y `pasillo`.
 Consecuencias: durante la caminata se ven los dos estados a la vez. El ingreso UDP sin mapa sigue en «esta habitación». La calibración de la demo no usa esa caminata.
+
+### D-034 — RSSI: una fila por nombre (2026-10-25)
+Contexto: el modo degradado aceptaba una lista de dispositivos propios, pero el simulador en vivo usaba solo el primero.
+Opciones consideradas: seguir con una etiqueta, o dibujar cada nombre y mover solo el primero en la demo.
+Decisión: cada nombre es una fila. El primero tiene el vaivén ya existente. Los demás quedan quietos. El estado grande es el OR: si alguno se mueve, hay movimiento. Sigue sin haber presencia y sin buscar equipos en la red.
+Consecuencias: dos nombres se ven distintos en el mismo instante. Un nombre solo ocupa una fila. La advertencia de sensibilidad baja sigue visible.

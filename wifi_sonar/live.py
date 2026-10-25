@@ -8,7 +8,7 @@ from fastapi import FastAPI
 
 from wifi_sonar.api.stream import follow, state_at, trace_states
 from wifi_sonar.detect.rssi import detect_rssi, simulated_rssi
-from wifi_sonar.detect.zones import zone_states
+from wifi_sonar.detect.zones import fuse_states, zone_states
 from wifi_sonar.runtime import SonarState
 from wifi_sonar.sources.simulated import ScenarioEvent, SimulatedSource
 
@@ -64,7 +64,7 @@ def live_loop(app: FastAPI, stop: threading.Event, *, pace_s: float = 0.1) -> No
         token = state.config.model_dump_json()
         seed += 1
         if state.config.mode == "rssi":
-            stream = _rssi_snapshots(state.config.rssi_devices, seed)
+            stream = rssi_snapshots(state.config.rssi_devices, seed)
         else:
             stream = demo_stream(
                 state,
@@ -82,11 +82,29 @@ def live_loop(app: FastAPI, stop: threading.Event, *, pace_s: float = 0.1) -> No
                 stop.wait(pace_s)
 
 
-def _rssi_snapshots(devices: list[str], seed: int) -> list[dict[str, object]]:
-    device_id = devices[0] if devices else "ap-propio"
-    # A scripted swing stands in for someone walking. The label is the operator's.
-    points = simulated_rssi(seed, 24.0, device_id=device_id, swing=True)
-    return detect_rssi(points)
+def rssi_snapshots(devices: list[str], seed: int) -> list[dict[str, object]]:
+    """One row per name the operator typed. Only the first name swings in the demo."""
+    labels = [item for item in devices if item] or ["ap-propio"]
+    series = [
+        detect_rssi(simulated_rssi(seed, 24.0, device_id=label, swing=index == 0))
+        for index, label in enumerate(labels)
+    ]
+    merged: list[dict[str, object]] = []
+    count = min(len(rows) for rows in series)
+    for index in range(count):
+        states = [str(rows[index]["state"]) for rows in series]
+        scores = [float(rows[index]["score"]) for rows in series]
+        zones = [{"name": label, "state": states[pos]} for pos, label in enumerate(labels)]
+        merged.append(
+            {
+                "ts": series[0][index]["ts"],
+                "state": fuse_states(states, "or"),
+                "score": max(scores) if scores else 0.0,
+                "mode": "rssi",
+                "zones": zones,
+            }
+        )
+    return merged
 
 
 def _demo_zones(node_states: dict[str, str], config: object) -> list[dict[str, str]]:

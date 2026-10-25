@@ -268,6 +268,11 @@ Formato: `[ ] ID — Título` · *Depende de* · **Aceptación**
   La demo deja de ser un solo nodo. Living recorre la escena de 24 s y pasillo se queda vacío. El snapshot lleva las dos zonas.
   **Aceptación:** en la caminata, living está en movimiento y pasillo en vacío. Sin mapa guardado, el panel muestra esos dos nombres.
 
+- [x] **T-33 — Una fila RSSI por nombre**
+  *Depende de:* T-21, T-32
+  El modo RSSI deja de mirar solo el primer nombre. Cada dispositivo que la persona escribió es una fila. En la demo solo el primero se mueve; el resto queda quieto. No se busca nada en la red y no aparece el estado presencia.
+  **Aceptación:** con dos nombres, un snapshot tiene el primero en movimiento y el segundo en vacío.
+
 ---
 
 ## 5. Plantilla de `PROGRESS.md`

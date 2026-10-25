@@ -1,6 +1,7 @@
 from fastapi.testclient import TestClient
 from wifi_sonar.api import create_app
 from wifi_sonar.detect.rssi import detect_rssi, simulated_rssi
+from wifi_sonar.live import rssi_snapshots
 from wifi_sonar.runtime import SonarConfig, SonarState
 
 
@@ -16,6 +17,22 @@ def test_rssi_motion_needs_a_swing_and_never_claims_presence() -> None:
         pass
     else:
         raise AssertionError("a wildcard device id must be rejected")
+
+
+def test_rssi_demo_lists_each_named_device() -> None:
+    rows = rssi_snapshots(["ap-living", "tele"], seed=1)
+    assert rows
+    assert all(row["state"] != "presence" for row in rows)
+    paired = [
+        row
+        for row in rows
+        if {zone["name"]: zone["state"] for zone in row["zones"]}
+        == {"ap-living": "motion", "tele": "empty"}
+    ]
+    assert paired
+    assert paired[0]["state"] == "motion"
+    alone = rssi_snapshots([], seed=1)
+    assert alone[0]["zones"] == [{"name": "ap-propio", "state": alone[0]["zones"][0]["state"]}]
 
 
 def test_rssi_mode_is_rejected_for_a_scan_label() -> None:
