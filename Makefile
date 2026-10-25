@@ -1,4 +1,4 @@
-.PHONY: dev test lint format
+.PHONY: dev test lint format eval
 
 PYTHON ?= python3
 VENV ?= .venv
@@ -10,6 +10,7 @@ $(BIN)/pytest: pyproject.toml
 	$(PYTHON) -m venv $(VENV)
 	$(BIN)/python -m pip install -U pip
 	$(BIN)/python -m pip install -e ".[dev]"
+	touch $(BIN)/pytest
 
 test: $(BIN)/pytest
 	$(BIN)/python -m pytest
@@ -21,3 +22,9 @@ lint: $(BIN)/pytest
 format: $(BIN)/pytest
 	$(BIN)/ruff check --fix .
 	$(BIN)/ruff format .
+
+eval: $(BIN)/pytest
+	$(BIN)/python -m wifi_sonar.eval
+
+serve: $(BIN)/pytest
+	$(BIN)/python -m wifi_sonar

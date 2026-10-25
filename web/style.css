@@ -1,0 +1,231 @@
+:root {
+  color-scheme: dark;
+  --bg: #14140f;
+  --ink: #f3efe2;
+  --muted: #9a947f;
+  --line: #2a2a22;
+  --empty: #c8c2b0;
+  --presence: #e2a23a;
+  --motion: #ef6434;
+  --live: #d6f25c;
+  font-family: "Iowan Old Style", Palatino, "Palatino Linotype", Georgia, serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(1200px 500px at 10% -10%, #242418 0%, transparent 55%),
+    var(--bg);
+  color: var(--ink);
+}
+
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.mark {
+  margin: 0;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+}
+
+.link {
+  margin: 0;
+  font-family: "Segoe UI", Helvetica, sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.link[data-state="on"] { color: var(--live); }
+.link[data-state="off"] { color: #c45b4a; }
+
+#sensing {
+  margin: 0;
+  padding: 0.45rem 1.5rem;
+  font-family: "Segoe UI", Helvetica, sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: #2a2416;
+  color: var(--presence);
+}
+
+#sensing[data-state="off"] {
+  background: #241816;
+  color: #c45b4a;
+}
+
+.controls { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.6rem; align-items: center; }
+
+.controls button {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--line);
+  padding: 0.45rem 0.8rem;
+  font: inherit;
+  cursor: pointer;
+}
+
+main {
+  padding: 1.4rem 1.5rem 2rem;
+}
+
+.kicker {
+  margin: 0 0 0.5rem;
+  color: var(--muted);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+}
+
+#zones {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  margin: 0.4rem 0 0.8rem;
+  padding: 0;
+  font-family: "Segoe UI", Helvetica, sans-serif;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+#zones li { display: flex; gap: 0.4rem; }
+
+#mode-note {
+  margin: 0.2rem 0 0;
+  color: var(--presence);
+  font-family: "Segoe UI", Helvetica, sans-serif;
+  font-size: 0.85rem;
+}
+
+#state {
+  margin: 0;
+  font-size: clamp(3.2rem, 8vw, 5.6rem);
+  font-weight: 500;
+  line-height: 0.9;
+  letter-spacing: -0.04em;
+}
+
+#state[data-state="empty"] { color: var(--empty); }
+#state[data-state="presence"] { color: var(--presence); }
+#state[data-state="motion"] { color: var(--motion); }
+
+.score {
+  margin-top: 1.5rem;
+  color: var(--muted);
+  font-family: "Segoe UI", Helvetica, sans-serif;
+  font-size: 0.95rem;
+}
+
+.charts {
+  display: grid;
+  gap: 0.85rem;
+  margin-top: 1.25rem;
+  max-width: 760px;
+}
+
+figure { margin: 0; }
+
+figcaption {
+  margin-bottom: 0.35rem;
+  color: var(--muted);
+  font-family: "Segoe UI", Helvetica, sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+canvas {
+  width: 100%;
+  height: auto;
+  background: #1c1c16;
+  border: 1px solid var(--line);
+}
+
+#timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", Helvetica, sans-serif;
+  font-size: 0.85rem;
+}
+
+#timeline li {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+}
+
+.settings,
+.wizard {
+  max-width: 760px;
+  margin-top: 1.5rem;
+  font-family: "Segoe UI", Helvetica, sans-serif;
+}
+
+.settings label,
+.wizard label {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0.45rem 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.settings input[type="range"] { flex: 1; }
+.settings input[type="url"] {
+  flex: 1;
+  background: #1c1c16;
+  color: var(--ink);
+  border: 1px solid var(--line);
+  padding: 0.35rem 0.5rem;
+}
+
+#config-note, #record-note { min-height: 1rem; color: var(--live); font-size: 0.8rem; }
+
+.settings h2,
+.wizard h2 {
+  margin: 0 0 0.4rem;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+#cal-prompt,
+#cal-count,
+#cal-result {
+  margin: 0.3rem 0;
+}
+
+#cal-count {
+  font-size: 2rem;
+  color: var(--live);
+}
+
+#cal-start {
+  margin-top: 0.6rem;
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--line);
+  padding: 0.45rem 0.8rem;
+  font: inherit;
+  cursor: pointer;
+}
+
+#cal-start:disabled { color: var(--muted); cursor: default; }

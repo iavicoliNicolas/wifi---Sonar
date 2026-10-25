@@ -8,16 +8,23 @@ version = "0.0.1"
 description = "Panel local que usa el WiFi del hogar como sensor de presencia y movimiento."
 readme = "README.md"
 requires-python = ">=3.11"
-dependencies = []
+dependencies = [
+    "numpy>=2.1",
+    "fastapi>=0.115",
+    "uvicorn>=0.32",
+    "websockets>=14",
+]
 
 [project.optional-dependencies]
 dev = [
     "pytest>=8.3",
     "ruff>=0.6",
+    "httpx>=0.27",
 ]
 
-[tool.setuptools]
-packages = ["wifi_sonar"]
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["wifi_sonar*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

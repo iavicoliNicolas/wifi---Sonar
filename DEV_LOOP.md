@@ -99,130 +99,179 @@ Formato: `[ ] ID — Título` · *Depende de* · **Aceptación**
   Gestor de dependencias, `Makefile` o scripts (`dev`, `test`, `lint`), `.gitignore`, `.env.example`, pre-commit opcional.
   **Aceptación:** clon limpio + un comando = tests corriendo.
 
-- [ ] **T-02 — Modelo de datos y simulador de CSI**
+- [x] **T-02 — Modelo de datos y simulador de CSI**
   *Depende de:* T-01
   Definir `CSIFrame`. Implementar `SimulatedSource`: ~52 subportadoras, ruido gaussiano, deriva lenta y eventos configurables (persona entra, camina, se queda quieta, sale).
   **Aceptación:** generador determinista por seed; test que verifica que los eventos alteran la varianza esperada.
 
-- [ ] **T-03 — Interfaz `CSISource` + replay desde archivo**
+- [x] **T-03 — Interfaz `CSISource` + replay desde archivo**
   *Depende de:* T-02
   Interfaz común, y `ReplaySource` que lee grabaciones (`.csv`/`.jsonl`) a velocidad real o acelerada.
   **Aceptación:** mismo pipeline consume simulador y replay sin cambios.
 
 ### Fase 1 — Núcleo de señal
 
-- [ ] **T-04 — Preprocesamiento**
+- [x] **T-04 — Preprocesamiento**
   *Depende de:* T-03
   Filtro Hampel (outliers), interpolación de paquetes perdidos, normalización de amplitud por subportadora, remoción de subportadoras nulas.
   **Aceptación:** tests con ruido/outliers inyectados; salida estable.
 
-- [ ] **T-05 — Extracción de features por ventana**
+- [x] **T-05 — Extracción de features por ventana**
   *Depende de:* T-04
   Ventanas deslizantes (ej. 2 s, paso 0.5 s). Features: varianza, media absoluta de diferencias, energía en bandas (movimiento ~0.5-5 Hz, respiración ~0.1-0.5 Hz) vía FFT/Welch, PCA opcional.
   **Aceptación:** features con valores esperados sobre señales sintéticas conocidas.
 
-- [ ] **T-06 — Calibración de línea base**
+- [x] **T-06 — Calibración de línea base**
   *Depende de:* T-05
   Capturar N segundos con el ambiente vacío; guardar media y desvío de features; umbrales derivados (ej. media + k·σ).
   **Aceptación:** función `calibrate(source, seconds)` + persistencia de la calibración; test con simulador.
 
-- [ ] **T-07 — Detector de movimiento**
+- [x] **T-07 — Detector de movimiento**
   *Depende de:* T-06
   Compara features contra la línea base con histéresis y mínimo de duración para evitar parpadeo. Salida: `{moving: bool, score: 0-1, ts}`.
   **Aceptación:** en simulador, detecta ≥95 % de eventos de caminata con ≤1 falso positivo cada 10 min de ruido.
 
-- [ ] **T-08 — Detector de presencia (quieto)**
+- [x] **T-08 — Detector de presencia (quieto)**
   *Depende de:* T-07
   Detecta presencia sin movimiento grande usando banda de respiración / cambio sostenido respecto de la línea base, con ventana más larga.
   **Aceptación:** estados `vacío | presencia | movimiento` con máquina de estados testeada.
 
-- [ ] **T-09 — Métricas de evaluación**
+- [x] **T-09 — Métricas de evaluación**
   *Depende de:* T-08
   Script que corre el pipeline sobre escenarios simulados y/o grabaciones etiquetadas y reporta precisión, recall y latencia.
   **Aceptación:** `make eval` imprime tabla de métricas; se guarda en `docs/eval.md`.
 
 ### Fase 2 — Servicio y tiempo real
 
-- [ ] **T-10 — API HTTP**
+- [x] **T-10 — API HTTP**
   *Depende de:* T-08
   Endpoints: `GET /status`, `POST /calibrate`, `GET /config`, `PUT /config`, `GET /history`.
   **Aceptación:** tests de API; OpenAPI/docs generada.
 
-- [ ] **T-11 — Streaming por WebSocket**
+- [x] **T-11 — Streaming por WebSocket**
   *Depende de:* T-10
   Canal con frames reducidos, features y estado a ~10 Hz.
   **Aceptación:** cliente de test recibe estado coherente; backpressure manejado (descarta frames viejos).
 
-- [ ] **T-12 — Persistencia local**
+- [x] **T-12 — Persistencia local**
   *Depende de:* T-10
   SQLite para eventos (cambios de estado), calibraciones y config. Retención configurable.
   **Aceptación:** migración inicial, tests, limpieza automática por antigüedad.
 
-- [ ] **T-13 — Grabación y exportación de sesiones**
+- [x] **T-13 — Grabación y exportación de sesiones**
   *Depende de:* T-12
   Grabar CSI crudo + etiquetas manuales para generar datasets propios y reusar en `ReplaySource`.
   **Aceptación:** grabar → replay → mismo resultado del detector.
 
 ### Fase 3 — Panel
 
-- [ ] **T-14 — Shell del panel**
+- [x] **T-14 — Shell del panel**
   *Depende de:* T-11
   Layout, estado de conexión, indicador grande `vacío / presencia / movimiento`, tema oscuro.
   **Aceptación:** el panel se conecta al WS y refleja el estado en vivo con el simulador.
 
-- [ ] **T-15 — Visualizaciones en vivo**
+- [x] **T-15 — Visualizaciones en vivo**
   *Depende de:* T-14
   Heatmap de amplitud (subportadora × tiempo), gráfico de score con umbrales, timeline de eventos.
   **Aceptación:** 60 fps aceptables con 100 Hz de entrada; sin fugas de memoria tras 10 min.
 
-- [ ] **T-16 — Asistente de calibración en el panel**
+- [x] **T-16 — Asistente de calibración en el panel**
   *Depende de:* T-14, T-06
   Flujo guiado: "salí de la habitación" → cuenta regresiva → captura → resumen de calidad.
   **Aceptación:** se calibra de punta a punta desde la UI.
 
-- [ ] **T-17 — Configuración y alertas**
+- [x] **T-17 — Configuración y alertas**
   *Depende de:* T-15
   Sliders de sensibilidad, ventana, histéresis; alertas opcionales (notificación del navegador, webhook local).
   **Aceptación:** cambios aplican en caliente y persisten.
 
-- [ ] **T-18 — Privacidad y control**
+- [x] **T-18 — Privacidad y control**
   *Depende de:* T-12, T-14
   Aviso de sensado activo, botón pausar, botón borrar todo el historial, retención visible.
   **Aceptación:** pausar detiene ingesta y borrar elimina datos (verificado por test).
 
 ### Fase 4 — Hardware real
 
-- [ ] **T-19 — Adaptador ESP32 CSI**
+- [x] **T-19 — Adaptador ESP32 CSI**
   *Depende de:* T-03
   `ESP32Source` por serial y/o UDP. Incluir `firmware/` con instrucciones de flasheo (esp-csi) y formato de línea documentado. Parser tolerante a líneas corruptas.
   **Aceptación:** parser con tests sobre muestras reales/ficticias del formato; documento `docs/hardware.md` con lista de materiales y pasos.
 
-- [ ] **T-20 — Multi-nodo y zonas**
+- [x] **T-20 — Multi-nodo y zonas**
   *Depende de:* T-19, T-08
   Varios receptores, estado por nodo, fusión simple (OR/votación) y mapa de zonas configurable (ej. "living", "pasillo").
   **Aceptación:** panel muestra un estado por zona; test de fusión con nodos simulados.
 
-- [ ] **T-21 — Modo RSSI degradado**
+- [x] **T-21 — Modo RSSI degradado**
   *Depende de:* T-08
   Fuente alternativa con solo RSSI (por ejemplo, dispositivos conocidos de la LAN) con detector adaptado y sensibilidad claramente marcada como baja.
   **Aceptación:** el panel indica el modo y su limitación.
 
 ### Fase 5 — Calidad y cierre
 
-- [ ] **T-22 — Robustez operativa**
+- [x] **T-22 — Robustez operativa**
   *Depende de:* T-12
   Reconexión automática de fuentes, logs estructurados, health check, manejo de deriva (recalibración automática lenta cuando está vacío).
   **Aceptación:** test de caos: cortar y reanudar la fuente sin reiniciar el servicio.
 
-- [ ] **T-23 — Empaquetado**
+- [x] **T-23 — Empaquetado**
   *Depende de:* T-22
   Dockerfile / compose, o servicio systemd, para correr en una Raspberry Pi o mini PC.
   **Aceptación:** `docker compose up` deja todo funcionando con el simulador.
 
-- [ ] **T-24 — Documentación final**
+- [x] **T-24 — Documentación final**
   *Depende de:* T-23
   README con capturas, guía de instalación, guía de calibración, límites conocidos, sección de privacidad.
   **Aceptación:** alguien externo puede reproducir el setup leyendo solo el README.
+
+### Fase 6 — Deuda sin hardware
+
+- [x] **T-25 — Favicon**
+  *Depende de:* T-14
+  El navegador deja de pedir `/favicon.ico` en vano.
+  **Aceptación:** `GET /favicon.ico` responde 200 con una imagen.
+
+- [x] **T-26 — Reloj de pared en el historial en vivo**
+  *Depende de:* T-12, T-14
+  Los eventos que publica el simulador del panel se guardan con hora real, así la retención puede borrarlos. El gráfico sigue mostrando el tiempo de la traza.
+  **Aceptación:** un test fija el reloj y el historial usa ese instante; el snapshot del socket conserva el tiempo de la traza.
+
+- [x] **T-27 — Calibrar la fuente conectada**
+  *Depende de:* T-16
+  Si hay una captura reciente marcada como fuente real, la calibración sale de ahí. Si no, sigue el cuarto vacío simulado.
+  **Aceptación:** una fuente quieta distinta de la semilla 1 cambia los umbrales; sin fuente, el resultado sigue siendo el de la semilla 1.
+
+- [x] **T-28 — UDP opcional**
+  *Depende de:* T-19, T-22
+  Con `WIFI_SONAR_UDP_PORT` el proceso lee líneas CSI propias. Apagado, sigue el simulador.
+  **Aceptación:** un datagrama de prueba se parsea; sin la variable no se abre el socket.
+
+### Fase 7 — Robustez del ingreso real
+
+- [x] **T-29 — Reabrir el UDP si el socket muere**
+  *Depende de:* T-22, T-28
+  Un timeout sin datagramas sigue en silencio. Un error del socket cuenta como caída y `iter_resilient` vuelve a abrirlo. Si las caídas se agotan, `/health` dice `down` y el proceso sigue.
+  **Aceptación:** después de un socket muerto, el datagrama siguiente se parsea; sin error no hay reapertura.
+
+- [x] **T-30 — Zonas en el ingreso CSI**
+  *Depende de:* T-20, T-28
+  Cada `node_id` tiene su propia ventana. El snapshot fusiona con la config (OR o votación). Sin zonas, sigue «esta habitación».
+  **Aceptación:** dos nodos simulados, uno caminando y otro vacío, publican living en movimiento y pasillo vacío.
+
+- [x] **T-31 — Grabar la traza reciente**
+  *Depende de:* T-13, T-14
+  Un botón guarda en disco los frames que ya están en memoria, con el mismo JSONL del replay. No arranca una grabación nueva ni manda nada fuera de la máquina.
+  **Aceptación:** un POST deja un archivo que el replay lee; sin frames responde que no hay nada para guardar. El panel tiene el botón.
+
+- [x] **T-32 — Dos zonas en el simulador del panel**
+  *Depende de:* T-20, T-31
+  La demo deja de ser un solo nodo. Living recorre la escena de 24 s y pasillo se queda vacío. El snapshot lleva las dos zonas.
+  **Aceptación:** en la caminata, living está en movimiento y pasillo en vacío. Sin mapa guardado, el panel muestra esos dos nombres.
+
+- [x] **T-33 — Una fila RSSI por nombre**
+  *Depende de:* T-21, T-32
+  El modo RSSI deja de mirar solo el primer nombre. Cada dispositivo que la persona escribió es una fila. En la demo solo el primero se mueve; el resto queda quieto. No se busca nada en la red y no aparece el estado presencia.
+  **Aceptación:** con dos nombres, un snapshot tiene el primero en movimiento y el segundo en vacío.
 
 ---
 
