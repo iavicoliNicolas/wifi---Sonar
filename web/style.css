@@ -18,24 +18,39 @@
   box-sizing: border-box;
 }
 
+html {
+  max-width: 100%;
+}
+
 body {
   margin: 0;
   min-height: 100vh;
+  max-width: 100%;
   background:
     radial-gradient(circle at top, #1a2420 0%, transparent 42%),
     var(--bg);
   color: var(--ink);
   display: grid;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: auto auto 1fr;
+}
+
+body > * {
+  min-width: 0;
+  max-width: 100%;
 }
 
 header {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
-  gap: 1rem;
+  gap: 0.75rem 1rem;
   padding: 1.25rem 1.5rem;
   border-bottom: 1px solid var(--line);
+}
+
+.brand {
+  min-width: 0;
 }
 
 h1 {
@@ -54,11 +69,15 @@ h1 {
 
 .pill {
   margin: 0;
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
   padding: 0.4rem 0.75rem;
   border-radius: 999px;
   background: var(--bad);
   color: var(--bad-ink);
   font-size: 0.85rem;
+  overflow-wrap: anywhere;
 }
 
 .pill.live {
@@ -66,14 +85,25 @@ h1 {
   color: var(--ok-ink);
 }
 
+.notices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  min-width: 0;
+  padding: 0.8rem 1rem 0;
+}
+
 .banner {
-  margin: 0.8rem 0 0;
+  margin: 0;
   width: fit-content;
-  padding: 0.35rem 0.75rem;
+  max-width: 100%;
+  padding: 0.45rem 0.75rem;
   border-radius: 999px;
   background: #3d2a12;
   color: #f0c27a;
   font-size: 0.85rem;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
 }
 
 .banner[data-paused="1"] {
@@ -84,14 +114,22 @@ h1 {
 .header-actions,
 .dialog-actions {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 0.6rem;
+  min-width: 0;
+  max-width: 100%;
+}
+
+button,
+.pill {
+  min-height: 2.75rem;
 }
 
 button {
   border: 0;
   border-radius: 999px;
-  padding: 0.45rem 0.85rem;
+  padding: 0.55rem 1rem;
   background: #24302b;
   color: var(--ink);
   font: inherit;
@@ -108,7 +146,10 @@ dialog {
   border-radius: 16px;
   background: #171d21;
   color: var(--ink);
-  max-width: 28rem;
+  width: min(28rem, calc(100vw - 1.5rem));
+  max-width: calc(100vw - 1.5rem);
+  max-height: calc(100vh - 1.5rem);
+  overflow: auto;
   padding: 1.2rem 1.3rem;
 }
 
@@ -132,10 +173,12 @@ main {
 
 #state {
   margin: 0;
-  font-size: clamp(3.2rem, 12vw, 8rem);
+  max-width: 100%;
+  font-size: clamp(1.7rem, 9vw, 7.25rem);
   line-height: 0.95;
   letter-spacing: -0.04em;
   font-weight: 600;
+  overflow-wrap: anywhere;
 }
 
 #state[data-state="vacío"] {
@@ -162,11 +205,21 @@ main {
   max-width: 920px;
   margin: 0 auto;
   width: 100%;
+  min-width: 0;
+  container-type: inline-size;
 }
 
 #state,
 #detail {
   text-align: center;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+@container (min-width: 280px) {
+  #state {
+    font-size: clamp(1.7rem, 13cqi, 7.25rem);
+  }
 }
 
 .charts {
@@ -193,7 +246,9 @@ h2 {
 
 canvas {
   width: 100%;
-  height: 160px;
+  max-width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 1;
   display: block;
   background: #0c1012;
   border-radius: 8px;
@@ -209,8 +264,10 @@ canvas {
 
 #timeline li {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
-  gap: 1rem;
+  gap: 0.35rem 1rem;
+  min-width: 0;
   padding: 0.45rem 0.7rem;
   background: #151b1e;
   border-radius: 8px;
@@ -227,9 +284,11 @@ canvas {
 
 #zones li {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
-  gap: 1rem;
+  gap: 0.5rem 1rem;
+  min-width: 0;
   padding: 0.45rem 0.7rem;
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -238,16 +297,25 @@ canvas {
 #zones label {
   display: grid;
   gap: 0.1rem;
+  flex: 1 1 10rem;
+  min-width: 0;
 }
 
 #zones input {
-  width: 12rem;
-  max-width: 60vw;
+  width: 100%;
+  max-width: 100%;
+  min-height: 2.75rem;
   border: 0;
   background: transparent;
   color: var(--ink);
   font: inherit;
-  padding: 0;
+  padding: 0.2rem 0;
+}
+
+.zone-state {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 #zones small {
@@ -270,8 +338,10 @@ canvas {
 
 #settings .control-name {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
-  gap: 1rem;
+  gap: 0.25rem 1rem;
+  min-width: 0;
 }
 
 #settings output {
@@ -283,6 +353,15 @@ canvas {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  min-height: 2.75rem;
+}
+
+#settings input[type="url"],
+#settings input[type="range"] {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  min-height: 2.75rem;
 }
 
 #settings input[type="url"] {
@@ -294,8 +373,53 @@ canvas {
   font: inherit;
 }
 
+#settings-note,
+#detail,
+#retention {
+  overflow-wrap: anywhere;
+}
+
 #settings-note {
   margin: 0;
   color: var(--muted);
   font-size: 0.82rem;
+}
+
+@media (max-width: 768px) {
+  header {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 1rem 0.9rem;
+  }
+
+  .header-actions,
+  .dialog-actions {
+    width: 100%;
+  }
+
+  main {
+    padding: 1.25rem 0.9rem 3rem;
+  }
+
+  .notices {
+    padding-inline: 0.9rem;
+  }
+
+  h1 {
+    font-size: 1.05rem;
+  }
+}
+
+@media (max-width: 420px) {
+  #state {
+    font-size: clamp(1.55rem, 11vw, 2.4rem);
+  }
+
+  button {
+    flex: 1 1 auto;
+  }
+
+  .pill {
+    justify-content: center;
+  }
 }
