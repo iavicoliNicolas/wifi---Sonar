@@ -10,6 +10,7 @@ import numpy as np
 from wifi_sonar.models import CSIFrame
 
 EVENT_KINDS = ("enter", "walk", "still", "leave")
+SIGNATURE_KINDS = ("walk", "still")
 
 
 @dataclass(frozen=True, slots=True)
@@ -32,6 +33,29 @@ class SimEvent:
 
 
 @dataclass(frozen=True, slots=True)
+class SimSignature:
+    """Firma anónima que se suma a la del cuarto. No nombra a nadie."""
+
+    kind: str
+    start_s: float
+    duration_s: float
+    hz: float
+    amp: float | None = None
+    phase: float = 0.0
+    spatial_shift: float = 0.0
+
+    def __post_init__(self) -> None:
+        if self.kind not in SIGNATURE_KINDS:
+            raise ValueError(f"unknown signature kind: {self.kind}")
+        if self.duration_s < 0:
+            raise ValueError("duration_s must be >= 0")
+        if self.hz <= 0:
+            raise ValueError("hz must be positive")
+        if self.amp is not None and self.amp < 0:
+            raise ValueError("amp must be >= 0")
+
+
+@dataclass(frozen=True, slots=True)
 class SimConfig:
     seed: int = 0
     sample_rate_hz: float = 100.0
@@ -50,6 +74,7 @@ class SimConfig:
     node_id: str = "sim-0"
     rssi_base: float = -45.0
     events: tuple[SimEvent, ...] = ()
+    signatures: tuple[SimSignature, ...] = ()
     loop: bool = False
     loop_period_s: float = 40.0
 
@@ -185,6 +210,7 @@ class SimulatedSource:
             hz=cfg.walk_hz,
             spatial=1.0 + 0.3 * np.sin(np.linspace(0, 2 * np.pi, n_sc) + 0.4),
         )
+        _add_signatures(amps, t, clock, cfg)
         nulls = [i for i in cfg.null_subcarriers if 0 <= i < n_sc]
         if nulls:
             amps[:, nulls] = 0.0
@@ -228,6 +254,36 @@ def _add_modulation(
         if not np.any(mask):
             continue
         wave = np.sin(2 * np.pi * hz * t[mask])
+        amps[mask] += amp * wave[:, None] * spatial[None, :]
+
+
+def _add_signatures(
+    amps: np.ndarray,
+    t: np.ndarray,
+    clock: np.ndarray,
+    cfg: SimConfig,
+) -> None:
+    """Suma N senos con frecuencia y peso espacial distintos.
+
+    El peso es siempre positivo para que no se cancelen al promediar
+    subportadoras. Siguen siendo firmas, no identidades.
+    """
+
+    n_sc = amps.shape[1]
+    carriers = np.linspace(0, np.pi, n_sc)
+    for index, signature in enumerate(cfg.signatures):
+        if signature.duration_s == 0:
+            continue
+        mask = (clock >= signature.start_s) & (clock < signature.start_s + signature.duration_s)
+        if not np.any(mask):
+            continue
+        if signature.amp is None:
+            amp = cfg.breath_amp if signature.kind == "still" else cfg.walk_amp
+        else:
+            amp = signature.amp
+        shift = signature.spatial_shift + index * 0.8
+        spatial = 0.55 + 0.45 * np.cos(carriers + shift)
+        wave = np.sin(2 * np.pi * signature.hz * t[mask] + signature.phase)
         amps[mask] += amp * wave[:, None] * spatial[None, :]
 
 

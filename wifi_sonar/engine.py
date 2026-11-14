@@ -13,6 +13,7 @@ from datetime import UTC, datetime
 
 from wifi_sonar.detect.calibrate import Calibration, calibrate
 from wifi_sonar.detect.motion import MotionConfig, MotionDetector
+from wifi_sonar.detect.occupancy import estimate_occupancy
 from wifi_sonar.detect.presence import (
     PresenceConfig,
     PresenceMachine,
@@ -62,6 +63,10 @@ class NodeRuntime:
     ts: float = 0.0
     features: dict[str, float] = field(default_factory=dict)
     amplitudes: list[float] = field(default_factory=list)
+    occupancy_count: int = 0
+    occupancy_label: str = "0"
+    occupancy_confidence: float = 0.0
+    occupancy_low_confidence: bool = True
 
 
 @dataclass
@@ -81,6 +86,10 @@ class EngineStatus:
     nodes: list[dict[str, object]] = field(default_factory=list)
     features: dict[str, float] = field(default_factory=dict)
     amplitudes: list[float] = field(default_factory=list)
+    occupancy_count: int = 0
+    occupancy_label: str = "0"
+    occupancy_confidence: float = 0.0
+    occupancy_low_confidence: bool = True
 
     def as_dict(self) -> dict[str, object]:
         return {
@@ -99,6 +108,10 @@ class EngineStatus:
             "nodes": self.nodes,
             "features": self.features,
             "amplitudes": self.amplitudes,
+            "occupancy_count": self.occupancy_count,
+            "occupancy_label": self.occupancy_label,
+            "occupancy_confidence": self.occupancy_confidence,
+            "occupancy_low_confidence": self.occupancy_low_confidence,
         }
 
 
@@ -376,6 +389,7 @@ class Engine:
         node.ts = sample.ts
         node.features = feature.as_dict()
         node.amplitudes = [float(value) for value in node.buffer[-1].amplitudes]
+        self._update_occupancy(node)
         if sample.state == PresenceState.EMPTY:
             if self._empty_since is None:
                 self._empty_since = sample.ts
@@ -426,6 +440,40 @@ class Engine:
             if node.presence is not None:
                 node.presence.calibration = self.calibration
 
+    def _update_occupancy(self, node: NodeRuntime) -> None:
+        assert self.calibration is not None
+        estimate = estimate_occupancy(
+            node.buffer,
+            self.calibration.sample_rate_hz,
+            mode=self.config.mode,
+        )
+        node.occupancy_count = estimate.count
+        node.occupancy_label = estimate.label
+        node.occupancy_confidence = estimate.confidence
+        node.occupancy_low_confidence = estimate.low_confidence
+
+    def _fuse_occupancy(self) -> tuple[int, str, float, bool]:
+        """Suma los enlaces y corta en 2+.
+
+        Dos nodos viendo actividad no alcanzan para saber si es la misma
+        persona. En ese caso la confianza baja. El modo RSSI también.
+        """
+
+        if self.calibration is None or not self.nodes:
+            return 0, "0", 0.0, True
+        total = min(2, sum(node.occupancy_count for node in self.nodes.values()))
+        label = "2+" if total >= 2 else str(total)
+        confidence = min(node.occupancy_confidence for node in self.nodes.values())
+        low = any(node.occupancy_low_confidence for node in self.nodes.values())
+        active_links = sum(1 for node in self.nodes.values() if node.occupancy_count > 0)
+        if active_links > 1:
+            confidence = min(confidence, 0.4)
+            low = True
+        if self.config.mode == "rssi":
+            confidence = min(confidence, 0.3)
+            low = True
+        return total, label, confidence, low
+
     def _motion_config(self) -> MotionConfig:
         off = max(0.0, self.config.on_threshold - self.config.hysteresis)
         return MotionConfig(
@@ -457,9 +505,14 @@ class Engine:
                 "score": node.score,
                 "zone": self.config.zones.get(node_id, ""),
                 "ts": node.ts,
+                "occupancy_label": node.occupancy_label,
+                "occupancy_confidence": node.occupancy_confidence,
             }
             for node_id, node in self.nodes.items()
         ]
+        occupancy_count, occupancy_label, occupancy_confidence, occupancy_low = (
+            self._fuse_occupancy()
+        )
         sensing = not self.config.paused
         return EngineStatus(
             state=fused if self.calibration is not None else PresenceState.EMPTY,
@@ -482,6 +535,10 @@ class Engine:
             nodes=node_rows,
             features={} if active is None else dict(active.features),
             amplitudes=[] if active is None else list(active.amplitudes),
+            occupancy_count=occupancy_count,
+            occupancy_label=occupancy_label,
+            occupancy_confidence=occupancy_confidence,
+            occupancy_low_confidence=occupancy_low,
         )
 
     def remember(self, frame: CSIFrame) -> None:
