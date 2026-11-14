@@ -335,6 +335,14 @@ pauseButton.addEventListener("click", async () => {
   }
 });
 
+document.querySelector("#record").addEventListener("click", async () => {
+  const response = await fetch("/recording", { method: "POST" });
+  const body = await response.json().catch(() => ({}));
+  settingsNote.textContent = response.ok
+    ? `Traza guardada en esta máquina (${body.frames} frames).`
+    : body.detail || "No hay traza para guardar.";
+});
+
 document.querySelector("#erase").addEventListener("click", async () => {
   if (!window.confirm("¿Borrar el historial guardado en esta máquina?")) {
     return;

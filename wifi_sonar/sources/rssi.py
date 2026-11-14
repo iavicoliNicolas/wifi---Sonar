@@ -27,6 +27,9 @@ class RssiConfig:
         names = tuple(name.strip() for name in self.devices if name.strip())
         if not names:
             raise ValueError("rssi mode needs your own device names; it does not scan the LAN")
+        blocked = {"*", "scan", "all"}
+        if any(name.lower() in blocked for name in names):
+            raise ValueError("rssi mode needs your own device names; it does not scan the LAN")
         if names != self.devices:
             object.__setattr__(self, "devices", names)
         if self.sample_rate_hz <= 0:
@@ -77,7 +80,9 @@ class RssiSource:
         for device_index, name in enumerate(cfg.devices):
             rssi = np.full(count, cfg.base_rssi) + rng.normal(0.0, cfg.noise_sigma, size=count)
             rssi += 0.15 * device_index
-            _apply_events(rssi, times, cfg.events)
+            # En la demo solo el primer nombre se mueve. El resto queda quieto.
+            if device_index == 0:
+                _apply_events(rssi, times, cfg.events)
             for index in range(count):
                 value = float(rssi[index])
                 frames.append(

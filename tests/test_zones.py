@@ -1,6 +1,14 @@
-from wifi_sonar.engine import Engine, NodeRuntime
+import pytest
+
+from wifi_sonar.engine import Engine, NodeRuntime, build_source
 from wifi_sonar.settings import Settings
-from wifi_sonar.sources.simulated import SimConfig, SimEvent, SimulatedSource
+from wifi_sonar.sources.simulated import (
+    HomeDemoSource,
+    SimConfig,
+    SimEvent,
+    SimulatedSource,
+    home_demo_frames,
+)
 
 
 def test_simulated_nodes_report_a_state_per_zone_and_fuse_with_or():
@@ -41,6 +49,23 @@ def test_simulated_nodes_report_a_state_per_zone_and_fuse_with_or():
     engine.update_config({"fusion": "vote"})
     voted = engine.status()
     assert {row["zone"] for row in voted["nodes"]} == {"living", "pasillo"}
+
+
+def test_panel_demo_walks_in_living_and_leaves_the_hall_empty():
+    engine = Engine(Settings(auto_start=False, seed=3, source="sim"))
+    assert isinstance(build_source(engine.settings), HomeDemoSource)
+    assert engine.capture_from_recent is False
+    engine.calibrate(12)
+    empty = engine.calibration.mean["motion_energy"]
+    frames = [frame for frame in home_demo_frames(3, 16.0) if frame.timestamp <= 14.0]
+    for frame in frames:
+        engine.ingest(frame)
+    by_node = {row["node_id"]: row["state"] for row in engine.status()["nodes"]}
+    assert by_node == {"living": "movimiento", "pasillo": "vacío"}
+    assert engine.status()["state"] == "movimiento"
+    engine.recent.clear()
+    again = engine.calibrate(12)
+    assert again.mean["motion_energy"] == pytest.approx(empty)
 
 
 def test_renaming_a_zone_does_not_reset_the_detector():

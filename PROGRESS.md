@@ -1,7 +1,7 @@
 # PROGRESS
 
 ## Estado actual
-Fase: 5 — Calidad · Última tarea completada: T-24 · Próxima: ninguna
+Fase: 6 — T-25 a T-33 portados sobre main · Última tarea completada: T-33 · Próxima: ninguna
 
 ## Inventario del repo (2026-10-22)
 
@@ -232,4 +232,11 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Archivos tocados: `web/index.html`, `web/style.css`, `web/app.js`, `tests/test_api.py`, `PROGRESS.md`.
 - Tests agregados: el HTML incluye la salida del valor. En Chrome, mover sensibilidad a 2.4 actualizó el número al instante y `GET /config` devolvió 2.4. En 390 px de ancho el número y el slider entran en la pantalla.
 - Problemas / deuda: ninguna.
+- Siguiente paso sugerido: ninguno.
+
+### 2026-11-14 T-25…T-33 — Portado sobre main
+- Qué se hizo: favicon, hora de reloj en el historial, calibración de la fuente conectada, UDP opcional con reapertura, grabación de la traza en memoria, demo living/pasillo y una fila RSSI por nombre. Las ventanas por nodo de T-30 ya estaban en el motor; el UDP y la demo las usan. No se copió la otra historia de T-02…T-24.
+- Archivos tocados: `wifi_sonar/engine.py`, `wifi_sonar/api/app.py`, `wifi_sonar/sources/`, `wifi_sonar/recording.py`, `wifi_sonar/detect/calibrate.py`, `web/`, `tests/`, `DECISIONS.md`, `DEV_LOOP.md`, `README.md`.
+- Tests agregados: favicon, reloj fijo, calibración de fuente quieta y de caminata, UDP cerrado, caídas, demo de dos zonas, grabar traza, dos nombres RSSI.
+- Problemas / deuda: sin hardware, el UDP se probó con datagramas locales. La etiqueta de calidad sigue siendo estable/ruidosa.
 - Siguiente paso sugerido: ninguno.

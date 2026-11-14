@@ -9,10 +9,16 @@ import time
 import urllib.request
 from collections.abc import Callable
 from dataclasses import dataclass, field, replace
+from datetime import UTC, datetime
 
 from wifi_sonar.detect.calibrate import Calibration, calibrate
 from wifi_sonar.detect.motion import MotionConfig, MotionDetector
-from wifi_sonar.detect.presence import PresenceConfig, PresenceMachine, PresenceState
+from wifi_sonar.detect.presence import (
+    PresenceConfig,
+    PresenceMachine,
+    PresenceSample,
+    PresenceState,
+)
 from wifi_sonar.models import CSIFrame
 from wifi_sonar.pipeline.features import WindowFeatures, extract_features
 from wifi_sonar.pipeline.preprocess import preprocess
@@ -20,8 +26,9 @@ from wifi_sonar.recording import SessionRecorder
 from wifi_sonar.settings import AppConfig, Settings
 from wifi_sonar.sources.base import CSISource
 from wifi_sonar.sources.esp32 import ESP32Source
+from wifi_sonar.sources.listed import ListedSource
 from wifi_sonar.sources.rssi import RssiConfig, RssiSource
-from wifi_sonar.sources.simulated import SimConfig, SimulatedSource, demo_cycle
+from wifi_sonar.sources.simulated import HomeDemoSource, SimConfig, SimulatedSource, demo_cycle
 from wifi_sonar.storage.memory import MemoryStore
 
 logger = logging.getLogger("wifi_sonar")
@@ -102,6 +109,7 @@ class Engine:
         store: MemoryStore | None = None,
         source_factory: Callable[[], CSISource] | None = None,
         config: AppConfig | None = None,
+        clock: Callable[[], datetime] | None = None,
     ) -> None:
         self.settings = settings
         self.store = store if store is not None else MemoryStore()
@@ -109,6 +117,16 @@ class Engine:
             source_factory if source_factory is not None else (lambda: build_source(settings))
         )
         self.config = config if config is not None else AppConfig()
+        self.clock = clock if clock is not None else (lambda: datetime.now(UTC))
+        self.recent: list[CSIFrame] = []
+        self._recent_limit = 8000
+        # El simulador no marca la traza como fuente real: incluye una caminata.
+        self.capture_from_recent = settings.source == "esp32" or (
+            settings.source == "sim" and settings.udp_port is not None
+        )
+        self._drops = 0
+        self._max_drops = 3
+        self.source_status = "up"
         self._previous_ts: float | None = None
         self.calibration: Calibration | None = None
         self.nodes: dict[str, NodeRuntime] = {}
@@ -150,9 +168,19 @@ class Engine:
     def add_listener(self, listener: Listener) -> None:
         self._listeners.append(listener)
 
-    def calibrate(self, seconds: float) -> Calibration:
-        source = self._empty_source(seconds)
-        calibration = calibrate(source, seconds=seconds, k=self.config.threshold_k)
+    def calibrate(self, seconds: float, source: CSISource | None = None) -> Calibration:
+        chosen = source
+        if chosen is None and self.capture_from_recent:
+            with self._lock:
+                chosen = self._recent_source(seconds)
+            if chosen is not None:
+                frames = list(chosen.frames())
+                span = frames[-1].timestamp - frames[0].timestamp
+                seconds = min(seconds, span)
+                chosen = ListedSource(frames, sample_rate_hz=chosen.sample_rate_hz)
+        if chosen is None:
+            chosen = self._empty_source(seconds)
+        calibration = calibrate(chosen, seconds=seconds, k=self.config.threshold_k)
         with self._lock:
             self.calibration = calibration
             self._anchor_mean = dict(calibration.mean)
@@ -178,6 +206,7 @@ class Engine:
         with self._lock:
             if self.config.paused:
                 return
+            self.remember(frame)
             self.recorder.write_frame(frame)
             node = self.nodes.setdefault(frame.node_id, NodeRuntime())
             node.buffer.append(frame)
@@ -237,6 +266,9 @@ class Engine:
             if self.config.paused:
                 self._stop.wait(0.05)
                 continue
+            if self.source_status == "down":
+                self._stop.wait(0.5)
+                continue
             try:
                 iterator = self._ensure_iterator()
                 frame = next(iterator)
@@ -245,12 +277,20 @@ class Engine:
                 self.connected = False
                 self._stop.wait(0.2)
                 continue
+            except ConnectionError as exc:
+                self._iterator = None
+                self.connected = False
+                self._note_drop(exc)
+                self._stop.wait(0.05)
+                continue
             except Exception:
                 logger.exception("source read failed")
                 self._iterator = None
                 self.connected = False
                 self._stop.wait(0.2)
                 continue
+            self._drops = 0
+            self.source_status = "up"
             self._pace(frame)
             self._pulled += 1
             self.ingest(frame)
@@ -327,6 +367,7 @@ class Engine:
             node.presence = PresenceMachine(self.calibration, self._presence_config())
         motion = node.motion.update(feature)
         sample = node.presence.update(feature, motion)
+        sample = self._rssi_without_presence(node, sample)
         changed = sample.state != node.state
         node.state = sample.state
         node.score = sample.score
@@ -347,6 +388,7 @@ class Engine:
                 self.store.retention_days = self.config.retention_days
             event = {
                 "ts": sample.ts,
+                "recorded_at": self.clock().isoformat(),
                 "state": sample.state,
                 "score": sample.score,
                 "node_id": node_id,
@@ -442,6 +484,57 @@ class Engine:
             amplitudes=[] if active is None else list(active.amplitudes),
         )
 
+    def remember(self, frame: CSIFrame) -> None:
+        """Guarda el frame para el botón de traza. No calibra con eso por sí solo."""
+
+        self.recent.append(frame)
+        extra = len(self.recent) - self._recent_limit
+        if extra > 0:
+            del self.recent[:extra]
+
+    def recent_frames(self) -> list[CSIFrame]:
+        with self._lock:
+            return list(self.recent)
+
+    def _recent_source(self, seconds: float) -> ListedSource | None:
+        if len(self.recent) < 3:
+            return None
+        end = self.recent[-1].timestamp
+        window = [frame for frame in self.recent if frame.timestamp >= end - seconds]
+        if len(window) < 3:
+            return None
+        span = window[-1].timestamp - window[0].timestamp
+        # Una muestra menos que `seconds` sigue cubriendo la ventana espectral.
+        if span < 10.5:
+            return None
+        rate = (len(window) - 1) / span if span > 0 else 100.0
+        return ListedSource(window, sample_rate_hz=rate)
+
+    def _note_drop(self, exc: Exception) -> None:
+        self._drops += 1
+        logger.info(
+            json.dumps(
+                {
+                    "event": "source dropped",
+                    "attempt": self._drops,
+                    "reason": str(exc),
+                },
+                ensure_ascii=False,
+            )
+        )
+        if self._drops > self._max_drops:
+            self.source_status = "down"
+            self.connected = False
+
+    def _rssi_without_presence(self, node: NodeRuntime, sample: PresenceSample) -> PresenceSample:
+        """El RSSI no informa presencia quieta: vacío o movimiento."""
+
+        if self.config.mode != "rssi" or sample.state != PresenceState.PRESENCE:
+            return sample
+        if node.presence is not None:
+            node.presence.state = PresenceState.EMPTY
+        return replace(sample, state=PresenceState.EMPTY.value)
+
     def _notify_webhook(self, event: dict[str, object]) -> None:
         url = self.config.webhook_url.strip()
         if not url:
@@ -488,19 +581,14 @@ def fuse_states(states: list[str], method: str) -> str:
 
 def build_source(settings: Settings) -> CSISource:
     if settings.source == "sim":
-        return SimulatedSource(
-            SimConfig(
-                seed=settings.seed,
-                duration_s=None,
-                loop=True,
-                loop_period_s=40.0,
-                events=demo_cycle(),
-            )
-        )
+        if settings.udp_port is not None:
+            return ESP32Source(udp_host=settings.esp32_host, udp_port=settings.udp_port)
+        return HomeDemoSource(seed=settings.seed)
     if settings.source == "esp32":
         if settings.esp32_serial:
             return ESP32Source(serial_path=settings.esp32_serial)
-        return ESP32Source(udp_host=settings.esp32_host, udp_port=settings.esp32_port)
+        port = settings.udp_port if settings.udp_port is not None else settings.esp32_port
+        return ESP32Source(udp_host=settings.esp32_host, udp_port=port)
     if settings.source == "rssi":
         names = tuple(part.strip() for part in settings.rssi_devices.split(",") if part.strip())
         return RssiSource(

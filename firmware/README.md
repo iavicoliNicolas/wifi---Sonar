@@ -62,7 +62,7 @@ CSI,<nodo>,<segundos>,<rssi>,<amp0|amp1|...>,<fase0|fase1|...>
 La fase se puede omitir. Las listas usan `|`.
 
 ```bash
-WIFI_SONAR_SOURCE=esp32 WIFI_SONAR_ESP32_HOST=0.0.0.0 WIFI_SONAR_ESP32_PORT=5005 python -m wifi_sonar
+WIFI_SONAR_UDP_PORT=5005 python -m wifi_sonar
 ```
 
 Cada placa manda un datagrama UDP por línea al puerto 5005 de la máquina del panel. El campo nodo distingue las zonas (T-20).

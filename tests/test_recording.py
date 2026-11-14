@@ -4,7 +4,8 @@ from wifi_sonar.api.app import create_app
 from wifi_sonar.detect.calibrate import calibrate
 from wifi_sonar.detect.presence import analyze_frames
 from wifi_sonar.engine import Engine
-from wifi_sonar.recording import SessionRecorder, read_labels
+from wifi_sonar.models import CSIFrame
+from wifi_sonar.recording import SessionRecorder, read_labels, save_recent
 from wifi_sonar.settings import Settings
 from wifi_sonar.sources.base import read_frames
 from wifi_sonar.sources.replay import ReplaySource
@@ -49,3 +50,29 @@ def test_recording_endpoints(tmp_path):
         assert stopped.status_code == 200
         assert read_labels(stopped.json()["labels"]) == [{"ts": 1.5, "label": "still"}]
         assert client.post("/recordings/stop").status_code == 409
+        assert client.post("/recording").status_code == 409
+
+
+def test_record_button_writes_frames_already_in_memory(tmp_path):
+    settings = Settings(auto_start=False, recordings_dir=str(tmp_path))
+    engine = Engine(settings)
+    frames = [
+        CSIFrame(timestamp=0.0, rssi=-40.0, amplitudes=(1.0, 2.0), node_id="living"),
+        CSIFrame(timestamp=0.1, rssi=-41.0, amplitudes=(1.1, 2.1), node_id="living"),
+        CSIFrame(timestamp=0.2, rssi=-39.0, amplitudes=(0.9, 1.9), node_id="pasillo"),
+    ]
+    for frame in frames:
+        engine.remember(frame)
+    assert engine.capture_from_recent is False
+    path = save_recent(engine.recent_frames(), tmp_path)
+    replayed = list(ReplaySource(path).frames())
+    assert [(frame.timestamp, frame.node_id) for frame in replayed] == [
+        (frame.timestamp, frame.node_id) for frame in frames
+    ]
+    client = TestClient(create_app(settings, engine))
+    with client:
+        saved = client.post("/recording")
+    assert saved.status_code == 200
+    body = saved.json()
+    assert body["frames"] == 3
+    assert (tmp_path / body["file"]).is_file()

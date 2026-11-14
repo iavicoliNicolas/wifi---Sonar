@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import math
 import socket
-from collections.abc import Iterable, Iterator
+from collections.abc import Callable, Iterable, Iterator
 from pathlib import Path
 
 from wifi_sonar.models import CSIFrame
@@ -129,6 +129,7 @@ class ESP32Source:
         udp_host: str | None = None,
         udp_port: int | None = None,
         sample_rate_hz: float = 100.0,
+        socket_factory: Callable[..., socket.socket] | None = None,
     ) -> None:
         if sample_rate_hz <= 0:
             raise ValueError("sample_rate_hz must be positive")
@@ -137,6 +138,7 @@ class ESP32Source:
         self.udp_host = udp_host
         self.udp_port = udp_port
         self._sample_rate_hz = sample_rate_hz
+        self._socket_factory = socket.socket if socket_factory is None else socket_factory
 
     @property
     def sample_rate_hz(self) -> float:
@@ -156,15 +158,23 @@ class ESP32Source:
 
     def _udp_frames(self) -> Iterator[CSIFrame]:
         assert self.udp_host is not None and self.udp_port is not None
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         try:
-            sock.bind((self.udp_host, self.udp_port))
-            sock.settimeout(1.0)
+            sock = self._socket_factory(socket.AF_INET, socket.SOCK_DGRAM)
+        except OSError as exc:
+            raise ConnectionError("udp socket closed") from exc
+        try:
+            try:
+                sock.bind((self.udp_host, self.udp_port))
+                sock.settimeout(1.0)
+            except OSError as exc:
+                raise ConnectionError("udp socket closed") from exc
             while True:
                 try:
                     payload, _addr = sock.recvfrom(65535)
                 except TimeoutError:
                     continue
+                except OSError as exc:
+                    raise ConnectionError("udp socket closed") from exc
                 text = payload.decode("utf-8", errors="replace")
                 yield from _frames_from_lines(text.splitlines())
         finally:

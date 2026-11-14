@@ -12,6 +12,10 @@ def test_rssi_mode_needs_an_allow_list_and_does_not_invent_devices():
     with pytest.raises(ValueError, match="does not scan"):
         RssiSource(RssiConfig(devices=(" ",)))
     with pytest.raises(ValueError, match="does not scan"):
+        RssiSource(RssiConfig(devices=("*",)))
+    with pytest.raises(ValueError, match="does not scan"):
+        RssiSource(RssiConfig(devices=("scan", "all")))
+    with pytest.raises(ValueError, match="does not scan"):
         build_source(Settings(source="rssi", rssi_devices=" , "))
 
     source = RssiSource(RssiConfig(devices=("telefono", "notebook"), seed=1, duration_s=0.2))
@@ -51,3 +55,25 @@ def test_rssi_walk_is_motion_and_an_empty_room_stays_empty():
     client = TestClient(create_app(moving.settings, moving))
     with client:
         assert "sensibilidad baja" in client.get("/").text
+    assert all(row["state"] != "presencia" for row in status["nodes"])
+
+
+def test_rssi_demo_moves_only_the_first_named_device():
+    engine = Engine(
+        Settings(auto_start=False, source="rssi", seed=1, rssi_devices="ap-living,tele")
+    )
+    engine.calibrate(12)
+    frames = RssiSource(
+        RssiConfig(
+            devices=("ap-living", "tele"),
+            seed=5,
+            duration_s=18.0,
+            events=(SimEvent("walk", 0.0, 18.0),),
+        )
+    ).generate()
+    for frame in frames:
+        engine.ingest(frame)
+    by_name = {row["node_id"]: row["state"] for row in engine.status()["nodes"]}
+    assert by_name == {"ap-living": "movimiento", "tele": "vacío"}
+    assert engine.status()["state"] == "movimiento"
+    assert all(row["state"] != "presencia" for row in engine.status()["nodes"])

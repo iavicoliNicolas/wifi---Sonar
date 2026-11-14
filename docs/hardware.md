@@ -19,7 +19,7 @@ No hace falta antena externa para una habitación. El CSI no atraviesa bien vari
 3. Dejá las dos placas asociadas a la red de tu casa, no a la de un vecino. El ejemplo oficial filtra por la MAC del emisor (`CONFIG_CSI_SEND_MAC`).
 4. Elegí cómo llega la línea al panel:
    - Serie: `WIFI_SONAR_SOURCE=esp32` y `WIFI_SONAR_ESP32_SERIAL=/dev/ttyUSB1`.
-   - UDP: el snippet `firmware/csi_line.c` y `WIFI_SONAR_ESP32_PORT=5005`.
+   - UDP: el snippet `firmware/csi_line.c` y `WIFI_SONAR_UDP_PORT=5005`. Sin esa variable el panel no abre el socket.
 5. Arrancá el panel, salí de la habitación y usá Calibrar. Sin esa captura vacía el detector no tiene línea base.
 6. Para una segunda zona, repetí el receptor con otro nombre de nodo y cargá el mapa en la config (`zones`).
 

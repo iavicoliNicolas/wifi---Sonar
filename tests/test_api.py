@@ -1,3 +1,5 @@
+from datetime import UTC, datetime
+
 from fastapi.testclient import TestClient
 
 from wifi_sonar.api.app import create_app
@@ -74,7 +76,32 @@ def test_panel_shell_is_served():
         assert "Nombre de la zona" in script.text
         assert 'id="sensitivity-value"' in page.text
         assert "editSeq" in script.text
+        assert 'id="record"' in page.text
+        assert "Grabar traza" in page.text
+        assert 'rel="icon"' in page.text
+        icon = client.get("/favicon.ico")
+        assert icon.status_code == 200
+        assert icon.headers["content-type"].startswith("image/png")
+        assert icon.content[:8] == b"\x89PNG\r\n\x1a\n"
         assert client.get("/assets/style.css").status_code == 200
+
+
+def test_live_history_uses_wall_clock_and_the_snapshot_keeps_trace_time():
+    wall = datetime(2024, 6, 1, 12, 0, tzinfo=UTC)
+    engine = Engine(Settings(auto_start=False, seed=3), clock=lambda: wall)
+    engine.calibrate(12)
+    walk = SimulatedSource(
+        SimConfig(seed=9, duration_s=16.0, events=(SimEvent("walk", 0.0, 16.0),))
+    )
+    for frame in walk.generate():
+        engine.ingest(frame)
+    status = engine.status()
+    assert status["state"] == "movimiento"
+    assert status["ts"] < 100
+    history = engine.store.list_events(10)
+    assert history
+    assert all(event["recorded_at"] == wall.isoformat() for event in history)
+    assert all(float(event["ts"]) < 100 for event in history)
 
 
 def test_or_fusion_prefers_motion_and_vote_breaks_ties_toward_activity():

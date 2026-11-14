@@ -101,3 +101,39 @@ Contexto: D-009 reiniciaba los detectores ante cualquier `PUT /config`. Nombrar 
 Opciones consideradas: seguir reiniciando siempre, o solo cuando cambia un parámetro del detector.
 Decisión: la histéresis se tira si cambia sensibilidad, ventanas, umbrales o el modo. Zona, fusión, pausa, retención y webhook dejan el detector como está.
 Consecuencias: renombrar una zona en el panel no parpadea el estado. Un cambio de sensibilidad sigue aplicando en caliente desde la próxima ventana.
+
+### D-018 — Historial con hora de reloj (2026-11-14)
+Contexto: el simulador numera la traza desde cero. Si la retención comparara ese `ts`, los eventos del panel no envejecerían.
+Opciones consideradas: guardar la hora de pared también en el gráfico, o separar los dos relojes.
+Decisión: `recorded_at` es la hora real al guardar el evento. El `ts` del estado y del gráfico sigue siendo el segundo de la traza.
+Consecuencias: la poda de SQLite puede borrar un evento del panel. El timeline no salta a un número de Unix.
+
+### D-019 — Calibrar la fuente conectada, no la caminata de la demo (2026-11-14)
+Contexto: Calibrar arma un cuarto vacío simulado. Con una placa, tiene que usar lo que esa placa acaba de mandar. La demo incluye una caminata y no sirve de línea base.
+Opciones consideradas: calibrar siempre el buffer en vivo, o solo cuando la fuente es hardware.
+Decisión: `capture_from_recent` se prende con `esp32` o con `WIFI_SONAR_UDP_PORT`. El simulador y el modo RSSI lo dejan apagado: recuerdan frames para grabarlos, pero calibran el cuarto vacío. Una captura cuya energía de movimiento queda alta se marca `ruidosa`.
+Consecuencias: el botón de la demo no cambia. Una caminata guardada no se acepta como cuarto vacío.
+
+### D-020 — UDP solo si hay puerto (2026-11-14)
+Contexto: el parser UDP ya existía para `WIFI_SONAR_SOURCE=esp32`. El proceso por defecto no tiene que abrir un socket.
+Opciones consideradas: escuchar siempre el 5005, o abrirlo solo cuando el operador lo pide.
+Decisión: `WIFI_SONAR_UDP_PORT` reemplaza el simulador en vivo. Sin la variable, `source=sim` no crea el socket. Un silencio (timeout) no es una caída. Un `OSError` se vuelve `ConnectionError`, se reabre el socket y, al agotar los reintentos, `/health` dice `source: down`. El HTTP sigue. Cada nodo conserva su ventana; la fusión es la que ya tenía el motor.
+Consecuencias: el demo sin la variable no cambia. No se escucha la red de un vecino: solo llegan las líneas CSI que una placa propia manda a ese puerto.
+
+### D-021 — Grabar la traza que ya está en memoria (2026-11-14)
+Contexto: T-13 graba desde que se aprieta iniciar. El panel no tenía forma de guardar lo que el ingreso ya tiene.
+Opciones consideradas: abrir otra captura desde ahora, o volcar el buffer.
+Decisión: `POST /recording` escribe un JSONL en `WIFI_SONAR_RECORDINGS`. Con menos de dos frames responde 409. El archivo no sale de la máquina. El simulador no usa ese buffer para calibrar.
+Consecuencias: el botón Grabar traza no manda telemetría ni etiqueta personas.
+
+### D-022 — La demo muestra living y pasillo (2026-11-14)
+Contexto: la fusión por zona ya existía, pero el simulador en vivo era un solo nodo.
+Opciones consideradas: dejar un nodo hasta tener dos placas, o simular las dos habitaciones.
+Decisión: living camina a partir de los 6 s y pasillo no tiene eventos. Los nombres son zonas del hogar propio, no personas.
+Consecuencias: durante la caminata se ven los dos estados. La calibración de la demo no usa esa caminata.
+
+### D-023 — Una fila RSSI por nombre (2026-11-14)
+Contexto: el modo degradado aceptaba varios nombres, pero la misma escena movía a todos.
+Opciones consideradas: seguir con una etiqueta, o una fila por nombre y mover solo el primero en la demo.
+Decisión: cada nombre escrito es un nodo. El primero tiene el vaivén. Los demás quedan quietos. `*`, `scan` y `all` se rechazan. El estado presencia no sale de este modo: vacío o movimiento.
+Consecuencias: dos nombres se ven distintos. No hay barrido de la LAN ni identificación de personas.

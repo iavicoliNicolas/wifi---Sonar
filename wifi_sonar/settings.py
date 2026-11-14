@@ -74,11 +74,17 @@ class Settings:
     esp32_serial: str = ""
     recordings_dir: str = "data/recordings"
     rssi_devices: str = "telefono"
+    udp_port: int | None = None
 
     @classmethod
     def from_env(cls) -> Settings:
         def env(name: str, default: str) -> str:
             return os.environ.get(name, default)
+
+        udp_raw = os.environ.get("WIFI_SONAR_UDP_PORT", "").strip()
+        udp_port = int(udp_raw) if udp_raw else None
+        if udp_port is not None and not 1 <= udp_port <= 65535:
+            raise ValueError("WIFI_SONAR_UDP_PORT must be between 1 and 65535")
 
         return cls(
             host=env("WIFI_SONAR_HOST", "127.0.0.1"),
@@ -94,4 +100,5 @@ class Settings:
             esp32_serial=env("WIFI_SONAR_ESP32_SERIAL", ""),
             recordings_dir=env("WIFI_SONAR_RECORDINGS", "data/recordings"),
             rssi_devices=env("WIFI_SONAR_RSSI_DEVICES", "telefono"),
+            udp_port=udp_port,
         )

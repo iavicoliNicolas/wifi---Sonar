@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterator
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 import numpy as np
 
@@ -62,6 +62,13 @@ class SimConfig:
             raise ValueError("duration_s must be >= 0")
         if self.loop and self.loop_period_s <= 0:
             raise ValueError("loop_period_s must be positive")
+
+
+# Living camina; el pasillo no tiene eventos. Cabe en un período de 24 s.
+HOME_DEMO_EVENTS = (
+    SimEvent("walk", 6.0, 10.0),
+    SimEvent("still", 16.0, 8.0),
+)
 
 
 def demo_cycle(period_s: float = 40.0) -> tuple[SimEvent, ...]:
@@ -242,3 +249,69 @@ def _add_rssi(
             rssi[mask] += 0.6 * np.sin(2 * np.pi * cfg.breath_hz * t[mask])
         elif event.kind in ("enter", "leave"):
             rssi[mask] += 2.0 * np.sin(2 * np.pi * cfg.burst_hz * t[mask])
+
+
+def home_demo_frames(
+    seed: int,
+    duration_s: float = 24.0,
+    *,
+    sample_rate_hz: float = 100.0,
+    n_subcarriers: int = 52,
+) -> list[CSIFrame]:
+    """Living recorre la escena y pasillo queda vacío, con los mismos relojes."""
+
+    living = SimulatedSource(
+        SimConfig(
+            seed=seed,
+            duration_s=duration_s,
+            sample_rate_hz=sample_rate_hz,
+            n_subcarriers=n_subcarriers,
+            node_id="living",
+            events=HOME_DEMO_EVENTS,
+        )
+    ).generate()
+    hall = SimulatedSource(
+        SimConfig(
+            seed=seed + 1,
+            duration_s=duration_s,
+            sample_rate_hz=sample_rate_hz,
+            n_subcarriers=n_subcarriers,
+            node_id="pasillo",
+        )
+    ).generate()
+    return sorted([*living, *hall], key=lambda frame: (frame.timestamp, frame.node_id))
+
+
+class HomeDemoSource:
+    """El simulador del panel: dos zonas propias, en bucle."""
+
+    def __init__(
+        self,
+        seed: int = 0,
+        *,
+        sample_rate_hz: float = 100.0,
+        n_subcarriers: int = 52,
+        period_s: float = 24.0,
+    ) -> None:
+        if period_s < 24.0:
+            raise ValueError("home demo needs a period of at least 24 s")
+        self.seed = seed
+        self._sample_rate_hz = sample_rate_hz
+        self.n_subcarriers = n_subcarriers
+        self.period_s = period_s
+
+    @property
+    def sample_rate_hz(self) -> float:
+        return self._sample_rate_hz
+
+    def frames(self) -> Iterator[CSIFrame]:
+        offset = 0.0
+        while True:
+            for frame in home_demo_frames(
+                self.seed,
+                self.period_s,
+                sample_rate_hz=self._sample_rate_hz,
+                n_subcarriers=self.n_subcarriers,
+            ):
+                yield replace(frame, timestamp=frame.timestamp + offset)
+            offset += self.period_s

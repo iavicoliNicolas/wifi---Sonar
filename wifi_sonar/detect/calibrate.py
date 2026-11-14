@@ -170,3 +170,18 @@ def save_calibration(calibration: Calibration, path: str | Path) -> None:
 
 def load_calibration(path: str | Path) -> Calibration:
     return Calibration.from_json(Path(path).read_text(encoding="utf-8"))
+
+
+def baseline_quality(calibration: Calibration) -> str:
+    """`estable` solo si la captura parece un cuarto vacío.
+
+    Una caminata constante tiene poca dispersión relativa y un ratio solo
+    la marcaría estable. La media de la energía de movimiento la deja afuera.
+    """
+
+    mean = calibration.mean["motion_energy"]
+    spread = calibration.std["motion_energy"]
+    ratio = spread / mean if mean else 0.0
+    if ratio >= 0.8 or mean > 1.0:
+        return "ruidosa"
+    return "estable"

@@ -3,11 +3,12 @@
 from __future__ import annotations
 
 import json
+import time
 from datetime import UTC, datetime
 from pathlib import Path
 
 from wifi_sonar.models import CSIFrame
-from wifi_sonar.sources.replay import dumps_frame
+from wifi_sonar.sources.replay import dumps_frame, write_recording
 
 
 class SessionRecorder:
@@ -49,6 +50,19 @@ class SessionRecorder:
         self._handle = None
         self.recording = False
         return self.path
+
+
+def save_recent(frames: list[CSIFrame], directory: str | Path) -> Path:
+    """Escribe los frames que ya están en memoria. No abre una captura nueva."""
+
+    if len(frames) < 2:
+        raise ValueError("nothing to record")
+    folder = Path(directory)
+    folder.mkdir(parents=True, exist_ok=True)
+    path = folder / f"sesion-{time.time_ns()}.jsonl"
+    write_recording(path, frames)
+    path.with_name(path.stem + ".labels.jsonl").write_text("", encoding="utf-8")
+    return path
 
 
 def read_labels(path: str | Path) -> list[dict[str, object]]:

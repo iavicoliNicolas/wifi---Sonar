@@ -13,7 +13,9 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from wifi_sonar import __version__
+from wifi_sonar.detect.calibrate import baseline_quality
 from wifi_sonar.engine import Engine
+from wifi_sonar.recording import save_recent
 from wifi_sonar.settings import Settings
 from wifi_sonar.storage.sqlite import SqliteStore
 from wifi_sonar.stream import SnapshotHub
@@ -86,6 +88,7 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
             "connected": current["connected"],
             "paused": current["paused"],
             "sensing": current["sensing"],
+            "source": engine.source_status,
         }
 
     @app.get("/status")
@@ -99,10 +102,7 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
         except ValueError as error:
             raise HTTPException(status_code=400, detail=str(error)) from error
         payload = calibration.to_dict()
-        mean = calibration.mean["motion_energy"]
-        spread = calibration.std["motion_energy"]
-        ratio = spread / mean if mean else 0.0
-        payload["quality"] = "estable" if ratio < 0.8 else "ruidosa"
+        payload["quality"] = baseline_quality(calibration)
         return payload
 
     @app.get("/config")
@@ -126,6 +126,15 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
     def delete_history() -> dict[str, bool]:
         engine.store.clear_events()
         return {"ok": True}
+
+    @app.post("/recording")
+    def record_recent() -> dict[str, object]:
+        frames = engine.recent_frames()
+        try:
+            path = save_recent(frames, engine.settings.recordings_dir)
+        except ValueError as error:
+            raise HTTPException(status_code=409, detail="no hay traza reciente") from error
+        return {"frames": len(frames), "file": path.name}
 
     @app.post("/recordings/start")
     def start_recording(body: RecordingStart | None = None) -> dict[str, str]:
@@ -169,6 +178,10 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
         @app.get("/")
         def panel() -> FileResponse:
             return FileResponse(assets / "index.html")
+
+        @app.get("/favicon.ico")
+        def favicon() -> FileResponse:
+            return FileResponse(assets / "favicon.png", media_type="image/png")
 
         app.mount("/assets", StaticFiles(directory=assets), name="assets")
 

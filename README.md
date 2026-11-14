@@ -39,7 +39,7 @@ El panel queda en <http://127.0.0.1:8000> y la API en <http://127.0.0.1:8000/doc
 
 ![Asistente de calibración](docs/calibracion.png)
 
-Con el simulador, esa captura no usa el ciclo demo: arma un cuarto vacío aparte. En hardware real sí tenés que salir de la habitación. Cambiar la ventana o la sensibilidad aplica en caliente, pero los umbrales siguen siendo los de la última calibración hasta que vuelvas a calibrar.
+Con el simulador, esa captura no usa la demo: arma un cuarto vacío aparte. La demo muestra living caminando y el pasillo vacío, y esa caminata no se toma como línea base. Si la fuente es una placa (`WIFI_SONAR_SOURCE=esp32` o `WIFI_SONAR_UDP_PORT`), Calibrar usa los frames recientes de esa placa. Una caminata queda marcada como calidad ruidosa.
 
 ## Docker
 
@@ -59,13 +59,17 @@ Sin placas, el programa usa el simulador. Para CSI de verdad hacen falta dos ESP
 WIFI_SONAR_SOURCE=esp32 WIFI_SONAR_ESP32_SERIAL=/dev/ttyUSB1 .venv/bin/python -m wifi_sonar
 ```
 
-UDP, si usás el snippet de línea corta:
+UDP, solo si lo pedís. Sin la variable el proceso no abre el socket y sigue el simulador:
 
 ```bash
-WIFI_SONAR_SOURCE=esp32 WIFI_SONAR_ESP32_PORT=5005 .venv/bin/python -m wifi_sonar
+WIFI_SONAR_UDP_PORT=5005 .venv/bin/python -m wifi_sonar
 ```
 
-El modo degradado no escanea vecinos. Poné los nombres en `WIFI_SONAR_RSSI_DEVICES` y arrancá con `WIFI_SONAR_SOURCE=rssi`.
+También vale `WIFI_SONAR_SOURCE=esp32` con `WIFI_SONAR_ESP32_PORT`. Un silencio no corta la fuente. Si el socket muere, se vuelve a abrir; si eso se agota, `/health` queda con `source: down` y la API sigue. Cada nodo conserva su ventana.
+
+El modo degradado no escanea vecinos. Poné los nombres en `WIFI_SONAR_RSSI_DEVICES` y arrancá con `WIFI_SONAR_SOURCE=rssi`. En la demo solo el primer nombre se mueve; el resto queda quieto, cada uno en su fila, y no informa presencia.
+
+**Grabar traza** escribe en esta máquina el JSONL de los frames que ya están en memoria. No arranca una captura nueva ni lo manda a ningún lado.
 
 ## Límites conocidos
 
@@ -74,7 +78,7 @@ El modo degradado no escanea vecinos. Poné los nombres en `WIFI_SONAR_RSSI_DEVI
 - No hay identificación de personas ni de actividades finas. Movimiento y presencia quieta es todo el vocabulario.
 - El RSSI es grueso. Sirve como respaldo y el panel lo dice.
 - Sin hardware CSI, lo que ves es el simulador determinista, no tu casa.
-- El historial se guarda en `data/wifi_sonar.sqlite` y se poda según la retención (30 días por defecto). No sale de esta máquina.
+- El historial se guarda en `data/wifi_sonar.sqlite`. La retención usa la hora de reloj; el gráfico sigue en segundos de la traza. No sale de esta máquina.
 
 ## Privacidad
 

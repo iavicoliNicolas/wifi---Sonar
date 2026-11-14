@@ -224,6 +224,53 @@ Formato: `[ ] ID — Título` · *Depende de* · **Aceptación**
   README con capturas, guía de instalación, guía de calibración, límites conocidos, sección de privacidad.
   **Aceptación:** alguien externo puede reproducir el setup leyendo solo el README.
 
+### Fase 6 — Lo que main no tenía de T-25 a T-33
+
+- [x] **T-25 — Favicon**
+  *Depende de:* T-14
+  El navegador deja de pedir `/favicon.ico` en vano.
+  **Aceptación:** `GET /favicon.ico` responde 200 con una imagen.
+
+- [x] **T-26 — Reloj de pared en el historial en vivo**
+  *Depende de:* T-12, T-14
+  Los eventos que publica el simulador se guardan con hora real. El gráfico sigue en el tiempo de la traza.
+  **Aceptación:** un test fija el reloj y el historial usa ese instante; el estado conserva el tiempo de la traza.
+
+- [x] **T-27 — Calibrar la fuente conectada**
+  *Depende de:* T-16
+  Si hay una captura reciente marcada como fuente real, la calibración sale de ahí. Si no, sigue el cuarto vacío simulado.
+  **Aceptación:** una fuente quieta distinta cambia los umbrales; una caminata no queda como línea base buena; sin fuente, sigue el cuarto vacío.
+
+- [x] **T-28 — UDP opcional**
+  *Depende de:* T-19, T-22
+  Con `WIFI_SONAR_UDP_PORT` el proceso lee líneas CSI propias. Apagado, sigue el simulador.
+  **Aceptación:** sin la variable no se abre el socket; una traza corta no publica movimiento.
+
+- [x] **T-29 — Reabrir el UDP si el socket muere**
+  *Depende de:* T-22, T-28
+  Un timeout sin datagramas sigue en silencio. Un error del socket vuelve a abrirlo. Si las caídas se agotan, `/health` dice `down` y el proceso sigue.
+  **Aceptación:** después de un socket muerto, el datagrama siguiente se parsea; las caídas repetidas dejan la fuente en down.
+
+- [x] **T-30 — Zonas en el ingreso CSI**
+  *Depende de:* T-20, T-28
+  Cada `node_id` tiene su ventana. El snapshot fusiona con la config. El ingreso UDP usa ese mismo camino.
+  **Aceptación:** dos nodos, uno caminando y otro vacío, publican living en movimiento y pasillo vacío.
+
+- [x] **T-31 — Grabar la traza reciente**
+  *Depende de:* T-13, T-14
+  Un botón guarda en disco los frames que ya están en memoria, en el JSONL del replay.
+  **Aceptación:** un POST deja un archivo que el replay lee; sin frames responde 409. El panel tiene el botón.
+
+- [x] **T-32 — Dos zonas en el simulador del panel**
+  *Depende de:* T-20, T-31
+  Living recorre la escena y pasillo queda vacío.
+  **Aceptación:** en la caminata, living está en movimiento y pasillo en vacío.
+
+- [x] **T-33 — Una fila RSSI por nombre**
+  *Depende de:* T-21, T-32
+  Cada dispositivo que la persona escribió es una fila. En la demo solo el primero se mueve. No se busca nada en la red y no aparece el estado presencia.
+  **Aceptación:** con dos nombres, el primero queda en movimiento y el segundo en vacío.
+
 ---
 
 ## 5. Plantilla de `PROGRESS.md`
