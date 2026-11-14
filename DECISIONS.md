@@ -143,3 +143,9 @@ Contexto: el detector decía vacío, presencia o movimiento. Hace falta un núme
 Opciones consideradas: nombrar dispositivos y tratarlos como personas, guardar el conteo en el historial, o publicar solo un entero acotado en el estado en vivo.
 Decisión: `estimate_occupancy` devuelve 0, 1 o 2+ y una confianza sobre la claridad de los picos de esa ventana. No hay nombre, huella ni seguimiento entre muestras. 2+ es el techo: la señal no sostiene un censo más fino y los tests no afirman una precisión más allá de esos tres casos en el simulador. En modo RSSI, o con una sola subportadora, la confianza queda baja y el panel lo dice. Si dos enlaces ven actividad a la vez, el total se suma y se corta en 2+, pero la confianza baja: no se sabe si es la misma persona. El conteo no se escribe en el historial.
 Consecuencias: el estado de la API y el WebSocket muestran cuántos, no quiénes. Un hábito o una identidad no se pueden reconstruir desde este campo. No pisa D-018…D-023.
+
+### D-025 — No hay plano métrico con esta señal (2026-11-14)
+Contexto: un mapa del espacio suena a radar o a plano en metros. El motor no tiene ángulo de llegada, tiempo de vuelo ni una calibración geométrica. Cada nodo solo publica vacío, presencia o movimiento. El simulador ubica las firmas en frecuencia, no en coordenadas. Varios enlaces no se asocian a un mismo cuerpo.
+Opciones consideradas: inventar una imagen radar, dibujar trayectorias, o dejar que la persona arme un esquema y pintar el estado de cada nodo propio.
+Decisión: no se implementa un plano métrico ni un rastreo. `layout` guarda, en la config local, la posición x/y (0 a 1) que la persona elige para cada nodo. El panel muestra esa ficha con el estado en vivo. No hay historial de posiciones, ni nombres, ni vigilancia entre viviendas.
+Consecuencias: mover una ficha no reinicia el detector. Un esquema no dice dónde está alguien en metros ni quién es.

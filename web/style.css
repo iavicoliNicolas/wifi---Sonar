@@ -377,8 +377,69 @@ canvas {
 
 #settings-note,
 #detail,
-#retention {
+#retention,
+#space-note {
   overflow-wrap: anywhere;
+}
+
+#space-note {
+  margin: 0 0 0.7rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+#floor {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  aspect-ratio: 5 / 3;
+  min-height: 11rem;
+  background:
+    linear-gradient(rgba(36, 48, 43, 0.45) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(36, 48, 43, 0.45) 1px, transparent 1px),
+    #0c1012;
+  background-size: 25% 33.4%, 20% 100%, auto;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+  touch-action: none;
+}
+
+.space-empty {
+  margin: 0;
+  padding: 1rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+.space-marker {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  max-width: min(12rem, 78%);
+  padding: 0.35rem 0.7rem;
+  border: 0;
+  border-radius: 999px;
+  color: #101417;
+  font: inherit;
+  font-size: 0.82rem;
+  line-height: 1.2;
+  text-align: center;
+  cursor: grab;
+}
+
+.space-marker[data-state="vacío"] {
+  background: var(--empty);
+}
+
+.space-marker[data-state="presencia"] {
+  background: var(--presence);
+}
+
+.space-marker[data-state="movimiento"] {
+  background: var(--motion);
+  color: #1a1210;
 }
 
 #settings-note {

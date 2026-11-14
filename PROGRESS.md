@@ -227,6 +227,13 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Problemas / deuda: ninguna.
 - Siguiente paso sugerido: ninguno.
 
+### 2026-11-14 feat(map) — Esquema del espacio monitoreado
+- Qué se hizo: cada nodo se puede ubicar a mano en un lienzo 2D. La posición queda en la config local y la ficha muestra el estado en vivo. No hay trayectorias ni nombres. Un plano métrico no se sostiene con esta señal: no hay ángulo, tiempo de vuelo ni asociación entre enlaces. Decisión D-025.
+- Archivos tocados: `wifi_sonar/settings.py`, `wifi_sonar/api/app.py`, `web/index.html`, `web/style.css`, `web/app.js`, `tests/test_layout.py`, `tests/test_api.py`, `DECISIONS.md`, `README.md`, `PROGRESS.md`.
+- Tests agregados: la posición se guarda, no reinicia el detector, rechaza coordenadas de más y un campo de nombre. El HTML dice que no es un plano.
+- Problemas / deuda: las posiciones son las que elige la persona, no una medida de la señal.
+- Siguiente paso sugerido: ninguno.
+
 ### 2026-11-14 feat(occupancy) — Cantidad de personas en alcance
 - Qué se hizo: un estimador anónimo devuelve 0, 1 o 2+ y una confianza. El simulador puede superponer N firmas de respiración o caminata. El conteo sale por la API y el WebSocket y el panel lo muestra sin nombres. En modo RSSI la confianza queda baja. No se guarda en el historial. Decisión D-024.
 - Archivos tocados: `wifi_sonar/detect/occupancy.py`, `wifi_sonar/sources/simulated.py`, `wifi_sonar/engine.py`, `web/index.html`, `web/app.js`, `web/style.css`, `tests/test_occupancy.py`, `tests/test_api.py`, `tests/test_ws.py`, `DECISIONS.md`, `README.md`, `PROGRESS.md`.
