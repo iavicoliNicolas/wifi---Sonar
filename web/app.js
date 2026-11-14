@@ -1,5 +1,6 @@
 const stateNode = document.querySelector("#state");
 const detailNode = document.querySelector("#detail");
+const occupancyNode = document.querySelector("#occupancy");
 const connectionNode = document.querySelector("#connection");
 const heatmap = document.querySelector("#heatmap");
 const scoreCanvas = document.querySelector("#score");
@@ -48,6 +49,7 @@ function renderState(snapshot) {
   const score = Number(snapshot.score || 0);
   const calibrated = snapshot.calibrated ? "calibrado" : "sin calibrar";
   detailNode.textContent = `${calibrated} · score ${score.toFixed(2)}`;
+  renderOccupancy(snapshot);
   renderSensing(snapshot);
   renderZones(snapshot);
   renderMode(snapshot.mode);
@@ -64,6 +66,18 @@ function renderState(snapshot) {
       timeline.removeChild(timeline.lastElementChild);
     }
   }
+}
+
+function renderOccupancy(snapshot) {
+  if (!snapshot.calibrated) {
+    occupancyNode.textContent = "Personas en alcance: —";
+    return;
+  }
+  const label = snapshot.occupancy_label || "0";
+  const low = Boolean(snapshot.occupancy_low_confidence);
+  occupancyNode.textContent = low
+    ? `Personas en alcance: ${label} · confianza baja`
+    : `Personas en alcance: ${label}`;
 }
 
 function displayRange(series) {

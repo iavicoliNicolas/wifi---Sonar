@@ -137,3 +137,9 @@ Contexto: el modo degradado aceptaba varios nombres, pero la misma escena movía
 Opciones consideradas: seguir con una etiqueta, o una fila por nombre y mover solo el primero en la demo.
 Decisión: cada nombre escrito es un nodo. El primero tiene el vaivén. Los demás quedan quietos. `*`, `scan` y `all` se rechazan. El estado presencia no sale de este modo: vacío o movimiento.
 Consecuencias: dos nombres se ven distintos. No hay barrido de la LAN ni identificación de personas.
+
+### D-024 — El conteo no identifica (2026-11-14)
+Contexto: el detector decía vacío, presencia o movimiento. Hace falta un número de personas en alcance, y la señal de un enlace no alcanza para reconocer a nadie. D-023 ya limita el RSSI a vacío o movimiento, sin identificar.
+Opciones consideradas: nombrar dispositivos y tratarlos como personas, guardar el conteo en el historial, o publicar solo un entero acotado en el estado en vivo.
+Decisión: `estimate_occupancy` devuelve 0, 1 o 2+ y una confianza sobre la claridad de los picos de esa ventana. No hay nombre, huella ni seguimiento entre muestras. 2+ es el techo: la señal no sostiene un censo más fino y los tests no afirman una precisión más allá de esos tres casos en el simulador. En modo RSSI, o con una sola subportadora, la confianza queda baja y el panel lo dice. Si dos enlaces ven actividad a la vez, el total se suma y se corta en 2+, pero la confianza baja: no se sabe si es la misma persona. El conteo no se escribe en el historial.
+Consecuencias: el estado de la API y el WebSocket muestran cuántos, no quiénes. Un hábito o una identidad no se pueden reconstruir desde este campo. No pisa D-018…D-023.

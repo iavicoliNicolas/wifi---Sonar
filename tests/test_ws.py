@@ -32,5 +32,7 @@ def test_websocket_receives_the_same_state_as_status():
         status = client.get("/status").json()
         assert message["state"] == status["state"] == "movimiento"
         assert message["score"] == status["score"]
+        assert message["occupancy_label"] == status["occupancy_label"]
+        assert message["occupancy_label"] in ("0", "1", "2+")
         assert message["features"]["motion_energy"] > 0
         assert message["amplitudes"]

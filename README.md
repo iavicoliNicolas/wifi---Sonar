@@ -6,7 +6,7 @@ Panel local de presencia y movimiento a partir del WiFi de tu casa. Corre en tu 
 
 ## Qué hace
 
-Clasifica el ambiente en tres estados: **vacío**, **presencia** y **movimiento**. Con más de un receptor podés nombrar zonas (living, pasillo). El modo RSSI, si no tenés CSI, usa solo dispositivos que vos nombrás y el panel lo marca como sensibilidad baja.
+Clasifica el ambiente en tres estados: **vacío**, **presencia** y **movimiento**. Además muestra un conteo anónimo de personas en alcance: **0**, **1** o **2+**. Ese número no identifica a nadie. Con más de un receptor podés nombrar zonas (living, pasillo). El modo RSSI, si no tenés CSI, usa solo dispositivos que vos nombrás; el panel lo marca como sensibilidad baja y la confianza del conteo queda baja.
 
 No identifica personas, no reconoce actividades íntimas y no arma un perfil de hábitos de nadie. El aviso **Sensado activo** está siempre visible. **Pausar** deja de leer la fuente. **Borrar historial** elimina los eventos guardados en esta máquina; la calibración del cuarto vacío se conserva.
 
@@ -75,7 +75,8 @@ El modo degradado no escanea vecinos. Poné los nombres en `WIFI_SONAR_RSSI_DEVI
 
 - El CSI no atraviesa bien varias paredes. Un receptor por ambiente rinde más que subir la potencia.
 - La primera decisión espera una ventana de unos 10 segundos: es lo que separa la respiración (0,1–0,5 Hz) del movimiento (0,5–5 Hz). Una persona quieta suma unos 3 segundos más.
-- No hay identificación de personas ni de actividades finas. Movimiento y presencia quieta es todo el vocabulario.
+- No hay identificación de personas ni de actividades finas. El vocabulario de estado sigue siendo vacío, presencia y movimiento. El conteo es solo 0, 1 o 2+ y no dice quién está.
+- Dos enlaces activos a la vez no alcanzan para saber si cuentan a la misma persona. En ese caso el total se corta en 2+ y la confianza baja.
 - El RSSI es grueso. Sirve como respaldo y el panel lo dice.
 - Sin hardware CSI, lo que ves es el simulador determinista, no tu casa.
 - El historial se guarda en `data/wifi_sonar.sqlite`. La retención usa la hora de reloj; el gráfico sigue en segundos de la traza. No sale de esta máquina.

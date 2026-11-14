@@ -227,6 +227,13 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Problemas / deuda: ninguna.
 - Siguiente paso sugerido: ninguno.
 
+### 2026-11-14 feat(occupancy) — Cantidad de personas en alcance
+- Qué se hizo: un estimador anónimo devuelve 0, 1 o 2+ y una confianza. El simulador puede superponer N firmas de respiración o caminata. El conteo sale por la API y el WebSocket y el panel lo muestra sin nombres. En modo RSSI la confianza queda baja. No se guarda en el historial. Decisión D-024.
+- Archivos tocados: `wifi_sonar/detect/occupancy.py`, `wifi_sonar/sources/simulated.py`, `wifi_sonar/engine.py`, `web/index.html`, `web/app.js`, `web/style.css`, `tests/test_occupancy.py`, `tests/test_api.py`, `tests/test_ws.py`, `DECISIONS.md`, `README.md`, `PROGRESS.md`.
+- Tests agregados: cuarto vacío → 0; una persona quieta o caminando → 1; dos firmas distinguibles → 2+; RSSI con confianza baja; el estado público no trae identidad.
+- Problemas / deuda: el número no está validado con CSI real. 2+ es un techo, no un censo.
+- Siguiente paso sugerido: esquema del espacio propio, sin un plano métrico.
+
 ### 2026-11-14 feat(ui) — Panel responsive
 - Qué se hizo: el panel deja de desbordar en ~360 px, ~768 px y escritorio. El header pasa a columna por debajo de 768 px, los botones y los campos de zona tienen alto táctil, los canvas siguen el ancho del contenedor y la palabra de estado (`vacío`, `presencia`, `movimiento`) entra con `clamp` sin recortarse. La paleta y el vocabulario no cambian.
 - Archivos tocados: `web/style.css`, `web/index.html`, `web/app.js`, `tests/test_api.py`, `PROGRESS.md`.
