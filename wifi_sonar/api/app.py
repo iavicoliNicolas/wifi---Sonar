@@ -49,6 +49,7 @@ class ConfigUpdate(BaseModel):
     webhook_url: str | None = None
     fusion: str | None = None
     zones: dict[str, str] | None = None
+    layout: dict[str, dict[str, float]] | None = None
     mode: str | None = None
 
 

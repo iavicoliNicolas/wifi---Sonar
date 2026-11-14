@@ -68,6 +68,8 @@ def test_panel_shell_is_served():
         assert 'id="state"' in page.text
         assert 'id="occupancy"' in page.text
         assert "Personas en alcance" in page.text
+        assert 'id="floor"' in page.text
+        assert "No es un plano" in page.text
         assert 'id="heatmap"' in page.text
         assert 'id="score"' in page.text
         assert 'id="timeline"' in page.text

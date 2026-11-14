@@ -52,6 +52,7 @@ function renderState(snapshot) {
   renderOccupancy(snapshot);
   renderSensing(snapshot);
   renderZones(snapshot);
+  renderSpace(snapshot);
   renderMode(snapshot.mode);
   if (state !== lastState) {
     lastState = state;
@@ -273,6 +274,135 @@ function renderZones(snapshot) {
   list.replaceChildren(next);
 }
 
+const floorNode = document.querySelector("#floor");
+let spaceLayout = {};
+let spaceDrag = null;
+let lastRows = [];
+
+function defaultPoint(index, total) {
+  const cols = Math.max(1, Math.ceil(Math.sqrt(total)));
+  const rows = Math.max(1, Math.ceil(total / cols));
+  return {
+    x: (index % cols + 1) / (cols + 1),
+    y: (Math.floor(index / cols) + 1) / (rows + 1),
+  };
+}
+
+function clampUnit(value) {
+  return Math.min(0.88, Math.max(0.12, value));
+}
+
+function pointsFor(rows) {
+  const placed = {};
+  rows.forEach((row, index) => {
+    const nodeId = row.node_id || "";
+    const saved = spaceLayout[nodeId];
+    if (saved && Number.isFinite(Number(saved.x)) && Number.isFinite(Number(saved.y))) {
+      placed[nodeId] = { x: Number(saved.x), y: Number(saved.y) };
+      return;
+    }
+    placed[nodeId] = defaultPoint(index, rows.length);
+  });
+  return placed;
+}
+
+function renderSpace(snapshot) {
+  const rows = Array.isArray(snapshot.nodes) ? snapshot.nodes : [];
+  lastRows = rows;
+  if (!rows.length) {
+    floorNode.replaceChildren();
+    const empty = document.createElement("p");
+    empty.className = "space-empty";
+    empty.textContent = "Todavía no hay nodos.";
+    floorNode.append(empty);
+    return;
+  }
+  const placed = pointsFor(rows);
+  const existing = new Map(
+    [...floorNode.querySelectorAll(".space-marker")].map((marker) => [marker.dataset.node, marker]),
+  );
+  const next = document.createDocumentFragment();
+  for (const row of rows) {
+    const nodeId = row.node_id || "";
+    let marker = existing.get(nodeId);
+    if (!marker) {
+      marker = document.createElement("button");
+      marker.type = "button";
+      marker.className = "space-marker";
+      marker.dataset.node = nodeId;
+    }
+    const name = row.zone || nodeId || "zona";
+    const state = labels[row.state] || row.state || "—";
+    marker.dataset.state = state;
+    marker.textContent = `${name} · ${state}`;
+    marker.setAttribute("aria-label", `${name}, ${state}. Arrastrá para ubicar la zona.`);
+    const point = placed[nodeId];
+    marker.style.left = `${point.x * 100}%`;
+    marker.style.top = `${point.y * 100}%`;
+    next.append(marker);
+  }
+  floorNode.replaceChildren(next);
+}
+
+function saveLayout() {
+  fetch("/config", {
+    method: "PUT",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ layout: spaceLayout }),
+  })
+    .then((response) => (response.ok ? response.json() : null))
+    .then((config) => {
+      if (config && !spaceDrag) {
+        spaceLayout = config.layout || {};
+      }
+    })
+    .catch(() => {});
+}
+
+floorNode.addEventListener("pointerdown", (event) => {
+  const marker = event.target.closest(".space-marker");
+  if (!marker) {
+    return;
+  }
+  spaceDrag = { id: marker.dataset.node, pointer: event.pointerId };
+  marker.setPointerCapture(event.pointerId);
+});
+
+floorNode.addEventListener("pointermove", (event) => {
+  if (!spaceDrag || event.pointerId !== spaceDrag.pointer) {
+    return;
+  }
+  const rect = floorNode.getBoundingClientRect();
+  if (rect.width < 1 || rect.height < 1) {
+    return;
+  }
+  spaceLayout = {
+    ...pointsFor(lastRows),
+    [spaceDrag.id]: {
+      x: clampUnit((event.clientX - rect.left) / rect.width),
+      y: clampUnit((event.clientY - rect.top) / rect.height),
+    },
+  };
+  const marker = floorNode.querySelector(`[data-node="${CSS.escape(spaceDrag.id)}"]`);
+  if (!marker) {
+    return;
+  }
+  marker.style.left = `${spaceLayout[spaceDrag.id].x * 100}%`;
+  marker.style.top = `${spaceLayout[spaceDrag.id].y * 100}%`;
+});
+
+floorNode.addEventListener("pointerup", (event) => {
+  if (!spaceDrag || event.pointerId !== spaceDrag.pointer) {
+    return;
+  }
+  spaceDrag = null;
+  saveLayout();
+});
+
+floorNode.addEventListener("pointercancel", () => {
+  spaceDrag = null;
+});
+
 function saveZones() {
   const zones = {};
   for (const item of document.querySelectorAll("#zones li[data-node]")) {
@@ -316,6 +446,10 @@ function fillSettings(config) {
   retentionNode.textContent = `El historial se conserva ${config.retention_days} días en esta máquina.`;
   applyPaused(config.paused);
   renderMode(config.mode);
+  if (!spaceDrag) {
+    spaceLayout = config.layout || {};
+    renderSpace(lastRows.length ? { nodes: lastRows } : { nodes: [] });
+  }
 }
 
 function renderMode(mode) {

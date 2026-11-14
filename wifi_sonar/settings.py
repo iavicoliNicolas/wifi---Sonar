@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 import os
 from dataclasses import asdict, dataclass, field
 
@@ -22,6 +23,7 @@ class AppConfig:
     webhook_url: str = ""
     fusion: str = "or"
     zones: dict[str, str] = field(default_factory=dict)
+    layout: dict[str, dict[str, float]] = field(default_factory=dict)
     mode: str = "csi"
 
     def __post_init__(self) -> None:
@@ -49,6 +51,7 @@ class AppConfig:
             raise ValueError("mode must be csi or rssi")
         if self.hysteresis > self.on_threshold:
             raise ValueError("hysteresis cannot exceed on_threshold")
+        self.layout = _normalize_layout(self.layout)
 
     def to_dict(self) -> dict[str, object]:
         return asdict(self)
@@ -57,6 +60,30 @@ class AppConfig:
         data = self.to_dict()
         data.update(updates)
         return AppConfig(**data)
+
+
+def _normalize_layout(layout: object) -> dict[str, dict[str, float]]:
+    """Coordenadas del esquema propio. Solo x e y, nunca un nombre."""
+
+    if not isinstance(layout, dict):
+        raise ValueError("layout must be a map of node ids")
+    if len(layout) > 24:
+        raise ValueError("layout supports at most 24 nodes")
+    cleaned: dict[str, dict[str, float]] = {}
+    for node_id, point in layout.items():
+        if not isinstance(node_id, str) or not node_id.strip() or len(node_id) > 80:
+            raise ValueError("layout node id must be a short non-empty string")
+        if not isinstance(point, dict) or set(point) != {"x", "y"}:
+            raise ValueError("layout point only stores x and y")
+        try:
+            x = float(point["x"])
+            y = float(point["y"])
+        except (TypeError, ValueError) as error:
+            raise ValueError("layout coordinates must be numbers") from error
+        if not (math.isfinite(x) and math.isfinite(y) and 0.0 <= x <= 1.0 and 0.0 <= y <= 1.0):
+            raise ValueError("layout coordinates must be between 0 and 1")
+        cleaned[node_id] = {"x": x, "y": y}
+    return cleaned
 
 
 @dataclass(frozen=True, slots=True)
