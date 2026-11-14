@@ -91,7 +91,20 @@ function displayRange(series) {
   return { low, high };
 }
 
+function fitCanvas(node) {
+  const width = Math.floor(node.clientWidth);
+  if (width < 2) {
+    return;
+  }
+  const height = Math.max(2, Math.round(width / 4));
+  if (node.width !== width || node.height !== height) {
+    node.width = width;
+    node.height = height;
+  }
+}
+
 function drawHeatmap() {
+  fitCanvas(heatmap);
   const context = heatmap.getContext("2d");
   const width = heatmap.width;
   const height = heatmap.height;
@@ -122,6 +135,7 @@ function drawHeatmap() {
 }
 
 function drawScore() {
+  fitCanvas(scoreCanvas);
   const context = scoreCanvas.getContext("2d");
   const width = scoreCanvas.width;
   const height = scoreCanvas.height;

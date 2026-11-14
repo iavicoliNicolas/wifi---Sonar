@@ -83,7 +83,13 @@ def test_panel_shell_is_served():
         assert icon.status_code == 200
         assert icon.headers["content-type"].startswith("image/png")
         assert icon.content[:8] == b"\x89PNG\r\n\x1a\n"
-        assert client.get("/assets/style.css").status_code == 200
+        assert "fitCanvas" in script.text
+        css = client.get("/assets/style.css")
+        assert css.status_code == 200
+        assert "@media" in css.text
+        assert "min-height: 2.75rem" in css.text
+        assert 'class="brand"' in page.text
+        assert 'class="notices"' in page.text
 
 
 def test_live_history_uses_wall_clock_and_the_snapshot_keeps_trace_time():

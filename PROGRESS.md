@@ -227,6 +227,13 @@ El repo es greenfield. Se aplica el backlog tal cual, con las responsabilidades 
 - Problemas / deuda: ninguna.
 - Siguiente paso sugerido: ninguno.
 
+### 2026-11-14 feat(ui) — Panel responsive
+- Qué se hizo: el panel deja de desbordar en ~360 px, ~768 px y escritorio. El header pasa a columna por debajo de 768 px, los botones y los campos de zona tienen alto táctil, los canvas siguen el ancho del contenedor y la palabra de estado (`vacío`, `presencia`, `movimiento`) entra con `clamp` sin recortarse. La paleta y el vocabulario no cambian.
+- Archivos tocados: `web/style.css`, `web/index.html`, `web/app.js`, `tests/test_api.py`, `PROGRESS.md`.
+- Tests agregados: el CSS servido incluye `@media` y el alto táctil; el HTML trae las clases `brand` y `notices`.
+- Problemas / deuda: ninguna.
+- Siguiente paso sugerido: conteo anónimo de personas en alcance.
+
 ### 2026-10-22 feat(T-17) — Número visible en los sliders
 - Qué se hizo: sensibilidad, ventana e histéresis muestran el valor al lado del nombre en cuanto se mueve el control. Una respuesta vieja del `PUT` no pisa un cambio más nuevo.
 - Archivos tocados: `web/index.html`, `web/style.css`, `web/app.js`, `tests/test_api.py`, `PROGRESS.md`.

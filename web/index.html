@@ -9,7 +9,7 @@
   </head>
   <body>
     <header>
-      <div>
+      <div class="brand">
         <p class="eyebrow">Hogar propio · procesamiento local</p>
         <h1>WiFi Sonar</h1>
       </div>
@@ -18,10 +18,12 @@
         <p id="connection" class="pill">desconectado</p>
       </div>
     </header>
-    <p id="sensing" class="banner" data-paused="0">Sensado activo</p>
-    <p id="mode-note" class="banner" hidden>
-      modo RSSI · sensibilidad baja. Solo dispositivos de tu red, sin identificar personas.
-    </p>
+    <div class="notices">
+      <p id="sensing" class="banner" data-paused="0">Sensado activo</p>
+      <p id="mode-note" class="banner" hidden>
+        modo RSSI · sensibilidad baja. Solo dispositivos de tu red, sin identificar personas.
+      </p>
+    </div>
     <main>
       <p id="state" data-state="vacío">—</p>
       <p id="detail">esperando la señal</p>
