@@ -1,0 +1,7 @@
+# Runtime libraries. Same lower bounds as [project.dependencies] in pyproject.toml.
+# Install the package with `pip install -e .` (or `pip install -e ".[dev]"` for pytest and ruff).
+# websockets is not imported directly. Uvicorn needs it to accept the /ws upgrade.
+numpy>=1.26
+fastapi>=0.115
+uvicorn>=0.32
+websockets>=13
